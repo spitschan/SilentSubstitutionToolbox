@@ -3,15 +3,8 @@
 % ReceptorIsolate Functions
 % -------------------------
 %   ReceptorIsolate     - Function that finds isolating primaries
-%   ReceptorIsolateWrapper
-%                       - Wrapper function for ReceptorIsolate
-%   ReceptorIsolateEnforceSpectralChange
-%                       - Function which enforces a different spectrum
-%   ReceptorIsolateStrictPhotonIncrease
-%                       - Function which enforces increases in photons
-%   ReceptorIsolateStrictPhotonDecrease
-%                       - Function which enforces decreases in photons
 %
+%  
 %
 % ContrastSplatter functions
 % -----------------------------
@@ -62,9 +55,8 @@
 % Demo
 % ----
 %
-%   ReceptorIsolateDemo - Demos the ReceptorIsolate functions 
-%   ContrastSplatterDemo 
-%                       - Demos the splatter calculations
+%   Recep
+%   ContrastSplatterDemo - Demos the splatter calculations
 %
 %
 % Requirements
@@ -85,9 +77,3 @@
 %
 %   Statistics Toolbox
 %       mvnpdf
-%
-%
-% License
-% -------
-%
-% Licenses under the MIT License.
