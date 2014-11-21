@@ -35,31 +35,34 @@ function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFract
 % 11/21/14  ms      Cleaned up and commented.
 
 % Do a few conversions
-radianceWattsPerM2Sr = spd;
+backgroundSpd = spd;
+radianceWattsPerM2Sr = backgroundSpd;
+radianceWattsPerM2Sr(radianceWattsPerM2Sr < 0) = 0;
 radianceWattsPerCm2Sr = (10.^-4)*radianceWattsPerM2Sr;
 radianceQuantaPerCm2SrSec = EnergyToQuanta(S,radianceWattsPerCm2Sr);
+
+%% Get the fraction bleached for each cone type. See
+% OLGetBGConeIsomerizations for reference.
 
 %% Load CIE functions.
 load T_xyz1931
 T_xyz = SplineCmf(S_xyz1931,683*T_xyz1931,S);
 photopicLuminanceCdM2 = T_xyz(2,:)*radianceWattsPerM2Sr;
+chromaticityXY = T_xyz(1:2,:)*radianceWattsPerM2Sr/sum(T_xyz*radianceWattsPerM2Sr);
 
 %% Adjust background luminance by scaling.  Handles small shifts from
 % original calibration, just by scaling.  This is close enough for purposes
 % of computing fraction of pigment bleached.
-if ~isempty(desiredPhotopicLuminanceCdM2)
-    scaleFactor = desiredPhotopicLuminanceCdM2/photopicLuminanceCdM2;
-else
-    scaleFactor = 1;
-end
+desiredPhotopicLuminanceCdM2 = photopicLuminanceCdM2; % here we set it to original one
+scaleFactor = desiredPhotopicLuminanceCdM2/photopicLuminanceCdM2;
 radianceWattsPerM2Sr = scaleFactor*radianceWattsPerM2Sr;
 radianceWattsPerCm2Sr = scaleFactor*radianceWattsPerCm2Sr;
 radianceQuantaPerCm2SrSec = scaleFactor*radianceQuantaPerCm2SrSec;
 photopicLuminanceCdM2 = scaleFactor*photopicLuminanceCdM2;
 
 %% Get cone spectral sensitivities to use to compute isomerization rates
-[~, T_quantalIsom]  = GetHumanPhotopigmentSS(S, {'LCone' 'MCone' 'SCone'}, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], []);
-[~, T_quantalIsomHemo]  = GetHumanPhotopigmentSS(S, {'LConeHemo' 'MConeHemo' 'SConeHemo'}, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], []);
+[T_cones, T_quantalIsom]  = GetHumanPhotopigmentSS(S, {'LCone' 'MCone' 'SCone'}, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], []);
+[T_conesHemo, T_quantalIsomHemo]  = GetHumanPhotopigmentSS(S, {'LConeHemo' 'MConeHemo' 'SConeHemo'}, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], []);
 
 %% Compute irradiance, trolands, etc.
 pupilAreaMm2 = pi*((pupilDiameterMm/2)^2);
@@ -97,3 +100,4 @@ fprintf('    * Fraction bleached from isomerization rates: L, %0.2f; M, %0.2f; S
     fractionBleachedFromIsom(1),fractionBleachedFromIsom(2),fractionBleachedFromIsom(3));
 fprintf('    * Fraction bleached from isomerization rates: LHemo, %0.2f; MHemo, %0.2f; SHemo, %0.2f\n', ...
     fractionBleachedFromIsomHemo(1),fractionBleachedFromIsomHemo(2),fractionBleachedFromIsomHemo(3));
+

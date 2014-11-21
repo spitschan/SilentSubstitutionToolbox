@@ -24,13 +24,14 @@ end
 %% Save out the contrast map as .mat
 saveFile = fullfile(saveDir, ['Splatter' fileNameSuffix '.mat']);
 save(saveFile, 'contrastMap', 'photoreceptorClasses', 'nominalLambdaMax', 'ageRange', 'lambdaMaxShiftRange', 'targetContrasts');
-fprintf('  - Contrast map saved to %s.\n', fullfile(saveDir, ['Splatter' fileNameSuffix '.mat']));
+fprintf('  - Contrast map saved to %s.\n', saveFile);
 
 %% Compile a few statistics on the splatter and save out as csv
-fileID = fopen(fullfile(saveDir, ['Splatter_statistics' fileNameSuffix '.csv']), 'w');
+outFile = fullfile(saveDir, ['Splatter' fileNameSuffix '_statistics.csv']);
+fileID = fopen(outFile, 'w');
 fprintf(fileID,'Class,NominalLambdaMax,LambdaMaxShiftMin,LambdaMaxShiftMax,ageRangeMin,ageRangeMax,targetContrast,measuredTargetContrast,meanContrast,stdContrast,meanAbsContrast,stdAbsContrast,minContrast,maxContrast\n');
 for k = 1:length(photoreceptorClasses)
     fprintf(fileID,'%s,%.2f,%.2f,%.2f,%.2f,%.2f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f\n',photoreceptorClasses{k}, nominalLambdaMax(k), min(lambdaMaxShiftRange), max(lambdaMaxShiftRange), min(ageRange), max(ageRange), targetContrasts{k}, contrastMap{k}(find(nominalLambdaMax(k)-lambdaMaxShiftRange == nominalLambdaMax(k)), find(ageRange == targetAge)), mean(contrastMap{k}(:)), std(contrastMap{k}(:)), mean(abs(contrastMap{k}(:))), std(abs(contrastMap{k}(:))), min(contrastMap{k}(:)), max(contrastMap{k}(:)));
 end
 fclose(fileID);
-fprintf('  - Contrast statistics saved to %s.\n', fullfile(saveDir, ['Splatter_statistics' fileNameSuffix '.csv']));
+fprintf('  - Contrast statistics saved to %s.\n', outFile);

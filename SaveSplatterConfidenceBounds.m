@@ -9,7 +9,6 @@ function SaveSplatterConfidenceBounds(saveDir, fileNameSuffix, contrastMap, phot
 %   fileNameSuffix (str)        - Suffix for file name
 %   photoreceptorClasses (cell) - Photoreceptor classes
 %   nominalLambdaMax (1xK)      - Nominal lambda-max
-%   targetAge                   - Target age
 %   ageRange                    - Age range of contrast map
 %   lambdaMaxShiftRange         - Shift range of lambda-max
 %   targetContrast (1xK)        - Target contrasts
@@ -23,7 +22,8 @@ if isempty(saveDir)
 end
 
 %% Compile a few statistics on the splatter and save out as csv
-fileID = fopen(fullfile(saveDir, ['Splatter_statistics' fileNameSuffix '.csv']), 'w');
+outFile = fullfile(saveDir, ['Splatter' fileNameSuffix '_statistics.csv']);
+fileID = fopen(outFile, 'w');
 fprintf(fileID,'Class,NominalLambdaMax,LambdaMaxShiftMin,LambdaMaxShiftMax,targetAge,ageRangeMin,ageRangeMax,targetContrast,measuredTargetContrast,meanContrast,stdContrast,meanAbsContrast,stdAbsContrast,minContrast,maxContrast,expectedValue\n');
 
 for o = ageRange
@@ -79,4 +79,4 @@ for o = ageRange
     end
 end
 fclose(fileID);
-fprintf('  - Contrast statistics saved to %s.\n', fullfile(saveDir, ['Splatter_statistics' fileNameSuffix '.csv']));
+fprintf('  - Contrast statistics saved to %s.\n', outFile);

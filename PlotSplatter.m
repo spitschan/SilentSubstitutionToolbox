@@ -154,7 +154,6 @@ for k = 1:length(contrastMap)
     
     % Get the stepsize to normalize the pdf to get pmf
     stepSize = median(diff(x1))*median(diff(x2));
-    
     [~, x, y] = error_ellipse([lambdaMaxSD.^2 0 ; 0 ageSD.^2], mu, 'conf', 0.9973);
     
     plot(y, x, '-k'); hold on;
@@ -193,14 +192,15 @@ for k = 1:length(contrastMap)
     pbaspect([1 1 1]);
     
     % Add a title
-    title({[titleSuffix ' modulation: ' photoreceptorClasses{k}] ; ['max: ' num2str(max(contrastMap{k}(:))) ' / min: ' num2str(min(contrastMap{k}(:)))] ; ['at target: ' num2str(contrastMap{k}(find(lambdaMaxShiftRange == 0), find(ageRange == targetAge)))]});
+    title({[titleSuffix ' photopigment: ' photoreceptorClasses{k}] ; ['max: ' num2str(max(contrastMap{k}(:)), '%.2f') ' / min: ' num2str(min(contrastMap{k}(:)), '%.2f')] ; ['at target: ' num2str(contrastMap{k}(find(lambdaMaxShiftRange == 0), find(ageRange == targetAge)), '%.2f')]});
 end
 
+% Save the plots if required
 if SAVEPLOTS
     %% Save plots
     set(theFig, 'Color', [1 1 1]);
     set(theFig, 'InvertHardCopy', 'off');
-    set(theFig, 'PaperPosition', [0 0 20 10]); %Position plot at left hand corner with width 15 and height 6.
-    set(theFig, 'PaperSize', [20 10]); %Set the paper to have width 15 and height 6.
+    set(theFig, 'PaperPosition', [0 0 15 8]);
+    set(theFig, 'PaperSize', [15 8]);
     saveas(theFig, plotFileName, 'pdf');
 end

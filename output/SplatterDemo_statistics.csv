@@ -1,0 +1,6 @@
+Class,NominalLambdaMax,LambdaMaxShiftMin,LambdaMaxShiftMax,ageRangeMin,ageRangeMax,targetContrast,measuredTargetContrast,meanContrast,stdContrast,meanAbsContrast,stdAbsContrast,minContrast,maxContrast
+LCone,558.90,-10.00,10.00,1.00,80.00,0.00000,0.00000,0.00250,0.01118,0.00949,0.00641
+-1.545954e-02,0.03,MCone,530.30,-10.00,10.00,1.00,80.00,0.00000,0.00000,-0.00164,0.01220,0.01032,0.00670
+-2.376551e-02,0.03,SCone,420.70,-10.00,10.00,1.00,80.00,0.00000,0.00000,0.01156,0.04264,0.03644,0.02499
+-5.050003e-02,0.14,Melanopsin,480.00,-10.00,10.00,1.00,80.00,0.20000,0.20000,0.19482,0.02739,0.19482,0.02739
+1.198335e-01,0.24,
