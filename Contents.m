@@ -17,6 +17,9 @@
 % Auxiliary functions
 % -------------------
 %
+%   GetHumanPhotopigmentSS
+%                       - Wrapper around PTB functions to obtain standard
+%                         spectral sensitivities
 %   GetChronologicalAgeSDFromLensSD     
 %                       - Converts age standard deviation into lens density
 %                         standard deviation
@@ -26,6 +29,10 @@
 %   GetConeFractionBleachedFromSpectrum
 %                       - Calculates proportion of pigment bleached for a
 %                         given background spectrum
+%   GetHemoglobinTransmittance
+%                       - Returns hemoglobin transmittance
+%   GetHemoglobin       - Wrapper function to get hemoglobin
+%                         extinction/absorptivity/absorption functions
 %
 % Data
 % ----
@@ -39,6 +46,15 @@
 %   data/spd_melIsolatingSpd.mat
 %                       - Contains a sample melanopsin-isolating spectrum
 %
+% Third-party functions
+% ---------------------
+%
+%   error_ellipse       - Plots an error ellipse. No known license.
+%                         http://www.mathworks.com/matlabcentral/fileexchange/4705-error-ellipse
+%   lbmap               - Color maps. BSD license.
+%                         http://www.mathworks.com/matlabcentral/fileexchange/17555-light-bartlein-color-maps/content/lbmap.m
+% 
+%
 % Demo
 % ----
 %
@@ -48,4 +64,18 @@
 % Requirements
 % ------------
 %   Psychtoolbox - http://psychtoolbox.org/
-%   error_ellipse - http://www.mathworks.com/matlabcentral/fileexchange/4705-error-ellipse
+%       SToWls
+%       SplineSrf
+%       SplineCmf
+%       QuantaToEnergy
+%       EnergyToQuanta
+%       ComputeCIEConeFundamentals
+%       DefaultPhotoreceptors
+%       FillInPhotoreceptors
+%       PhotonAbsortionRate
+%       RadianceToRetIrradiance
+%       RetIrradianceToTrolands
+%       RetinalMMToDegrees
+%
+%   Statistics Toolbox
+%       mvnpdf
