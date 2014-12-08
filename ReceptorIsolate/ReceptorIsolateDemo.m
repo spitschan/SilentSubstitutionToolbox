@@ -68,7 +68,7 @@ switch (whichPrimaries)
 
      case 'OneLight'
         % Get some OneLight primary basis
-        cal = LoadCalFile('OLEyeTrackerLongCable');
+        cal = LoadCalFile('OLBoxBLongCableBEyePiece2');
         S = cal.describe.S;
         B_primary = cal.computed.pr650M;
         ambientSpd = cal.computed.pr650MeanDark;

@@ -156,7 +156,11 @@ backgroundSpd = B_primary*backgroundPrimary + ambientSpd;
 % Comptue contrasts for receptors we want to isolate.
 modulationSpd = B_primary*(x-backgroundPrimary);
 isolateContrasts = T_receptors(whichReceptorsToIsolate,:)*modulationSpd ./ (T_receptors(whichReceptorsToIsolate,:)*backgroundSpd);
-minimizeContrasts = T_receptors(whichReceptorsToMinimize,:)*modulationSpd ./ (T_receptors(whichReceptorsToMinimize,:)*backgroundSpd);
+
+% We once used whichReceptorsToMinimize, but not currently.  This is here
+% to remind us that we could stick a term back in the error function that
+% uses it, if we ever need to.
+% minimizeContrasts = T_receptors(whichReceptorsToMinimize,:)*modulationSpd ./ (T_receptors(whichReceptorsToMinimize,:)*backgroundSpd);
 
 if isempty(desiredContrasts)
     % Want the sum of the isolated receptor contrasts to be big. fmincon
