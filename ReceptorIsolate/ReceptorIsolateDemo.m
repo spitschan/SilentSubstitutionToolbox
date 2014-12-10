@@ -109,11 +109,39 @@ switch (whichModel)
     case 'HumanPhotopigments';
         observerAgeInYears = GetWithDefault('> Observer age in years?', 32);
         fieldSizeDegrees = GetWithDefault('> Field size in degrees?', 27.5);
-        pupilDiameterMm = GetWithDefault('> Pupil diameter?', 27.5);
+        pupilDiameterMm = GetWithDefault('> Pupil diameter?', 4.7);
         photoreceptorClasses = {'LCone', 'MCone', 'SCone', 'Melanopsin', 'Rods', 'LConeHemo', 'MConeHemo', 'SConeHemo'};
         
+        correctBleaching = GetWithDefault('> Correct for photopigment bleaching [1 = yes, 0 = no]?', 1);
+        if correctBleaching
+            [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, B_primary*backgroundPrimary + ambientSpd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, []);
+            
+            % We can now assign the fraction bleached for each photoreceptor
+            % class.
+            for p = 1:length(photoreceptorClasses)
+                switch photoreceptorClasses{p}
+                    case 'LCone'
+                        fractionBleached(p) = fractionBleachedFromIsom(1);
+                    case 'MCone'
+                        fractionBleached(p) = fractionBleachedFromIsom(2);
+                    case 'SCone'
+                        fractionBleached(p) = fractionBleachedFromIsom(3);
+                    case 'LConeHemo'
+                        fractionBleached(p) = fractionBleachedFromIsomHemo(1);
+                    case 'MConeHemo'
+                        fractionBleached(p) = fractionBleachedFromIsomHemo(2);
+                    case 'SConeHemo'
+                        fractionBleached(p) = fractionBleachedFromIsomHemo(3);
+                    otherwise
+                        fractionBleached(p) = 0;
+                end
+            end
+        else
+            fractionBleached = [];
+        end
+        
         % Make sensitivities for L, M, S, Mel
-        T_receptors = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], []);
+        T_receptors = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], fractionBleached);
         
         %% Which to do?
         fprintf('Available directions:\n');
