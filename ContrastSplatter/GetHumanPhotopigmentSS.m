@@ -81,7 +81,7 @@ if isempty(lambdaMaxShift)
 end
 
 if (isempty(fractionPigmentBleached)) && length(photoreceptorClasses) > 1
-    fractionPigmentBleached = zeros(3,1);
+    fractionPigmentBleached = zeros(length(photoreceptorClasses),1);
 elseif (isempty(fractionPigmentBleached)) && length(photoreceptorClasses) == 1
     fractionPigmentBleached = 0;
 end
