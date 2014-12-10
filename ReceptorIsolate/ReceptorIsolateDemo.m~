@@ -15,7 +15,7 @@ cd(fileparts(mfilename('fullpath')));
 
 %% Which to do?
 fprintf('Available receptor models:\n');
-fprintf('\t[1]  Human cones and melanopsin\n');
+fprintf('\t[1]  Human cones and melanopsin)\n');
 fprintf('\t[2]  Dog\n');
 whichModelNumber = GetWithDefault('Enter model',1);
 switch (whichModelNumber)
@@ -157,24 +157,24 @@ switch (whichModel)
         %% Which to do?
         fprintf('Available directions:\n');
         fprintf('\t[1]  Dog L cones\n');
-        fprintf('\t[2]  Dog S cones)\n');
-        fprintf('\t[3]  Dog Rods)\n');
+        fprintf('\t[2]  Dog S Cones)\n');
+        fprintf('\t[3]  Dog o)\n');
         whichDirectionNumber = GetWithDefault('Enter direction',1);
         switch (whichDirectionNumber)
             case 1
-                whichDirection = 'DogL';
-                whichReceptorsToIsolate = [1];
-                whichReceptorsToIgnore = [];
+                whichDirection = 'MelanopsinDirectedLegacy';
+                whichReceptorsToIsolate = [4];
+                whichReceptorsToIgnore = [5 6 7 8];
                 whichReceptorsToMinimize = [];
             case 2
-                whichDirection = 'DogS';
-                whichReceptorsToIsolate = [2];
-                whichReceptorsToIgnore = [];
+                whichDirection = 'MelanopsinDirected';
+                whichReceptorsToIsolate = [4];
+                whichReceptorsToIgnore = [5];
                 whichReceptorsToMinimize = [];
             case 3
-                whichDirection = 'DogRods';
+                whichDirection = 'SDirected';
                 whichReceptorsToIsolate = [3];
-                whichReceptorsToIgnore = [];
+                whichReceptorsToIgnore = [5 8];
                 whichReceptorsToMinimize = [];
             otherwise
                 error('Unknown direction entered');
@@ -186,6 +186,7 @@ end
 for i = 1:size(T_receptors,1)
     T_receptors(i,:) = T_receptors(i,:)/max(T_receptors(i,:));
 end
+
 
 % Ask if we want to maximize contrast, or peg contrast
 maxContrast = GetWithDefault('> Maximize contrast? [1 = yes, 0 = no]', 1);
@@ -222,6 +223,7 @@ backgroundReceptors = T_receptors*(B_primary*backgroundPrimary + ambientSpd);
 
 diffReceptors = T_receptors*B_primary*(modulationPrimary - backgroundPrimary);
 contrastReceptors = diffReceptors ./ backgroundReceptors;
+fprintf('\n> Observer age: %g\n',observerAgeInYears);
 for j = 1:size(T_receptors,1)
     fprintf('  - %s: contrast = \t%f\n',photoreceptorClasses{j},contrastReceptors(j));
 end
