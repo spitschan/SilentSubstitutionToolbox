@@ -70,8 +70,12 @@ switch (whichPrimaries)
         
     case 'OneLight'
         % Get some OneLight primary basis
+<<<<<<< HEAD
         calPath = fullfile(fileparts(mfilename('fullpath')), 'cals', 'OneLightCal.mat');
         load(calPath);
+=======
+        cal = LoadCalFile('OLBoxBLongCableBEyePiece2');
+>>>>>>> b6a55924678a92d1623fb129dacbab233b7cd84c
         S = cal.describe.S;
         B_primary = cal.computed.pr650M;
         ambientSpd = cal.computed.pr650MeanDark;

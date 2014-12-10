@@ -1,5 +1,5 @@
 function [isolatingPrimary] = ReceptorIsolate(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd)
-% [isolatingPrimaries] = ReceptorIsolate(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,[desiredContrasts],[ambientSpd])
+% [isolatingPrimaries] = ReceptorIsolate(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,[desiredContrasts],[ambientSpd])
 %
 % Find the best isolating modulation around a given background.  This is a very general routine,
 % with inputs as follows.
@@ -10,6 +10,7 @@ function [isolatingPrimary] = ReceptorIsolate(T_receptors,whichReceptorsToIsolat
 %                           Why, you ask, might you want to do this?  Maybe if T_receptors contains the rods but you're
 %                           working at high light levels.
 % whichReceptorsToMinimize  Index vector specifying which receptors we want to minimize (i.e. not 0, but get close to it).
+%                           This is a vestigal argument.  Receptors listed here are actually ignored, rather than minimized.
 % B_primary -               These calculations are device dependent.  B_primary is a set of basis vectors for the lights
 %                           that the device can produce, scaled so that the gamut is for the range [0-1] on each primary.
 % backgroundPrimary -       Background around which modulation will occur, in primary space.
@@ -155,7 +156,11 @@ backgroundSpd = B_primary*backgroundPrimary + ambientSpd;
 % Comptue contrasts for receptors we want to isolate.
 modulationSpd = B_primary*(x-backgroundPrimary);
 isolateContrasts = T_receptors(whichReceptorsToIsolate,:)*modulationSpd ./ (T_receptors(whichReceptorsToIsolate,:)*backgroundSpd);
-minimizeContrasts = T_receptors(whichReceptorsToMinimize,:)*modulationSpd ./ (T_receptors(whichReceptorsToMinimize,:)*backgroundSpd);
+
+% We once used whichReceptorsToMinimize, but not currently.  This is here
+% to remind us that we could stick a term back in the error function that
+% uses it, if we ever need to.
+% minimizeContrasts = T_receptors(whichReceptorsToMinimize,:)*modulationSpd ./ (T_receptors(whichReceptorsToMinimize,:)*backgroundSpd);
 
 if isempty(desiredContrasts)
     % Want the sum of the isolated receptor contrasts to be big. fmincon
