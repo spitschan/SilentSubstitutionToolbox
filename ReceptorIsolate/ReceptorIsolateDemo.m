@@ -158,10 +158,11 @@ switch (whichModel)
         % correction routine only knows about L, M, and S cones.
         if correctBleaching
             % The hard work is done by routine
-            % GetCOneFractionBleachedFromSpectrum, which is in the
-            % ContrastSplatter directory.
+            % GetConeFractionBleachedFromSpectrum, which is in the
+            % ContrastSplatter directory. We set the verbose flag here.
+            verbose = true;
             [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = ...
-                GetConeFractionBleachedFromSpectrum(S, B_primary*backgroundPrimary + ambientSpd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, []);
+                GetConeFractionBleachedFromSpectrum(S, B_primary*backgroundPrimary + ambientSpd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], verbose);
             
             % Assign the fraction bleached for each photoreceptor class.
             for p = 1:length(photoreceptorClasses)

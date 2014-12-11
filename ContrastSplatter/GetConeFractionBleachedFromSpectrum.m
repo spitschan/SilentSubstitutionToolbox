@@ -1,5 +1,5 @@
-function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, spd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, desiredPhotopicLuminanceCdM2)
-% [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, spd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, desiredPhotopicLuminanceCdM2)
+function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, spd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, desiredPhotopicLuminanceCdM2, verbose)
+% [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, spd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, desiredPhotopicLuminanceCdM2, verbose)
 %
 % Returns the fraction bleached for LMS cones and LMS penumbral cones for a
 % given spectrum, age, field size and pupil diameter.
@@ -13,6 +13,7 @@ function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFract
 %   pupilDiameterMm     - Assumed pupil diameter
 %   desiredPhotopicLuminanceCdM2
 %                       - Adjust background luminance by scaling
+%   verbose             - Prints out the fraction bleached
 % Output:
 %   fractionBleachedFromIsom
 %                       - Fraction bleached for open-field cones
@@ -94,10 +95,11 @@ for i = 1:3
     fractionBleachedFromIsom(i) = ComputePhotopigmentBleaching(theLMSIsomerizations(i),'cones','isomerizations','Boynton');
     fractionBleachedFromIsomHemo(i) = ComputePhotopigmentBleaching(theLMSIsomerizationsHemo(i),'cones','isomerizations','Boynton');
 end
-fprintf('    * Stimulus luminance %0.1f candelas/m2\n',photopicLuminanceCdM2);
-fprintf('    * Fraction bleached computed from trolands (applies to L and M cones): %0.2f\n',fractionBleachedFromTrolands);
-fprintf('    * Fraction bleached from isomerization rates: L, %0.2f; M, %0.2f; S, %0.2f\n', ...
-    fractionBleachedFromIsom(1),fractionBleachedFromIsom(2),fractionBleachedFromIsom(3));
-fprintf('    * Fraction bleached from isomerization rates: LHemo, %0.2f; MHemo, %0.2f; SHemo, %0.2f\n', ...
-    fractionBleachedFromIsomHemo(1),fractionBleachedFromIsomHemo(2),fractionBleachedFromIsomHemo(3));
-
+if verbose
+    fprintf('    * Stimulus luminance %0.1f candelas/m2\n',photopicLuminanceCdM2);
+    fprintf('    * Fraction bleached computed from trolands (applies to L and M cones): %0.2f\n',fractionBleachedFromTrolands);
+    fprintf('    * Fraction bleached from isomerization rates: L, %0.2f; M, %0.2f; S, %0.2f\n', ...
+        fractionBleachedFromIsom(1),fractionBleachedFromIsom(2),fractionBleachedFromIsom(3));
+    fprintf('    * Fraction bleached from isomerization rates: LHemo, %0.2f; MHemo, %0.2f; SHemo, %0.2f\n', ...
+        fractionBleachedFromIsomHemo(1),fractionBleachedFromIsomHemo(2),fractionBleachedFromIsomHemo(3));
+end
