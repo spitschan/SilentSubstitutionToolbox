@@ -1,17 +1,9 @@
-% SilentSubstitutionToolbox - A toolbox for silent substitution
+% SilentSubstitutionToolbox - A toolbox for silent substitution calculations.
 % 
 % ReceptorIsolate Functions
 % -------------------------
-%   ReceptorIsolate     - Function that finds isolating primaries
-%   ReceptorIsolateWrapper
-%                       - Wrapper function for ReceptorIsolate
-%   ReceptorIsolateEnforceSpectralChange
-%                       - Function which enforces a different spectrum
-%   ReceptorIsolateStrictPhotonIncrease
-%                       - Function which enforces increases in photons
-%   ReceptorIsolateStrictPhotonDecrease
-%                       - Function which enforces decreases in photons
-%
+%   ReceptorIsolate     - Function that finds isolating device primary
+%                         settings
 %
 % ContrastSplatter functions
 % -----------------------------
@@ -59,35 +51,19 @@
 %                         http://www.mathworks.com/matlabcentral/fileexchange/17555-light-bartlein-color-maps/content/lbmap.m
 % 
 %
-% Demo
+% Demos
 % ----
 %
-%   ReceptorIsolateDemo - Demos the ReceptorIsolate functions 
-%   ContrastSplatterDemo 
-%                       - Demos the splatter calculations
+%   ReceptorIsolateDemo  - Demos the ReceptorIsolate functions 
+%   ContrastSplatterDemo - Demos the splatter calculations
 %
 %
 % Requirements
 % ------------
 %   Psychtoolbox - http://psychtoolbox.org/
-%       SToWls
-%       SplineSrf
-%       SplineCmf
-%       QuantaToEnergy
-%       EnergyToQuanta
-%       ComputeCIEConeFundamentals
-%       DefaultPhotoreceptors
-%       FillInPhotoreceptors
-%       PhotonAbsortionRate
-%       RadianceToRetIrradiance
-%       RetIrradianceToTrolands
-%       RetinalMMToDegrees
-%
 %   Statistics Toolbox
-%       mvnpdf
-%
 %
 % License
 % -------
 %
-% Licenses under the MIT License.
+% Licensed under the MIT License.
