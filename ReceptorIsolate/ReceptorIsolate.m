@@ -48,7 +48,7 @@ function [isolatingPrimary] = ReceptorIsolate(T_receptors,whichReceptorsToIsolat
 %          dhb      Change error function a little to avoid numerical issues.
 % 8/27/13  ll       Fix minor typo in variable name
 
-% Check whether the desired contrasts was passed, and if so check
+% Check whether the desired contrasts were passed, and if so check
 % consistency of its dimensions.
 if (nargin < 10)
     desiredContrasts = [];
