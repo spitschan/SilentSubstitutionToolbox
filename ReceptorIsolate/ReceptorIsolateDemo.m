@@ -192,7 +192,13 @@ switch (whichModel)
         % directory.  Each row of the matrix T_receptors provides the
         % spectral sensitivity of the photoreceptor class in the
         % corresponding entry of the cell array photoreceptorClasses.
-        T_receptors = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], fractionBleached);
+        %
+        % The last two arguments are the oxygenation fraction and the
+        % vessel thickness. We set them to be empty here, prompting the
+        % user to enter these values later.
+        oxygenationFraction = [];
+        vesselThickness = [];
+        T_receptors = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], fractionBleached, oxygenationFraction, vesselThickness);
         
         %% Let user choose a photoreceptor class to target
         fprintf('Available photoreceptor classes to target:\n');
@@ -274,12 +280,6 @@ switch (whichModel)
                 error('Unknown direction entered');
         end
         
-end
-
-%% Normalize receptors to maximum of unity.
-% Not clear that we really need to do this.
-for i = 1:size(T_receptors,1)
-    T_receptors(i,:) = T_receptors(i,:)/max(T_receptors(i,:));
 end
 
 % User chooses whether to maximize contrast in targeted receptor classes or
