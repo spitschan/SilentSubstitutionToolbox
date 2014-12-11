@@ -12,8 +12,7 @@ function isolatingPrimary = ReceptorIsolateWrapper(mode, T_receptors,whichRecept
 %                               into the main ReceptorIsolate code somehow.
 
 %% Execute some consistency checks
-% Check whether the desired contrasts was passed, and if so check
-% consistency of its dimensions.
+% Check whether the desired contrasts vector was passed, and if so check consistency of its dimensions.
 if (nargin < 11)
     desiredConstrast = [];
 end
