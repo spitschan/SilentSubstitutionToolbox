@@ -184,14 +184,15 @@ for i = 1:length(photoreceptorClasses)
     % only assign these values once, and they will be used for all other
     % photoreceptor classes screened by blood.
     if strfind(theClass,  'Hemo')
+        fprintf('At least one of the passed photoreceptors is assumed to be screened by blood vessels.\n');
         if isempty(vesselOxyFraction)
-            vesselOxyFraction = GetWithDefault(['Class ' theClass ': Which oxygenation fraction [typical 0.85]?'], 0.85);
+            vesselOxyFraction = GetWithDefault(['\tWhich oxygenation fraction [typical 0.85]?'], 0.85);
         else
             sprintf('\t*** Assuming oxygenation fraction of %.2f ***\n', vesselOxyFraction);
         end
         
         if isempty(vesselOverallThicknessUm)
-            vesselOverallThicknessUm = GetWithDefault(['Class ' theClass ': Which vessel thickness [typical 5 um]?'], 5);
+            vesselOverallThicknessUm = GetWithDefault(['\tWhich vessel thickness [typical 5 um]?'], 5);
         else
             sprintf('\t*** Assuming vessel thickness of %.2f ***\n', vesselOverallThicknessUm);
         end
