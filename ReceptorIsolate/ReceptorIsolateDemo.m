@@ -74,8 +74,9 @@ switch (whichPrimaries)
         % Set ambient light to zero for this ideal device
         ambientSpd = zeros(size(B_primary,2),1);
         
-        % No smoothness constraint enforced here.
-        maxPowerDiff = Inf;    
+        % No smoothness constraint enforced here. Use a big number (Inf
+        % does not work).
+        maxPowerDiff = 10000;    
     case 'OneLight'
         % Get a OneLight calibration file, stored here for demo purposes.
         % Extract the descrption of spectral primaries, which is what we
@@ -126,8 +127,8 @@ switch (whichPrimaries)
         % No smoothness constraint envforced here.  It really wouldn't make
         % to much sense for a three-primary monitor, as the smoothness of a
         % monitor spectrum is pretty much determined by the spectral shape
-        % of its primarites.
-        maxPowerDiff = Inf;
+        % of its primarites. 
+        maxPowerDiff = 10000;
 end
 
 %% Get sensitivities and set other relvant parameters
