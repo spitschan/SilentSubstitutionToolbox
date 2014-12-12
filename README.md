@@ -1,7 +1,7 @@
 SilentSubstitutionToolbox
 =======================
 
-Toolbox to compute estimates of human photoreceptor spectral sensitivities, compute silent substitution
+Matlab toolbox to compute estimates of human photoreceptor spectral sensitivities, compute silent substitution
 spectral modulations for a variety of devices (including standard monitors and devices with many narrowband
 primaries), and to estimate the normal variation of photoreceptor spectral sensitivities and how much
 contrast splatter a given modulation can be expected to produce on nominally silenced photoreceptors.
