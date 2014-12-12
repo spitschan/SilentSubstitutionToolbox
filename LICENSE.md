@@ -1,8 +1,8 @@
-Except as noted explicitly (as in cases where we include support routines from some other source), the SilentSubstitutionToolbox is covered by:
+Except as noted explicitly (as in cases where we include support routines from some other source, in subfolder External), the SilentSubstitutionToolbox is covered by:
 
 The MIT License (MIT)
 
-Copyright (c) Manuel Spitschan, Geoffrey Aguirre David Brainard and the Trustees of the University of Pennsylvania
+Copyright (c) Manuel Spitschan, Geoffrey Aguirre, David Brainard and the Trustees of the University of Pennsylvania.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
