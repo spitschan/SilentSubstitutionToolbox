@@ -84,7 +84,7 @@ switch (whichPrimaries)
         % settings would need to be handled to get the device to actually
         % produce the spectrum, but here we are just finding the desired
         % modulation.
-        calPath = fullfile(fileparts(mfilename('fullpath')), 'cals', []);
+        calPath = fullfile(fileparts(mfilename('fullpath')), 'ReceptorIsolateDemoData', []);
         cal = LoadCalFile('OneLightDemoCal.mat',[],calPath);
         S = cal.describe.S;
         B_primary = cal.computed.pr650M;
