@@ -8,8 +8,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 % in energy units, normalized to max of 1.  T_quantalIosmerizations are the
 % probability of an isomerization for quantal unit input.
 %
-% If empty variables are passed for any of the following variables,
-% defaults will be assumed.
+% If empty variables are passed for any of the following variables, defaults will be assumed.
 %
 % Input:
 %   S (1x3)                         - Wavelength spacing.
@@ -19,7 +18,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %                                                        'LConeR+2', 'LConeR-2', 'MConeR+2', 'MConeR-2', 'SConeR+2', 'SConeR-2', ...
 %                                                        'MelanopsinR+2', 'MelanopsinR-2', 'RodsR+2', 'RodsR-2', ...
 %                                                        'LCone10DegTabulatedSS', 'MCone10DegTabulatedSS', 'SCone10DegTabulatedSS', ...
-%                                                        'MelanopsinLegacy', 'RodsLegacy', 'CIE1924VLambda'. ...
+%                                                        'MelanopsinLegacy', 'RodsLegacy', 'CIE1924VLambda' ...
 %                                                        'LConeHemo', 'MConeHemo', 'SConeHemo'
 %                                     Default: {'LCone' ; 'MCone' ; 'SCone'}
 %   fieldSizeDegrees (1x1)          - Field size in degrees.
@@ -51,6 +50,10 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %   blood vessels.
 %   c) Not all variants have a meaningful T_quantalIsomerizations variable returned.  When we don't have that sensitivity
 %   easily, a vector of NaN's of the right size is returned instead.
+%   D) The 'Legacy' versions are estimates that we used in some of our early work and that we now don't think are as good as the current ones.
+%   They are still here because sometimes we need to figure out what we did in the past.
+%   E) Passed fractionBleached numbers don't affect rod, melanopsin, or tabulated cone calculations.
+%   We throw an error if either of these ever receives a non-zero value.
 %
 % 1/21/14   ms    Wrote it based on old code.
 % 5/24/14   dhb   Remove vestigal references to a returned labels variable.
@@ -58,6 +61,10 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %           dhb   Simplify return interface.  Add many comments.
 %           dhb   Return isomerization sensitivities for hemoglobin variants.
 % 11/21/14  ms    Cleaned up and commented
+% 12/12/14  dhb   More cleaning and comments.
+%                 This now takes hemoglobin parameters.
+%                 Manuel did this but didn't leave a comment.  I pushed the
+%                 responsibility for prompting up to the caller.
 
 %% Set defaults
 
@@ -86,11 +93,11 @@ if ageInYears < 20
     ageInYears = 20;
     %fprintf('Observer age truncated at 20\n');
 end
-
 if ageInYears > 80
     ageInYears = 80;
     %fprintf('Observer age truncated at 80\n');
 end
+
 % Pupil diameter
 if (nargin < 5 | isempty(pupilDiameterMm))
     pupilDiameterMm = 3;
@@ -116,7 +123,7 @@ if (nargin < 8 | isempty(vesselOxyFraction))
 end
 
 % Vessel thickness
-if (nargin < 9 isempty(vesselOverallThicknessUm))
+if (nargin < 9 | isempty(vesselOverallThicknessUm))
     vesselOverallThicknessUm = 5;
 end
 
@@ -136,21 +143,39 @@ nominalLambdaMax = [];
 % still extract the triplet of fractions of pigment bleached, under the
 % assumption that in the input vector, the order is LMS. This is a bit
 % kludge-y, but works.
+%
+% I don't think this is quite right for cases where multiple "R" variants
+% of a class get passed, becuase later values in the passed vector clobber 
+% earlier ones in the vectors that get set here.  This needs some thought.
 if length(photoreceptorClasses) > 1
     for i = 1:length(photoreceptorClasses)
         switch photoreceptorClasses{i}
-            case 'LCone'
-                fractionBleachedFromIsom(1) = fractionPigmentBleached(i);
-            case 'MCone'
-                fractionBleachedFromIsom(2) = fractionPigmentBleached(i);
-            case 'SCone'
-                fractionBleachedFromIsom(3) = fractionPigmentBleached(i);
-            case {'LConeHemo' 'LConeHemoOxy' 'LConeHemoDeoxy' 'LConeHemoThick' 'LConeHemoThin'}
-                fractionBleachedFromIsomHemo(1) = fractionPigmentBleached(i);
-            case {'MConeHemo' 'MConeHemoOxy' 'MConeHemoDeoxy' 'MConeHemoThick' 'MConeHemoThin'}
-                fractionBleachedFromIsomHemo(2) = fractionPigmentBleached(i);
-            case {'SConeHemo' 'SConeHemoOxy' 'SConeHemoDeoxy' 'SConeHemoThick' 'SConeHemoThin'}
-                fractionBleachedFromIsomHemo(3) = fractionPigmentBleached(i);
+            case {'LCone' 'LConeR+2' 'LConeR-2'}
+                fractionConeBleachedFromIsom(1) = fractionPigmentBleached(i);
+            case {'MCone' 'MConeR+2' 'MConeR-2'}
+                fractionConeBleachedFromIsom(2) = fractionPigmentBleached(i);
+            case {'SCone' 'SConeR+2' 'SConeR-2'}
+                fractionConeBleachedFromIsom(3) = fractionPigmentBleached(i);
+            case {'LConeHemo'}
+                fractionConeBleachedFromIsomHemo(1) = fractionPigmentBleached(i);
+            case {'MConeHemo'}
+                fractionConeBleachedFromIsomHemo(2) = fractionPigmentBleached(i);
+            case {'SConeHemo'}
+                fractionConeBleachedFromIsomHemo(3) = fractionPigmentBleached(i);
+            case {'Melanopsin', 'MelanopsinR+2', 'MelanopsinR-2', 'MelanopsinLegacy'}
+                if (fractionPigmentBleached(i) ~= 0)
+                    error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
+                end
+            case {'Rods', 'RodsR+2', 'RodsR-2', 'RodsLegacy', 'CIE1924VLambda'}
+                if (fractionPigmentBleached(i) ~= 0)
+                    error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
+                end
+            case {'LCone10DegTabulatedSS', 'MCone10DegTabulatedSS', 'SCone10DegTabulatedSS'}
+                if (fractionPigmentBleached(i) ~= 0)
+                    error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
+                end
+            otherwise
+                error('Unknown photoreceptor class passed');
         end
     end
     
@@ -160,39 +185,39 @@ if length(photoreceptorClasses) > 1
 elseif length(photoreceptorClasses) == 1
     switch photoreceptorClasses{1}
         case 'LCone'
-            fractionBleachedFromIsom(1) = fractionPigmentBleached;
-            fractionBleachedFromIsom(2) = 0;
-            fractionBleachedFromIsom(3) = 0;
+            fractionConeBleachedFromIsom(1) = fractionPigmentBleached;
+            fractionConeBleachedFromIsom(2) = 0;
+            fractionConeBleachedFromIsom(3) = 0;
         case 'MCone'
-            fractionBleachedFromIsom(1) = 0;
-            fractionBleachedFromIsom(2) = fractionPigmentBleached;
-            fractionBleachedFromIsom(3) = 0;
+            fractionConeBleachedFromIsom(1) = 0;
+            fractionConeBleachedFromIsom(2) = fractionPigmentBleached;
+            fractionConeBleachedFromIsom(3) = 0;
         case 'SCone'
-            fractionBleachedFromIsom(1) = 0;
-            fractionBleachedFromIsom(2) = 0;
-            fractionBleachedFromIsom(3) = fractionPigmentBleached;
+            fractionConeBleachedFromIsom(1) = 0;
+            fractionConeBleachedFromIsom(2) = 0;
+            fractionConeBleachedFromIsom(3) = fractionPigmentBleached;
         case 'LConeHemo'
-            fractionBleachedFromIsomHemo(1) = fractionPigmentBleached;
-            fractionBleachedFromIsomHemo(2) = 0;
-            fractionBleachedFromIsomHemo(3) = 0;
+            fractionConeBleachedFromIsomHemo(1) = fractionPigmentBleached;
+            fractionConeBleachedFromIsomHemo(2) = 0;
+            fractionConeBleachedFromIsomHemo(3) = 0;
         case 'MConeHemo'
-            fractionBleachedFromIsomHemo(1) = 0;
-            fractionBleachedFromIsomHemo(2) = fractionPigmentBleached;
-            fractionBleachedFromIsomHemo(3) = 0;
+            fractionConeBleachedFromIsomHemo(1) = 0;
+            fractionConeBleachedFromIsomHemo(2) = fractionPigmentBleached;
+            fractionConeBleachedFromIsomHemo(3) = 0;
         case 'SConeHemo'
-            fractionBleachedFromIsomHemo(1) = 0;
-            fractionBleachedFromIsomHemo(2) = 0;
-            fractionBleachedFromIsomHemo(3) = fractionPigmentBleached;
+            fractionConeBleachedFromIsomHemo(1) = 0;
+            fractionConeBleachedFromIsomHemo(2) = 0;
+            fractionConeBleachedFromIsomHemo(3) = fractionPigmentBleached;
     end
 end
 
 % Transpose if we can. We do this because the PTB machinery expects this.
-if exist('fractionBleachedFromIsom', 'var')
-    fractionBleachedFromIsom = fractionBleachedFromIsom';
+if exist('fractionConeBleachedFromIsom', 'var')
+    fractionConeBleachedFromIsom = fractionConeBleachedFromIsom';
 end
 
-if exist('fractionBleachedFromIsomHemo', 'var')
-    fractionBleachedFromIsomHemo = fractionBleachedFromIsomHemo';
+if exist('fractionConeBleachedFromIsomHemo', 'var')
+    fractionConeBleachedFromIsomHemo = fractionConeBleachedFromIsomHemo';
 end
 
 %% Iterate over the photoreceptor classes that have been passed.
@@ -204,7 +229,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9 530.3 420.7]';
             
             %% Construct cones, pull out L cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsom);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -216,7 +241,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9 530.3 420.7]';
             
             %% Construct cones, pull out M cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsom);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -228,7 +253,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9 530.3 420.7];
             
             %% Construct cones, pull out S cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsom);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -264,14 +289,13 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; photoreceptors.energyFundamentals];
             T_quantalIsomerizations = [T_quantalIsomerizations ; photoreceptors.isomerizationAbsorptance];
-            nominalLambdaMax = [nominalLambdaMax nominalLambdaMaxTmp];
-            
+            nominalLambdaMax = [nominalLambdaMax nominalLambdaMaxTmp];   
         case 'LConeR+2'
             whichNomogram = 'StockmanSharpe';
             lambdaMax = [558.9+2 530.3 420.7]';
             
             %% Construct cones, pull out L cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsom);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -283,7 +307,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9-2 530.3 420.7]';
             
             %% Construct cones, pull out L cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsom);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -295,7 +319,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9 530.3+2 420.7]';
             
             %% Construct cones, pull out M cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsom);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -307,7 +331,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9 530.3-2 420.7]';
             
             %% Construct cones, pull out M cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsom);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -319,7 +343,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9 530.3 420.7+2];
             
             %% Construct cones, pull out S cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsom);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -331,7 +355,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9 530.3 420.7-2];
             
             %% Construct cones, pull out S cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsom);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -367,7 +391,7 @@ for i = 1:length(photoreceptorClasses)
             photoreceptors.ageInYears = ageInYears;
             photoreceptors.pupilDiameter.value = pupilDiameterMm;
             photoreceptors = FillInPhotoreceptors(photoreceptors);
-            
+             
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; photoreceptors.energyFundamentals];
             T_quantalIsomerizations = [T_quantalIsomerizations ; photoreceptors.isomerizationAbsorptance];
@@ -430,7 +454,7 @@ for i = 1:length(photoreceptorClasses)
             % Construct the melanopsin receptor
             whichNomogram = 'StockmanSharpe';
             lambdaMax = [558.9, 530.3, 480+lambdaMaxShift];
-            
+      
             % Make a call to ComputeCIEConeFundamentals() which makes appropriate calls
             T_quanta_tmp = ComputeCIEConeFundamentals(S,10,ageInYears,3,lambdaMax,whichNomogram);
             T_energyNormalized = [T_energyNormalized ; EnergyToQuanta(S,T_quanta_tmp(3,:)')'];
@@ -443,11 +467,13 @@ for i = 1:length(photoreceptorClasses)
             pupilSize = 3;
             fieldSize = 10;
             lambdaMaxRods = 500;
+      
             DORODS = true;
             T_quanta_tmp = ComputeCIEConeFundamentals(S,fieldSize,ageInYears,pupilSize,lambdaMaxRods,whichNomogram,[],DORODS);
             T_energyNormalized = [T_energyNormalized ; EnergyToQuanta(S,T_quanta_tmp')'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; NaN*ones(size(T_quanta))];
-        case 'CIE1924VLambda'
+        case 'CIE1924VLambda' 
+            
             % Load in the CIE 1959 scotopic luminosity function
             targetRaw = load('T_rods');
             T_energyNormalized = [T_energyNormalized ; SplineCmf(targetRaw.S_rods,targetRaw.T_rods,S,2)];
@@ -457,7 +483,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9 530.3 420.7]';
             
             %% Construct cones, pull out L cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsomHemo);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsomHemo);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Multiply with blood transmissivity, which is parametrized by
@@ -474,7 +500,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9 530.3 420.7]';
             
             %% Construct cones, pull out M cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsomHemo);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsomHemo);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Multiply with blood transmissivity
@@ -490,7 +516,7 @@ for i = 1:length(photoreceptorClasses)
             lambdaMax = [558.9 530.3 420.7];
             
             %% Construct cones, pull out S cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionBleachedFromIsomHemo);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsomHemo);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Multiply with blood transmissivity

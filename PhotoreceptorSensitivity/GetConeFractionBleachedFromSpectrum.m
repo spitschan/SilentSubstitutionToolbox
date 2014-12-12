@@ -1,5 +1,7 @@
-function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, spd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, desiredPhotopicLuminanceCdM2, verbose)
-% [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, spd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, desiredPhotopicLuminanceCdM2, verbose)
+function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, spd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, ...
+    desiredPhotopicLuminanceCdM2, verbose)
+% [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, spd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, ...
+%   desiredPhotopicLuminanceCdM2, [verbose])
 %
 % Returns the fraction bleached for LMS cones and LMS penumbral cones for a
 % given spectrum, age, field size and pupil diameter.
@@ -11,15 +13,23 @@ function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFract
 %   fieldSizeDegrees    - Size of the visual field
 %   observerAgeInYears  - Observer age
 %   pupilDiameterMm     - Assumed pupil diameter
-%   desiredPhotopicLuminanceCdM2
-%                       - Adjust background luminance by scaling
-%   verbose             - Prints out the fraction bleached
-% Output:
-%   fractionBleachedFromIsom
-%                       - Fraction bleached for open-field cones
-%   fractionBleachedFromIsomHemo
-%                       - Fraction bleached for penumbral cones
+%   desiredPhotopicLuminanceCdM2 - Adjust background luminance by scaling
+%                         Optional, and ignored if not passed.
+%   verbose             - Prints out the fraction bleached.  Default false.
 %
+% Output:
+%   fractionBleachedFromIsom - Fraction bleached for open-field cones
+%   fractionBleachedFromIsomHemo - Fraction bleached for penumbral cones
+%
+% The purpose of desired PhotopicLuminancCdM2 is to handle small deviations
+% between a calibration and the current luminance, without redoing thw
+% whole calibration.  The bleaching fractions are not highly sensitive to
+% small changes in luminance, so this is just fine.
+%
+% Note:
+%   This routine just does the computations for standard versions of hte
+%   cones.  It doesn't take a shifted lambdaMax into account.  It probably
+%   should.
 %
 % See also:
 %   ComputePhotopigmentBleaching
@@ -31,11 +41,18 @@ function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFract
 %   Kaiser PK & Boynton RM (1996) Human Color Vision (Optical Society of
 %   America, Washington, D.C.) 2nd Ed.
 %
-%
 % 8/1/14    ms      Wrote it, based on code by DHB
 % 11/21/14  ms      Cleaned up and commented.
+% 12/12/14  dhb     Make verbose arg (added yesterday by ms) optional.
+%           dhb     desiredPhotopicLuminanceCdM2 was ignored completely.
+%                   Now used, but ignored if not passed.
 
-% Do a few conversions
+%% Set default args
+if (nargin < 7 | isempty(verbose))
+    verbose = false;
+end
+
+%% Do a few conversions
 backgroundSpd = spd;
 radianceWattsPerM2Sr = backgroundSpd;
 radianceWattsPerM2Sr(radianceWattsPerM2Sr < 0) = 0;
@@ -51,10 +68,12 @@ T_xyz = SplineCmf(S_xyz1931,683*T_xyz1931,S);
 photopicLuminanceCdM2 = T_xyz(2,:)*radianceWattsPerM2Sr;
 chromaticityXY = T_xyz(1:2,:)*radianceWattsPerM2Sr/sum(T_xyz*radianceWattsPerM2Sr);
 
-%% Adjust background luminance by scaling.  Handles small shifts from
-% original calibration, just by scaling.  This is close enough for purposes
+%% Optional adjust of background luminance by scaling.
+% Handles small shifts from original calibration, just by scaling.  This is close enough for purposes
 % of computing fraction of pigment bleached.
-desiredPhotopicLuminanceCdM2 = photopicLuminanceCdM2; % here we set it to original one
+if (nargin < 6 | isempty(desiredPhotopicLuminanceCdM2))
+    desiredPhotopicLuminanceCdM2 = photopicLuminanceCdM2;
+end
 scaleFactor = desiredPhotopicLuminanceCdM2/photopicLuminanceCdM2;
 radianceWattsPerM2Sr = scaleFactor*radianceWattsPerM2Sr;
 radianceWattsPerCm2Sr = scaleFactor*radianceWattsPerCm2Sr;
@@ -95,8 +114,10 @@ for i = 1:3
     fractionBleachedFromIsom(i) = ComputePhotopigmentBleaching(theLMSIsomerizations(i),'cones','isomerizations','Boynton');
     fractionBleachedFromIsomHemo(i) = ComputePhotopigmentBleaching(theLMSIsomerizationsHemo(i),'cones','isomerizations','Boynton');
 end
+
+%% Optional printout
 if verbose
-    fprintf('    * Stimulus luminance %0.1f candelas/m2\n',photopicLuminanceCdM2);
+    fprintf('    * Stimulus luminance used %0.1f candelas/m2\n',photopicLuminanceCdM2);
     fprintf('    * Fraction bleached computed from trolands (applies to L and M cones): %0.2f\n',fractionBleachedFromTrolands);
     fprintf('    * Fraction bleached from isomerization rates: L, %0.2f; M, %0.2f; S, %0.2f\n', ...
         fractionBleachedFromIsom(1),fractionBleachedFromIsom(2),fractionBleachedFromIsom(3));

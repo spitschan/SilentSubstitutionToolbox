@@ -150,6 +150,7 @@ switch (whichModel)
         pupilDiameterMm = GetWithDefault('\tPupil diameter?', 4.7);
         vesselOxyFraction = GetWithDefault(['\tOxygenation fraction for vessel hemoglobin [typical 0.85]?'], 0.85);
         vesselOverallThicknessUm = GetWithDefault(['\tVessel thickness [typical 5 um]?'], 5); 
+        correctBleaching = GetWithDefault(['\tCorrect for cone photopigment bleaching [1 = yes, 0 = no]?'],1);
                 
         % Define photoreceptor classes that we'll consider.
         % ReceptorIsolate has a few more built-ins than these.
@@ -206,8 +207,9 @@ switch (whichModel)
         fprintf('Available photoreceptor classes to target:\n');
         fprintf('\t[1]  Melanopsin, silience open-field cones; ignore rods and penumbral cones\n');
         fprintf('\t[2]  Melanopsin, silence open-field and penumbral cones; ignore rods)\n');
-        fprintf('\t[3]  S cones, silence open-field cones, melanopsin, and prenumbral L and M cones; ignore rods and penumbral S cones\n');
-        fprintf('\t[4]  Penumbral L and M cones, silence open-field cones, melanopsin, and prenumbral S cones; ignore rods\n');
+        fprintf('\t[3]  S cones, silence open-field L and M cones, melanopsin, and prenumbral L and M cones; ignore rods and penumbral S cones\n');
+        fprintf('\t[4]  S cones, silence open field L and M cones, ingore all others\n');
+        fprintf('\t[5]  Penumbral L and M cones, silence open-field cones, melanopsin, and prenumbral S cones; ignore rods\n');
         whichDirectionNumber = GetWithDefault('Enter direction',1);
         
         % Depending on which direction is chosen, specify the indices
@@ -233,6 +235,11 @@ switch (whichModel)
                 whichReceptorsToIgnore = [5 8];
                 whichReceptorsToMinimize = [];
             case 4
+                whichDirection = 'SDirected';
+                whichReceptorsToTarget = [3];
+                whichReceptorsToIgnore = [4 5 6 7 8];
+                whichReceptorsToMinimize = [];
+            case 5
                 whichDirection = 'PenumbralLM';
                 whichReceptorsToTarget = [6 7];
                 whichReceptorsToIgnore = [5];
@@ -285,11 +292,15 @@ end
 
 % User chooses whether to maximize contrast in targeted receptor classes or
 % or get it as close to a specified value as possible.
+%
+% If we target, here we specify the same contrast for all targeted classes.
+% This is not necessary, they can differ.  It just makes the demo code a
+% bit simpler to yoke them since we only have to prompt for one number.
 maximizeTargetContrast = GetWithDefault('\tMaximize contrast? [1 = yes, 0 = no]', 1);
 if maximizeTargetContrast
     desiredContrast = [];
 else
-    desiredContrast = GetWithDefault('\tDesired contrast?', 0.45)*ones(size(whichReceptorsToTarget));
+    desiredContrast = GetWithDefault('\tDesired contrast (applies to all targeted classes)?', 0.45)*ones(size(whichReceptorsToTarget));
 end
 
 % Nice message for user
