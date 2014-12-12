@@ -148,9 +148,11 @@ switch (whichModel)
         observerAgeInYears = GetWithDefault('\tObserver age in years?', 32);
         fieldSizeDegrees = GetWithDefault('\tField size in degrees?', 27.5);
         pupilDiameterMm = GetWithDefault('\tPupil diameter?', 4.7);
-                correctBleaching = GetWithDefault('\tCorrect for photopigment bleaching [1 = yes, 0 = no]?', 1);
+        vesselOxyFraction = GetWithDefault(['\tOxygenation fraction for vessel hemoglobin [typical 0.85]?'], 0.85);
+        vesselOverallThicknessUm = GetWithDefault(['\tVessel thickness [typical 5 um]?'], 5); 
                 
         % Define photoreceptor classes that we'll consider.
+        % ReceptorIsolate has a few more built-ins than these.
         photoreceptorClasses = {'LCone', 'MCone', 'SCone', 'Melanopsin', 'Rods', 'LConeHemo', 'MConeHemo', 'SConeHemo'};
         
         % Correct for pigment bleaching if desired.  This is done
@@ -206,7 +208,6 @@ switch (whichModel)
         fprintf('\t[2]  Melanopsin, silence open-field and penumbral cones; ignore rods)\n');
         fprintf('\t[3]  S cones, silence open-field cones, melanopsin, and prenumbral L and M cones; ignore rods and penumbral S cones\n');
         fprintf('\t[4]  Penumbral L and M cones, silence open-field cones, melanopsin, and prenumbral S cones; ignore rods\n');
-
         whichDirectionNumber = GetWithDefault('Enter direction',1);
         
         % Depending on which direction is chosen, specify the indices

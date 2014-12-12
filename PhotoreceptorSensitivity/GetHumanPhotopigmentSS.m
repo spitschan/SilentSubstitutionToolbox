@@ -1,5 +1,7 @@
-function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, ageInYears, pupilDiameterMm, lambdaMaxShift, fractionPigmentBleached, vesselOxyFraction, vesselOverallThicknessUm)
-% [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, ageInYears, pupilDiameterMm, lambdaMaxShift, fractionPigmentBleached, [vesselOxyFraction], [vesselOverallThicknessUm])
+function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, ageInYears,...
+    pupilDiameterMm, lambdaMaxShift, fractionPigmentBleached, vesselOxyFraction, vesselOverallThicknessUm)
+% [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, ageInYears, pupilDiameterMm,
+%   lambdaMaxShift, fractionPigmentBleached, vesselOxyFraction, vesselOverallThicknessUm)
 %
 % Produces photopigment sensitivities that we often need, and allowing
 % variation in age and lambda-max.  T_energyNormalized are the sensitivities
@@ -31,10 +33,9 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %   fractionPigmentBleached         - Fraction of pigment bleached.
 %                                     Default: 0
 %   vesselOxyFraction               - Fraction of oxygenated blood assumed.
-%                                     Optional, user-prompt if not passed
-%   vesselOverallThicknessUm        - Thickness of vessel.
-%                                     Optional, user-prompt if not passed
-%
+%                                     Default: 0.85
+%   vesselOverallThicknessUm        - Thickness of vessel in um
+%                                     Default: 5
 % Output:
 %   T_energyNormalized              - Spectral sensitivities in energy
 %                                     units (normalized to max.).
@@ -58,56 +59,75 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %           dhb   Return isomerization sensitivities for hemoglobin variants.
 % 11/21/14  ms    Cleaned up and commented
 
-% Check if all variables have been passed with a value, fill in defaults in
-% cases where empty passed.
-if isempty(S)
+%% Set defaults
+
+% Wavelength sampling
+if (nargin < 1 | isempty(S))
     S = [380 2 201];
 end
 
-if isempty(photoreceptorClasses)
+% Photoreceptor classes to generate
+if (nargin < 2 | isempty(photoreceptorClasses))
     photoreceptorClasses = {'LCone' ; 'MCone' ; 'SCone'};
 end
 
-if isempty(fieldSizeDegrees)
+% Field size
+if (nargin < 3 | isempty(fieldSizeDegrees))
     fieldSizeDegrees = 10;
 end
 
-if isempty(ageInYears)
+% Observer age
+% If the passed observer age is <20 or >80, we assume that the observer is
+% 20 or 80 respectively, which are the maximum ages given by the CIE standard.
+if (nargin < 4 | isempty(ageInYears))
     ageInYears = 32;
 end
-
-if isempty(pupilDiameterMm)
-    pupilDiameterMm = 3;
-end
-
-if isempty(lambdaMaxShift)
-    lambdaMaxShift = 0;
-end
-
-if (isempty(fractionPigmentBleached)) && length(photoreceptorClasses) > 1
-    fractionPigmentBleached = zeros(length(photoreceptorClasses),1);
-elseif (isempty(fractionPigmentBleached)) && length(photoreceptorClasses) == 1
-    fractionPigmentBleached = 0;
-end
-
-% If the passed observer age is <20 or >80, we assume that the observer is
-% 20, and 80, which are the maximum ages given by the CIE standard.
 if ageInYears < 20
     ageInYears = 20;
     %fprintf('Observer age truncated at 20\n');
 end
 
 if ageInYears > 80
-    ageInYears = 80
+    ageInYears = 80;
     %fprintf('Observer age truncated at 80\n');
 end
+% Pupil diameter
+if (nargin < 5 | isempty(pupilDiameterMm))
+    pupilDiameterMm = 3;
+end
 
-% Assign empty vectors
+% Shift of pigment lambda max from nominal value
+if (nargin < 6 | isempty(lambdaMaxShift))
+    lambdaMaxShift = 0;
+end
+
+% Fraction pigment bleached
+if (nargin < 7 | isempty(fractionPigmentBleached))
+    if length(photoreceptorClasses) > 1
+        fractionPigmentBleached = zeros(length(photoreceptorClasses),1);
+    else
+        fractionPigmentBleached = 0;
+    end
+end
+
+% Vessel oxygenation
+if (nargin < 8 | isempty(vesselOxyFraction))
+    vesselOxyFraction = 0.85; 
+end
+
+% Vessel thickness
+if (nargin < 9 isempty(vesselOverallThicknessUm))
+    vesselOverallThicknessUm = 5;
+end
+
+%% Assign empty vectors
 T_quanta = [];
 T_energyNormalized = [];
 T_quantalIsomerizations = [];
 nominalLambdaMax = [];
 
+%% Fussing
+%
 % The fractionPigmentBleached vectors come in the same dimensions as
 % photoreceptors. However, ComputeCIEConeFundamentals expects LMS triplets.
 % So, we sort out the hemo vs. non-hemo fractions. We do that because we do
@@ -133,9 +153,10 @@ if length(photoreceptorClasses) > 1
                 fractionBleachedFromIsomHemo(3) = fractionPigmentBleached(i);
         end
     end
-    % If only one cone class is passed, which can happen in splatter
-    % calculations, we set the fraction pigment bleached for the pigments that
-    % are not passed to be 0. This is because PTB machinery expects triplets.
+    
+% If only one cone class is passed, which can happen in splatter
+% calculations, we set the fraction pigment bleached for the pigments that
+% are not passed to be 0. This is because PTB machinery expects triplets.
 elseif length(photoreceptorClasses) == 1
     switch photoreceptorClasses{1}
         case 'LCone'
@@ -177,27 +198,6 @@ end
 %% Iterate over the photoreceptor classes that have been passed.
 for i = 1:length(photoreceptorClasses)
     theClass = photoreceptorClasses{i};
-    
-    % Check if the photoreceptor class contains the word 'Hemo'. If it
-    % does, check if the parameters for hemoglobin screening have been
-    % passed. If they haven't prompt the user to enter them. Note that we
-    % only assign these values once, and they will be used for all other
-    % photoreceptor classes screened by blood.
-    if strfind(theClass,  'Hemo')
-        fprintf('At least one of the passed photoreceptors is assumed to be screened by blood vessels.\n');
-        if isempty(vesselOxyFraction)
-            vesselOxyFraction = GetWithDefault(['\tWhich oxygenation fraction [typical 0.85]?'], 0.85);
-        else
-            sprintf('\t*** Assuming oxygenation fraction of %.2f ***\n', vesselOxyFraction);
-        end
-        
-        if isempty(vesselOverallThicknessUm)
-            vesselOverallThicknessUm = GetWithDefault(['\tWhich vessel thickness [typical 5 um]?'], 5);
-        else
-            sprintf('\t*** Assuming vessel thickness of %.2f ***\n', vesselOverallThicknessUm);
-        end
-    end
-        
     switch theClass
         case 'LCone'
             whichNomogram = 'StockmanSharpe';
