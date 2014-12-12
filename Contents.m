@@ -19,7 +19,7 @@
 %
 % PhotoreceptorSensitivity Functions
 % -----------------------------
-%   GetHumanPhotopigmentSS - Wrapper around PTB functions to obtain
+%   GetHumanPhotoreceptorSS - Wrapper around PTB functions to obtain
 %                         photoreceptor spectral sensitivities
 %   GetChronologicalAgeSDFromLensSD - Converts age standard deviation into lens density
 %                         standard deviation

@@ -46,7 +46,7 @@ function [contrastMap, nominalLambdaMax, ageRange, lambdaMaxShiftRange] = Calcul
 %   lambdaMaxShiftRange (1xN)       - Shift range for lambda-max
 %
 % 1/21/14   ms    Wrote it based on old code.
-% 5/26/14   dhb   New calling form for GetHumanPhotopigmentSS.
+% 5/26/14   dhb   New calling form for GetHumanPhotoreceptorSS.
 % 11/21/14  ms    Cleaned up and commented
 
 %%  Check if all variables have been passed with a value, otherwise assign defaults.
@@ -105,7 +105,7 @@ for k = 1:length(photoreceptorClasses)
     % Preassign memory
     T_energy = zeros(nObservers, S(3));
     for i = 1:nObservers
-        [T_energy(i, :), ~, nominalLambdaMax(k)] = GetHumanPhotopigmentSS(S, {photoreceptorClasses{k}}, ...
+        [T_energy(i, :), ~, nominalLambdaMax(k)] = GetHumanPhotoreceptorSS(S, {photoreceptorClasses{k}}, ...
             fieldSizeDegrees, X(i), pupilDiameterMm, Y(i), fractionBleached(k));
     end
     tmp = (T_energy*(modulationSpd-backgroundSpd))./(T_energy*backgroundSpd);

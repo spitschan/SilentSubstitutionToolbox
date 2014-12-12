@@ -196,7 +196,7 @@ switch (whichModel)
         end
         
         % Make sensitivities.  The wrapper routine is
-        % GetHumanPhotopigmentSS, which is in the ContrastSplatter
+        % GetHumanPhotoreceptorSS, which is in the ContrastSplatter
         % directory.  Each row of the matrix T_receptors provides the
         % spectral sensitivity of the photoreceptor class in the
         % corresponding entry of the cell array photoreceptorClasses.
@@ -206,7 +206,7 @@ switch (whichModel)
         % user to enter these values later.
         oxygenationFraction = [];
         vesselThickness = [];
-        T_receptors = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], fractionBleached, oxygenationFraction, vesselThickness);
+        T_receptors = GetHumanPhotoreceptorSS(S, photoreceptorClasses, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], fractionBleached, oxygenationFraction, vesselThickness);
         
         %% Let user choose a photoreceptor class to target
         fprintf('Available photoreceptor classes to target:\n');

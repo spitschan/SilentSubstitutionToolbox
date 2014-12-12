@@ -4,7 +4,7 @@
 % slowly, so it may take > 10 minutes to run.
 %
 % See also:
-%   GetHumanPhotopigmentSS CalculateSplatter PlotSplatter SaveSplatter
+%   GetHumanPhotoreceptorSS CalculateSplatter PlotSplatter SaveSplatter
 %   GetConeFractionBleachedFromSpectrum
 %
 % 1/21/14   ms      Wrote it.
