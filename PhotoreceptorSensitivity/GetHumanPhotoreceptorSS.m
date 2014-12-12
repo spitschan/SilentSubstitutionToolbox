@@ -1,6 +1,6 @@
-function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, ageInYears,...
+function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHumanPhotoreceptorSS(S, photoreceptorClasses, fieldSizeDegrees, ageInYears,...
     pupilDiameterMm, lambdaMaxShift, fractionPigmentBleached, vesselOxyFraction, vesselOverallThicknessUm)
-% [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHumanPhotopigmentSS(S, photoreceptorClasses, fieldSizeDegrees, ageInYears, pupilDiameterMm,
+% [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHumanPhotoreceptorSS(S, photoreceptorClasses, fieldSizeDegrees, ageInYears, pupilDiameterMm,
 %   lambdaMaxShift, fractionPigmentBleached, vesselOxyFraction, vesselOverallThicknessUm)
 %
 % Produces photopigment sensitivities that we often need, and allowing
@@ -15,8 +15,6 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %                                     Default: [380 2 201]
 %   photoreceptorClasses (cell)     - Cell with names of photoreceptor classes.
 %                                     Supported options: 'LCone', 'MCone', 'SCone', 'Melanopsin', 'Rods', ...
-%                                                        'LConeR+2', 'LConeR-2', 'MConeR+2', 'MConeR-2', 'SConeR+2', 'SConeR-2', ...
-%                                                        'MelanopsinR+2', 'MelanopsinR-2', 'RodsR+2', 'RodsR-2', ...
 %                                                        'LCone10DegTabulatedSS', 'MCone10DegTabulatedSS', 'SCone10DegTabulatedSS', ...
 %                                                        'MelanopsinLegacy', 'RodsLegacy', 'CIE1924VLambda' ...
 %                                                        'LConeHemo', 'MConeHemo', 'SConeHemo'
@@ -44,15 +42,13 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %   nominalLambdaMax                - Peak of photopigment spectral sensitivities.
 %
 % NOTES:
-%   a) The R+2 and R-2 variants shift lambda max +/- 2nm from nominal value.  This is on top of any omnibus shift
-%   passed in scalar lambdaMaxShift.
-%   b) The Hemo variants take into account an estimate of the absorption spectrum of hemoglobin as seen through retinal
+%   A) The Hemo variants take into account an estimate of the absorption spectrum of hemoglobin as seen through retinal
 %   blood vessels.
-%   c) Not all variants have a meaningful T_quantalIsomerizations variable returned.  When we don't have that sensitivity
+%   B) Not all variants have a meaningful T_quantalIsomerizations variable returned.  When we don't have that sensitivity
 %   easily, a vector of NaN's of the right size is returned instead.
-%   D) The 'Legacy' versions are estimates that we used in some of our early work and that we now don't think are as good as the current ones.
+%   C) The 'Legacy' versions are estimates that we used in some of our early work and that we now don't think are as good as the current ones.
 %   They are still here because sometimes we need to figure out what we did in the past.
-%   E) Passed fractionBleached numbers don't affect rod, melanopsin, or tabulated cone calculations.
+%   D) Passed fractionBleached numbers don't affect rod, melanopsin, or tabulated cone calculations.
 %   We throw an error if either of these ever receives a non-zero value.
 %
 % 1/21/14   ms    Wrote it based on old code.
@@ -150,11 +146,11 @@ nominalLambdaMax = [];
 if length(photoreceptorClasses) > 1
     for i = 1:length(photoreceptorClasses)
         switch photoreceptorClasses{i}
-            case {'LCone' 'LConeR+2' 'LConeR-2'}
+            case {'LCone'}
                 fractionConeBleachedFromIsom(1) = fractionPigmentBleached(i);
-            case {'MCone' 'MConeR+2' 'MConeR-2'}
+            case {'MCone'}
                 fractionConeBleachedFromIsom(2) = fractionPigmentBleached(i);
-            case {'SCone' 'SConeR+2' 'SConeR-2'}
+            case {'SCone'}
                 fractionConeBleachedFromIsom(3) = fractionPigmentBleached(i);
             case {'LConeHemo'}
                 fractionConeBleachedFromIsomHemo(1) = fractionPigmentBleached(i);
@@ -162,11 +158,11 @@ if length(photoreceptorClasses) > 1
                 fractionConeBleachedFromIsomHemo(2) = fractionPigmentBleached(i);
             case {'SConeHemo'}
                 fractionConeBleachedFromIsomHemo(3) = fractionPigmentBleached(i);
-            case {'Melanopsin', 'MelanopsinR+2', 'MelanopsinR-2', 'MelanopsinLegacy'}
+            case {'Melanopsin', 'MelanopsinLegacy'}
                 if (fractionPigmentBleached(i) ~= 0)
                     error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
-            case {'Rods', 'RodsR+2', 'RodsR-2', 'RodsLegacy', 'CIE1924VLambda'}
+            case {'Rods', 'RodsLegacy', 'CIE1924VLambda'}
                 if (fractionPigmentBleached(i) ~= 0)
                     error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
@@ -290,146 +286,7 @@ for i = 1:length(photoreceptorClasses)
             T_energyNormalized = [T_energyNormalized ; photoreceptors.energyFundamentals];
             T_quantalIsomerizations = [T_quantalIsomerizations ; photoreceptors.isomerizationAbsorptance];
             nominalLambdaMax = [nominalLambdaMax nominalLambdaMaxTmp];   
-        case 'LConeR+2'
-            whichNomogram = 'StockmanSharpe';
-            lambdaMax = [558.9+2 530.3 420.7]';
-            
-            %% Construct cones, pull out L cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
-            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
-            
-            % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; T_energy1(1,:)];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMax(1)];
-        case 'LConeR-2'
-            whichNomogram = 'StockmanSharpe';
-            lambdaMax = [558.9-2 530.3 420.7]';
-            
-            %% Construct cones, pull out L cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
-            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
-            
-            % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; T_energy1(1,:)];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMax(1)];
-        case 'MConeR+2'
-            whichNomogram = 'StockmanSharpe';
-            lambdaMax = [558.9 530.3+2 420.7]';
-            
-            %% Construct cones, pull out M cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
-            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
-            
-            % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; T_energy1(2,:)];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMax(2)];
-        case 'MConeR-2'
-            whichNomogram = 'StockmanSharpe';
-            lambdaMax = [558.9 530.3-2 420.7]';
-            
-            %% Construct cones, pull out M cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
-            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
-            
-            % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; T_energy1(2,:)];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMax(2)];
-        case 'SConeR+2'
-            whichNomogram = 'StockmanSharpe';
-            lambdaMax = [558.9 530.3 420.7+2];
-            
-            %% Construct cones, pull out S cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
-            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
-            
-            % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; T_energy1(3,:)];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMax(3)];
-        case 'SConeR-2'
-            whichNomogram = 'StockmanSharpe';
-            lambdaMax = [558.9 530.3 420.7-2];
-            
-            %% Construct cones, pull out S cone
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
-            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
-            
-            % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; T_energy1(3,:)];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMax(3)];
-        case 'MelanopsinR-2'
-            %% Melanopsin
-            photoreceptors = DefaultPhotoreceptors('LivingHumanMelanopsin');
-            % Override fields
-            photoreceptors.nomogram.S = S;
-            photoreceptors.nomogram.lambdaMax = photoreceptors.nomogram.lambdaMax-2;
-            nominalLambdaMaxTmp = photoreceptors.nomogram.lambdaMax;
-            photoreceptors.nomogram.lambdaMax = photoreceptors.nomogram.lambdaMax+lambdaMaxShift;
-            photoreceptors.fieldSizeDegrees = fieldSizeDegrees;
-            photoreceptors.ageInYears = ageInYears;
-            photoreceptors.pupilDiameter.value = pupilDiameterMm;
-            photoreceptors = FillInPhotoreceptors(photoreceptors);
-            
-            % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; photoreceptors.energyFundamentals];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; photoreceptors.isomerizationAbsorptance];
-            nominalLambdaMax = [nominalLambdaMax nominalLambdaMaxTmp];
-        case 'MelanopsinR+2'
-            %% Melanopsin
-            photoreceptors = DefaultPhotoreceptors('LivingHumanMelanopsin');
-            % Override fields
-            photoreceptors.nomogram.S = S;
-            photoreceptors.nomogram.lambdaMax = photoreceptors.nomogram.lambdaMax+2;
-            nominalLambdaMaxTmp = photoreceptors.nomogram.lambdaMax;
-            photoreceptors.nomogram.lambdaMax = photoreceptors.nomogram.lambdaMax+lambdaMaxShift;
-            photoreceptors.fieldSizeDegrees = fieldSizeDegrees;
-            photoreceptors.ageInYears = ageInYears;
-            photoreceptors.pupilDiameter.value = pupilDiameterMm;
-            photoreceptors = FillInPhotoreceptors(photoreceptors);
-             
-            % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; photoreceptors.energyFundamentals];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; photoreceptors.isomerizationAbsorptance];
-            nominalLambdaMax = [nominalLambdaMax nominalLambdaMaxTmp];
-        case 'RodsR-2'
-            %% Rods
-            photoreceptors = DefaultPhotoreceptors('LivingHumanRod');
-            % Override fields
-            photoreceptors.nomogram.S = S;
-            photoreceptors.nomogram.lambdaMax = photoreceptors.nomogram.lambdaMax-2;
-            nominalLambdaMaxTmp = photoreceptors.nomogram.lambdaMax;
-            photoreceptors.nomogram.lambdaMax = photoreceptors.nomogram.lambdaMax+lambdaMaxShift;
-            photoreceptors.fieldSizeDegrees = fieldSizeDegrees;
-            photoreceptors.ageInYears = ageInYears;
-            photoreceptors.pupilDiameter.value = pupilDiameterMm;
-            photoreceptors = FillInPhotoreceptors(photoreceptors);
-            
-            % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; photoreceptors.energyFundamentals];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; photoreceptors.isomerizationAbsorptance];
-            nominalLambdaMax = [nominalLambdaMax nominalLambdaMaxTmp];
-        case 'RodsR+2'
-            %% Rods
-            photoreceptors = DefaultPhotoreceptors('LivingHumanRod');
-            % Override fields
-            photoreceptors.nomogram.S = S;
-            photoreceptors.nomogram.lambdaMax = photoreceptors.nomogram.lambdaMax+2;
-            nominalLambdaMaxTmp = photoreceptors.nomogram.lambdaMax;
-            photoreceptors.nomogram.lambdaMax = photoreceptors.nomogram.lambdaMax+lambdaMaxShift;
-            photoreceptors.fieldSizeDegrees = fieldSizeDegrees;
-            photoreceptors.ageInYears = ageInYears;
-            photoreceptors.pupilDiameter.value = pupilDiameterMm;
-            photoreceptors = FillInPhotoreceptors(photoreceptors);
-            
-            % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; photoreceptors.energyFundamentals];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; photoreceptors.isomerizationAbsorptance];
-            nominalLambdaMax = [nominalLambdaMax nominalLambdaMaxTmp];
+ 
         case 'LCone10DegTabulatedSS'
             % Load in the tabulated 10-deg S-S fundamentals
             targetRaw = load('T_cones_ss10');

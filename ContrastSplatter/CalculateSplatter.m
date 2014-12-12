@@ -1,9 +1,11 @@
-function [contrastMap, nominalLambdaMax, ageRange, lambdaMaxShiftRange] = CalculateSplatter(S, backgroundSpd, modulationSpd, photoreceptorClasses, fieldSizeDegrees, ageRange, pupilDiameterMm, lambdaMaxShiftRange, fractionBleached)
-% [contrastMap, nominalLambdaMax, ageRange, lambdaMaxShiftRange] = CalculateSplatter(S, backgroundSpd, modulationSpd, photoreceptorClasses, fieldSizeDegrees, ageRange, pupilDiameterMm, lambdaMaxShiftRange, fractionBleached)
+function [contrastMap, nominalLambdaMax, ageRange, lambdaMaxShiftRange] = CalculateSplatter(S, backgroundSpd, modulationSpd, photoreceptorClasses, fieldSizeDegrees, ...
+    ageRange, pupilDiameterMm, lambdaMaxShiftRange, fractionBleached)
+% [contrastMap, nominalLambdaMax, ageRange, lambdaMaxShiftRange] = CalculateSplatter(S, backgroundSpd, modulationSpd, photoreceptorClasses, fieldSizeDegrees, ...
+%    ageRange, pupilDiameterMm, lambdaMaxShiftRange, fractionBleached)
 %
 % Calculates splatter on the passed photopigments. Assumes that lambda-max
-% and age will be primary variables of interest.   To explore effect of
-% field size or pupil size, you need to call CalculateSplatter multiple
+% and age will be primary variables of interest. To explore effect of
+% field size, pupil size or fraction bleached you need to call CalculateSplatter multiple
 % times and compare the output.
 %
 % Let n be the number of lambda-max values and m be the number of age
@@ -32,9 +34,7 @@ function [contrastMap, nominalLambdaMax, ageRange, lambdaMaxShiftRange] = Calcul
 %                                     Default: 3
 %   lambdaMaxShiftRange (1xN)       - Vector of lambda-max shifts
 %                                     Default: -5:0.5:5
-%   fractionBleached (1xN)          - Fraction of pigment bleached. This
-%                                     can passed into this function from an
-%                                     earlier function.
+%   fractionBleached (1xN)          - Fraction of pigment bleached.
 %                                     Default: 0
 %
 % Output:
@@ -49,8 +49,7 @@ function [contrastMap, nominalLambdaMax, ageRange, lambdaMaxShiftRange] = Calcul
 % 5/26/14   dhb   New calling form for GetHumanPhotopigmentSS.
 % 11/21/14  ms    Cleaned up and commented
 
-% Check if all variables have been passed with a value, otherwise assign
-% defaults.
+%%  Check if all variables have been passed with a value, otherwise assign defaults.
 if isempty(S)
     S = [380 2 201];
 end
@@ -96,8 +95,7 @@ if (isempty(fractionBleached))
 end
 
 
-% Iterate over photoreceptor classes (k), then over lambda-max shift (m),
-% then over age (n)
+%% Iterate over photoreceptor classes (k), then over lambda-max shift (m), then over age (n)
 for k = 1:length(photoreceptorClasses)
     [X, Y] = meshgrid(ageRange, lambdaMaxShiftRange);
     X = X(:);
@@ -112,6 +110,7 @@ for k = 1:length(photoreceptorClasses)
     end
     tmp = (T_energy*(modulationSpd-backgroundSpd))./(T_energy*backgroundSpd);
     tmp2 = reshape(tmp, length(lambdaMaxShiftRange), length(ageRange));
+    
     % Finally, assign the contrast map.
     contrastMap{k} = tmp2;
 end

@@ -1,7 +1,7 @@
 function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, spd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, ...
     desiredPhotopicLuminanceCdM2, verbose)
 % [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFractionBleachedFromSpectrum(S, spd, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, ...
-%   desiredPhotopicLuminanceCdM2, [verbose])
+%   [desiredPhotopicLuminanceCdM2], [verbose])
 %
 % Returns the fraction bleached for LMS cones and LMS penumbral cones for a
 % given spectrum, age, field size and pupil diameter.
@@ -28,8 +28,8 @@ function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFract
 %
 % Note:
 %   This routine just does the computations for standard versions of hte
-%   cones.  It doesn't take a shifted lambdaMax into account.  It probably
-%   should.
+%   cones.  It doesn't take a shifted lambdaMax into account. We could pass
+%   one more argument and do that, but at present we don't.
 %
 % See also:
 %   ComputePhotopigmentBleaching

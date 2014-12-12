@@ -145,6 +145,11 @@ switch (whichModel)
         
         % Prompt user for key parameters that affect the spectral
         % sensitivities.
+        %
+        % Note that we don't typically vary or pass the blood vessel
+        % parameters but rather simply accept the defaults used by
+        % GetHumanPhotoreceptorSS.  It's mainly for fun that we show
+        % how to do this here.
         observerAgeInYears = GetWithDefault('\tObserver age in years?', 32);
         fieldSizeDegrees = GetWithDefault('\tField size in degrees?', 27.5);
         pupilDiameterMm = GetWithDefault('\tPupil diameter?', 4.7);

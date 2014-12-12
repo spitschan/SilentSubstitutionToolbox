@@ -24,12 +24,13 @@ function ageSD = GetChronicalAgeSDFromLensSD(src)
 %   Opt Soc Am A Opt Image Sci Vis 14(5):953-960. ('M&W')
 %
 % 7/15/2014     ms          Wrote it.
+% 12/12/14      ms, dhb     Change data directory name.
 
 switch src
     case 'Xu'
         % Load in the CSV file, which contains lens SD values from Xu,
         % Smith & Pokorny (1997), digitized by MS on July 21, 2014
-        M = csvread(fullfile(fileparts(which(mfilename)), 'data', 'XuPokornySmith1997_Fig4A.csv'), 1);
+        M = csvread(fullfile(fileparts(which(mfilename)), 'xRawData', 'XuPokornySmith1997_Fig4A.csv'), 1);
         
         chronologicalAge = M(:, 1);
         predictedAge = M(:, 2);
