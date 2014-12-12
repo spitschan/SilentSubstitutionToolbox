@@ -1,8 +1,16 @@
-ContrastSplatterToolbox
+SilentSubstitutionToolbox
 =======================
 
-Toolbox to simulate colorimetric observers for evaluation of photoreceptor isolation
+Toolbox to compute estimates of human photoreceptor spectral sensitivities, compute silent substitution
+spectral modulations for a variety of devices (including standard monitors and devices with many narrowband
+primaries), and to estimate the normal variation of photoreceptor spectral sensitivities and how much
+contrast splatter a given modulation can be expected to produce on nominally silenced photoreceptors.
 
-*Developers*: Manuel Spitschan & David H. Brainard, University of Pennsylvania
+*Developers*: Manuel Spitschan, Geoffrey Aguirre & David H. Brainard, University of Pennsylvania
 
-*Principal Investigators*: David H. Brainard & Geoffrey K. Aguirre, University of Pennsylvania
+If you use this code in support of work in a published paper.  We are working on publishing a paper that
+includes a description of the logic used in this code as well as examples of its use (as part of a methods
+section in support of a scientific result).  Once we have published our paper, that will be the appropriate
+work to cite.  For now, please use:
+  Sptitschan, M., Aguirre, G.K., & Brainard D.H. (2015), The silent substitution toolbox,
+  https://github.com/spitschan/SilentSubstitutionToolbox.
