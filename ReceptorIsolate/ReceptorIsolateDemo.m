@@ -326,7 +326,7 @@ for j = 1:size(T_receptors,1)
 end
 
 %% Plots
-plotDir = 'ReceptorIsolateDemoPlots';
+plotDir = 'ReceptorIsolateDemoOutput';
 if ~isdir(plotDir);
     mkdir(plotDir);
 end
