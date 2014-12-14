@@ -66,6 +66,7 @@
 % Requirements
 % ------------
 %   Open-source Psychtoolbox - http://psychtoolbox.org/
+%   Matlab Optimization Toolbox
 %   Matlab Statistics Toolbox
 %
 % License

@@ -4,15 +4,18 @@
 % slowly, so it may take > 10 minutes to run.
 %
 % See also:
-%   GetHumanPhotoreceptorSS CalculateSplatter PlotSplatter SaveSplatter
-%   GetConeFractionBleachedFromSpectrum
+%   CalculateSplatter PlotSplatter SaveSplatter
+%   GetHumanPhotoreceptorSS
 %
 % 1/21/14   ms      Wrote it.
 % 11/21/14  ms      Claned up and commented.
 % 12/12/14  dhb     Tuning.
 
-% Clear
+%% Clear
 clear; close all;
+
+%% Warn user that this is slow
+fprintf('  - Computing example contrast splatter maps.  This is slow. Be patient.\n');
 
 %% First, set up some parameters.
 S = [380 2 201];            % Wavelength spacing
