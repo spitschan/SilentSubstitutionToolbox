@@ -34,10 +34,23 @@ function [isolatingPrimary] = ReceptorIsolate(T_receptors,whichReceptorsToIsolat
 %                           the sum of the contrasts of the receptors in whichReceptorsToIsolate.
 % ambientSpd -              Spectral power distribution of the ambient light.  Optional.  Defaults to zero.
 %
-% Note that we don't pass the spectral sampling information, because this routine does not needed.  The spectral sampling is
-% assumed to match across all spectral functions (receptor sensitivities, spectral primaries, and ambientSpd).
+% Contrast held at zero for any receptor classes not in the lists.
 %
-% Contrast held at zero for any receptors not in the lists
+% Notes:
+%   A) We don't pass the spectral sampling information, because this
+%   routine does not need it.  The spectral sampling is assumed to match
+%   across all spectral functions (receptor sensitivities, spectral
+%   primaries, and ambientSpd), and the smoothness constraint is enforced in
+%   wavelength sampling steps not absolute wavelength.
+%
+% Known Bugs:
+%   A) It looks like the code that enforces gamut limitations in a manner that
+%   handles backgrounds that do not correspond to device primary settings
+%   of 0.5 only works just right if no primaries are being pinned.  There
+%   is an error check at the end of the function which throws an error if
+%   any of the primary values returned are outside the range [0-1], so our
+%   motivation for thinking about this will only cross threshold if this
+%   error ever gets thrown.
 %
 % 4/1/12   dhb      Wrote it.
 % 11/15/12 dhb, ms  Remove upperVaryFactor arg.  Bound between 0 and 1-primaryHeadRoom.
@@ -47,6 +60,7 @@ function [isolatingPrimary] = ReceptorIsolate(T_receptors,whichReceptorsToIsolat
 %                   of modulations, rather than sum of activations.
 %          dhb      Change error function a little to avoid numerical issues.
 % 8/27/13  ll       Fix minor typo in variable name
+% 12/12/13 dhb      Clean up comments etc.
 
 % Check whether the desired contrasts were passed, and if so check
 % consistency of its dimensions.
@@ -86,8 +100,10 @@ boundIndex = [whichPrimariesToPin whichPrimariesToVary];
 % out of gamut if our background is not constant across wl band. For a
 % half-on background, both the positive and the negative poles of a
 % modulation will be in gamut, but that's not necessary the case if the
-% background is not 0.5 for all wl bands. The following piece of code also
-% only works if we're not pinning primaries (I think).
+% background is not 0.5 for all wl bands.
+%
+% The following piece of code may also only works just right if we're
+% not pinning primaries.
 if isempty(whichPrimariesToPin)
     vub = backgroundPrimary + backgroundPrimary - primaryHeadRoom;
     vlb = backgroundPrimary - (1-backgroundPrimary) + primaryHeadRoom;
