@@ -12,5 +12,5 @@ If you use this code in support of work in a published paper, please cite us.
 We are working on publishing a paper that includes a description of the logic used in this code as
 well as examples of its use.  Once we have published our paper, that will be the appropriate
 work to cite.  For now, please use:
-  Sptitschan, M., Aguirre, G.K., & Brainard D.H. (2015), The silent substitution toolbox,
+  Spitschan, M., Aguirre, G.K., & Brainard D.H. (2015), The silent substitution toolbox,
   https://github.com/spitschan/SilentSubstitutionToolbox.
