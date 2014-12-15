@@ -1,4 +1,4 @@
-% HemoglobinTransmissivityDemo.m
+% HemoglobinTransmittanceDemo.m
 %
 % Demo of how we compute hemoglobin absorptivity for retinal blood vessels.
 %
@@ -34,11 +34,11 @@ figureWidth = 600;
 longFigureWidth = 1200;
 
 %% Define folder to save figures into:
-figFolder = fullfile(fileparts(mfilename), 'HemoglobinTransmissivityDemoOutput');
+figFolder = fullfile(fileparts(mfilename), 'HemoglobinTransmittanceDemoOutput');
 if ~isdir(figFolder)
    mkdir(figFolder); 
 end
-origcheckDataFolder = fullfile(fileparts(mfilename), 'HemoglobinTransmissivityDemoData');
+origcheckDataFolder = fullfile(fileparts(mfilename), 'HemoglobinTransmittanceDemoData');
 if ~isdir(origcheckDataFolder)
    mkdir(origcheckDataFolder); 
 end

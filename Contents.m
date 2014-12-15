@@ -10,7 +10,8 @@
 % -------------------------
 %   ReceptorIsolateDemo  - Demos the ReceptorIsolate, PhotoreceptorSensitivity,
 %                          and HemoglobinTransmivitity function
-%   ContrastSplatterDemo - Demos the contrast splatter calculations
+%   ContrastSplatterDemo - Demos the contrast splatter calculations.
+%   HemoglobinTransmittanceDemo - Demos how we compute hemoglobin transmittance.
 %
 % ReceptorIsolate Functions
 % -------------------------
@@ -28,7 +29,7 @@
 %   GetConeFractionBleachedFromSpectrum - Calculates proportion of pigment bleached for a
 %                         given background spectrum
 %
-% HemoglobinTransmisivity Functions
+% HemoglobinTransmittance Functions
 % -----------------------------
 %   GetHemoglobinTransmittance
 %                       - Returns hemoglobin transmittance
@@ -44,15 +45,20 @@
 %
 % Data
 % ----
-%   PhotoreceptorSensitivities /xRawData/XuPokornySmith1997_Fig4A.csv
-%                       - Contains digitized chronological age vs. lens
-%                         density plot, for use in GetChronologicalAgeSDFromLensSD
 %   ContrastSplatter/ContrastSplatterDemoData/spd_background.mat
 %                       - Contains a sample background spectrum
 %   ContrastSplatter/ContrastSplatterDemoData/spd_melIsolatingSpd.mat
 %                       - Contains a sample melanopsin-isolating spectrum
 %   ContrastSplatter/ContrastSplatterDemoOutput
 %                       - Data and plots produced by ContrastSplatterDemo
+%   PhotoreceptorSensitivities /xRawData/XuPokornySmith1997_Fig4A.csv
+%                       - Contains digitized chronological age vs. lens
+%                         density plot, for use in
+%                         GetChronologicalAgeSDFromLensSD
+%   HemoglobinTransmittance/HemoglobinTransmittanceDemoData
+%                       - Data for HemoglobinTransmittanceDemo
+%   HemoglobinTransmittance/HemoglobinTransmittanceDemoOutput
+%                       - Data and plots produced by HemoglobinTransmittanceDemo
 %   ReceptorIsolate/ReceptorIsolateDemoOutput
 %                       - Data and plots produced by ReceptorIsolateDemo
 %
