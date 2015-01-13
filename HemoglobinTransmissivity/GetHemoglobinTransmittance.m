@@ -1,4 +1,4 @@
-function [transmittance,absorbtance] = GetHemoglobinTransmittance(S,oxyFraction,overallThicknessUm,source)
+function [transmittance,absorptance] = GetHemoglobinTransmittance(S,oxyFraction,overallThicknessUm,source)
 % [transmittance,absorbtance] = GetHemoglobinTransmittance(S,oxyFraction,overallThicknessUm,source)
 % 
 % Return hemoglobin transmittance = 10.^(absorptance), given a fraction of oxy/deoxy hemoglobin
