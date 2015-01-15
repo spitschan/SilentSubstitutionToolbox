@@ -13,6 +13,8 @@ function [transmittance,absorptance] = GetHemoglobinTransmittance(S,oxyFraction,
 % See also HemoglobinTransmissivityDemo, GetHemoglobin.
 %
 % 6/4/14  dhb  Wrote it, based on what ms and I worked out in HemoglobinTransmissivityDemo.
+% 1/15/14 ms   Fixed error of 2.303 constant, which assumed our absorption
+%              coefficient was in natural log. ln 10 = 2.303.
 
 %% Set source
 if (nargin < 4 | isempty(source))
@@ -30,9 +32,15 @@ switch (source)
         % Prahl writes:
         %     To convert this data to absorption coefficient in (cm-1), multiply by the molar concentration and 2.303,
         %         ua = (2.303) e (x g/liter)/(64,500 g Hb/mole)
-        %     where x is the number of grams per liter. A typical value of x for whole blood is x=150 g Hb/liter.
-        absorptivityPerCm_oxy_Prahl = (2.303 .* oxyMolarExtinction_Prahl * 150)/64500;
-        absorptivityPerCm_deoxy_Prahl = (2.303 .* deoxyMolarExtinction_Prahl * 150)/64500;
+        %     where x is the number of grams per liter. A typical value of
+        %     x for whole blood is x=150 g Hb/liter.
+        %
+        % We note that the 2.303 constant is added in there to convert from
+        % decimal log to natural log. But, the transmittance is specified
+        % in decimal log, i.e. the base is wrong. We deal with this by
+        % removing 2.303 as a factor.
+        absorptivityPerCm_oxy_Prahl = (oxyMolarExtinction_Prahl * 150)/64500;
+        absorptivityPerCm_deoxy_Prahl = (deoxyMolarExtinction_Prahl * 150)/64500;
         
         % Calculate absorptance for oxy and deoxy.  We split the total thickness into effective
         % layers, one for oxy and one for deoxy.
