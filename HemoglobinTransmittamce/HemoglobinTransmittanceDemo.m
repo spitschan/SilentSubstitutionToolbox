@@ -139,8 +139,8 @@ saveas(theVariationAcrossDiameterFig,fullfile(figFolder,'Oxyhemoglobin_Thickness
 %     To convert this data to absorption coefficient in (cm-1), multiply by the molar concentration and 2.303,
 %         ua = (2.303) e (x g/liter)/(64,500 g Hb/mole) 
 %     where x is the number of grams per liter. A typical value of x for whole blood is x=150 g Hb/liter.
-absorptivityPerCm_oxy_Prahl = (2.303 .* oxyMolarExtinction_Prahl * 150)/64500;
-absorptivityPerCm_deoxy_Prahl = (2.303 .* deoxyMolarExtinction_Prahl * 150)/64500;
+absorptivityPerCm_oxy_Prahl = (oxyMolarExtinction_Prahl * 150)/64500;
+absorptivityPerCm_deoxy_Prahl = (deoxyMolarExtinction_Prahl * 150)/64500;
 
 % Let's calculate now the absorptance given a 2 um blood vessel.
 absorptance_oxy_Prahl = absorptivityPerCm_oxy_Prahl*0.0002;
