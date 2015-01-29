@@ -12,6 +12,7 @@
 %                          and HemoglobinTransmivitity function
 %   ContrastSplatterDemo - Demos the contrast splatter calculations.
 %   HemoglobinTransmittanceDemo - Demos how we compute hemoglobin transmittance.
+%   LightSafetyDemo      - Demos light safety calculations.
 %
 % ReceptorIsolate Functions
 % -------------------------
@@ -59,6 +60,8 @@
 %                       - Data for HemoglobinTransmittanceDemo
 %   HemoglobinTransmittance/HemoglobinTransmittanceDemoOutput
 %                       - Data and plots produced by HemoglobinTransmittanceDemo
+%   LightSafety/LightSafetyDemoData
+%                       - Data for light safety demo calculation.
 %   ReceptorIsolate/ReceptorIsolateDemoOutput
 %                       - Data and plots produced by ReceptorIsolateDemo
 %

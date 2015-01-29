@@ -1,4 +1,4 @@
-% LightSafetyExample
+% LightSafetyDemo
 %
 % Example calculation comparing a broadband spectrum to light safety limits.
 %
@@ -43,11 +43,14 @@
 %% Clear and close
 clear; close all
 
+%% Set wavelength sampling
+S = [380 1 401];
+
 %% Load in an example spectrum.
 % This has units of radiance in Watts/[sr-M2-wlband]
-load(fullfile('LightSafetyExampleData','spd_lightsafetyexample.mat'));
-S = S_lightsafetyexample;
-radianceWattsPerM2Sr = spd_lightsafetyexample;
+load(fullfile('LightSafetyDemoData','spd_lightsafetyexample.mat'));
+radianceWattsPerM2Sr = SplineSpd(S_lightsafetyexample,spd_lightsafetyexample,S);
+radianceWattsPerM2Sr(radianceWattsPerM2Sr < 0) = 0;
 clear spd_lightsafetyexample S_lightsafetyexample
 
 %% Unit coversion
