@@ -224,8 +224,16 @@ fprintf('    * Compare with total pupil adjusted radiance %0.1f log  W/[cm2-sr]\
 fprintf('    * Pupil adjustment assumes observer pupil diameter of %0.1f mm, MPE standard diameter of %0.1f mm\n',pupilDiamMm,mpePupilDiamMm);
 
 %% Now compare to the ISO Standard
+%
+% The ISO standard computes retinal irradiance with a 7 mm pupil, so we
+% adjust only if our specified pupil is larger.
+if (pupilDiamMm > 7)
+    ISOPupilAdjustFactor = (pupilDiamMm/7).^2;
+else
+    ISOPupilAdjustFactor = 1;
+end
 stimulusDurationForISOMPESecs = 120*60;
-[IsOverLimit,ISO2007MPEStruct] = ISO2007MPECheckType1ContinuousRadiance(S,pupilAdjustFactor*radianceWattsPerM2Sr,stimulusDurationForISOMPESecs,stimulusAreaDegrees2,eyeLengthMm);
+[IsOverLimit,ISO2007MPEStruct] = ISO2007MPECheckType1ContinuousRadiance(S,ISOPupilAdjustFactor*radianceWattsPerM2Sr,stimulusDurationForISOMPESecs,stimulusAreaDegrees2,eyeLengthMm);
 fprintf('\n');
 fprintf('  * ISO MPE Analysis\n');
 ISO2007MPEPrintAnalysis(IsOverLimit,ISO2007MPEStruct);
