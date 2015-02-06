@@ -158,6 +158,12 @@ if length(photoreceptorClasses) > 1
                 fractionConeBleachedFromIsomHemo(2) = fractionPigmentBleached(i);
             case {'SConeHemo'}
                 fractionConeBleachedFromIsomHemo(3) = fractionPigmentBleached(i);
+            case {'LConeHemoLegacy'}
+                fractionConeBleachedFromIsomHemo(1) = fractionPigmentBleached(i);
+            case {'MConeHemoLegacy'}
+                fractionConeBleachedFromIsomHemo(2) = fractionPigmentBleached(i);
+            case {'SConeHemoLegacy'}
+                fractionConeBleachedFromIsomHemo(3) = fractionPigmentBleached(i);
             case {'Melanopsin', 'MelanopsinLegacy'}
                 if (fractionPigmentBleached(i) ~= 0)
                     error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
@@ -201,6 +207,18 @@ elseif length(photoreceptorClasses) == 1
             fractionConeBleachedFromIsomHemo(2) = fractionPigmentBleached;
             fractionConeBleachedFromIsomHemo(3) = 0;
         case 'SConeHemo'
+            fractionConeBleachedFromIsomHemo(1) = 0;
+            fractionConeBleachedFromIsomHemo(2) = 0;
+            fractionConeBleachedFromIsomHemo(3) = fractionPigmentBleached;
+        case 'LConeHemoLegacy'
+            fractionConeBleachedFromIsomHemo(1) = fractionPigmentBleached;
+            fractionConeBleachedFromIsomHemo(2) = 0;
+            fractionConeBleachedFromIsomHemo(3) = 0;
+        case 'MConeHemoLegacy'
+            fractionConeBleachedFromIsomHemo(1) = 0;
+            fractionConeBleachedFromIsomHemo(2) = fractionPigmentBleached;
+            fractionConeBleachedFromIsomHemo(3) = 0;
+        case 'SConeHemoLegacy'
             fractionConeBleachedFromIsomHemo(1) = 0;
             fractionConeBleachedFromIsomHemo(2) = 0;
             fractionConeBleachedFromIsomHemo(3) = fractionPigmentBleached;
