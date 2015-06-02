@@ -7,7 +7,7 @@
 % standard three primary monitor and when you have a device that can
 % produce arbitrary (within gamut limits) spectra across the visible range
 % of wavelengths.
-% 
+%
 % It also demonstrates our code for producing individually customized (for
 % age, field size, pupil diameter, and background light level) estimates of
 % human cone spectral sensitivities.
@@ -42,6 +42,7 @@ fprintf('\nAvailable devices:\n');
 fprintf('\t[1]  Spectral - ideal spectral producing device\n');
 fprintf('\t[2]  OneLight - calibration data from Brainard/Aguirre lab OneLight device\n');
 fprintf('\t[3]  Monitor - some typical monitor\n');
+fprintf('\t[4]  FiveLEDPrimaries - 5 LEDs\n');
 whichPrimaryNumber = GetWithDefault('Enter device',1);
 switch (whichPrimaryNumber)
     case 1
@@ -50,6 +51,8 @@ switch (whichPrimaryNumber)
         whichPrimaries = 'OneLight';
     case 3
         whichPrimaries = 'Monitor';
+    case 4
+        whichPrimaries = 'FiveLEDPrimaries';
     otherwise
         error('Unknown primaries entered');
 end
@@ -76,7 +79,7 @@ switch (whichPrimaries)
         
         % No smoothness constraint enforced here. Use a big number (Inf
         % does not work).
-        maxPowerDiff = 10000;    
+        maxPowerDiff = 10000;
     case 'OneLight'
         % Get a OneLight calibration file, stored here for demo purposes.
         % Extract the descrption of spectral primaries, which is what we
@@ -105,7 +108,7 @@ switch (whichPrimaries)
         % change in spectral power between two adjacent wavelength samples.
         % Thus it's appropriate value depends on the overall power of the
         % viewed light as well as on the wavelength sampling step.
-        maxPowerDiff = 10^-1.5; 
+        maxPowerDiff = 10^-1.5;
     case 'Monitor'
         % Typical monitor calibration file.  Use the one supplied with PTB.
         S = WlsToS((400:4:700)');
@@ -117,7 +120,7 @@ switch (whichPrimaries)
         backgroundPrimary = [0.5 0.5 0.5]';
         ambientSpd = SplineSpd(cal.S_ambient,cal.P_ambient,S);
         
-         % Don't pin any primaries.  Do enforce a constraint that we don't
+        % Don't pin any primaries.  Do enforce a constraint that we don't
         % go right to the edge of the gamut.  The head room parameter is
         % defined in the [0-1] device primary space.  Using a little head
         % room keeps us a bit away from the hard edge of the device.
@@ -127,8 +130,47 @@ switch (whichPrimaries)
         % No smoothness constraint envforced here.  It really wouldn't make
         % to much sense for a three-primary monitor, as the smoothness of a
         % monitor spectrum is pretty much determined by the spectral shape
-        % of its primarites. 
+        % of its primarites.
         maxPowerDiff = 10000;
+    case 'FiveLEDPrimaries'
+        % Construct LEDs
+        peakWls = [456 488 540 592 632];
+        fwhm = [10 10 10 17 17]/2;
+        maxPower = [.57 .125 .156 .27 0.75];
+        for i = 1:length(fwhm)
+            % Figure out the standard deviation.
+            standardDeviation(i) = FWHMToStd(fwhm(i));
+        end
+        
+        S = [380 2 201];
+        wls = SToWls(S);
+        
+        % Make the spectrum.
+        for i = 1:length(fwhm)
+            spd(:, i) = normpdf(wls, peakWls(i), fwhm(i));
+            spd(:, i) = spd(:, i)./max(spd(:, i))*maxPower(i);
+        end
+        
+        B_primary = spd;
+        
+        % Set background to the monitor midpoint, and use the ambient
+        % spectrum from the calibration file.
+        backgroundPrimary = [0.5 0.5 0.5 0.5 0.5]';
+        ambientSpd = zeros(201, 1);
+        
+        % Don't pin any primaries.  Do enforce a constraint that we don't
+        % go right to the edge of the gamut.  The head room parameter is
+        % defined in the [0-1] device primary space.  Using a little head
+        % room keeps us a bit away from the hard edge of the device.
+        whichPrimariesToPin = [];
+        primaryHeadRoom = 0;
+        
+        % No smoothness constraint envforced here.  It really wouldn't make
+        % to much sense for a three-primary monitor, as the smoothness of a
+        % monitor spectrum is pretty much determined by the spectral shape
+        % of its primarites.
+        maxPowerDiff = 10000;
+        
 end
 
 %% Get sensitivities and set other relvant parameters
@@ -154,9 +196,9 @@ switch (whichModel)
         fieldSizeDegrees = GetWithDefault('\tField size in degrees?', 27.5);
         pupilDiameterMm = GetWithDefault('\tPupil diameter?', 4.7);
         vesselOxyFraction = GetWithDefault(['\tOxygenation fraction for vessel hemoglobin [typical 0.85]?'], 0.85);
-        vesselOverallThicknessUm = GetWithDefault(['\tVessel thickness [typical 5 um]?'], 5); 
+        vesselOverallThicknessUm = GetWithDefault(['\tVessel thickness [typical 5 um]?'], 5);
         correctBleaching = GetWithDefault(['\tCorrect for cone photopigment bleaching [1 = yes, 0 = no]?'],1);
-                
+        
         % Define photoreceptor classes that we'll consider.
         % ReceptorIsolate has a few more built-ins than these.
         photoreceptorClasses = {'LCone', 'MCone', 'SCone', 'Melanopsin', 'Rods', 'LConeHemo', 'MConeHemo', 'SConeHemo'};
@@ -215,6 +257,7 @@ switch (whichModel)
         fprintf('\t[3]  S cones, silence open-field L and M cones, melanopsin, and prenumbral L and M cones; ignore rods and penumbral S cones\n');
         fprintf('\t[4]  S cones, silence open field L and M cones, ingore all others\n');
         fprintf('\t[5]  Penumbral L and M cones, silence open-field cones, melanopsin, and prenumbral S cones; ignore rods\n');
+        fprintf('\t[6]  Rods\n');
         whichDirectionNumber = GetWithDefault('Enter direction',1);
         
         % Depending on which direction is chosen, specify the indices
@@ -248,6 +291,11 @@ switch (whichModel)
                 whichDirection = 'PenumbralLM';
                 whichReceptorsToTarget = [6 7];
                 whichReceptorsToIgnore = [5];
+                whichReceptorsToMinimize = [];
+            case 6
+                whichDirection = 'Rods';
+                whichReceptorsToTarget = [5];
+                whichReceptorsToIgnore = [6 7 8];
                 whichReceptorsToMinimize = [];
             otherwise
                 error('Unknown direction entered');
