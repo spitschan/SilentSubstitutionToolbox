@@ -152,6 +152,12 @@ if length(photoreceptorClasses) > 1
                 fractionConeBleachedFromIsom(2) = fractionPigmentBleached(i);
             case {'SCone'}
                 fractionConeBleachedFromIsom(3) = fractionPigmentBleached(i);
+            case {'LCone2Deg'}
+                fractionConeBleachedFromIsom(1) = fractionPigmentBleached(i);
+            case {'MCone2Deg'}
+                fractionConeBleachedFromIsom(2) = fractionPigmentBleached(i);
+            case {'SCone2Deg'}
+                fractionConeBleachedFromIsom(3) = fractionPigmentBleached(i);
             case {'LConeHemo'}
                 fractionConeBleachedFromIsomHemo(1) = fractionPigmentBleached(i);
             case {'MConeHemo'}
@@ -195,6 +201,18 @@ elseif length(photoreceptorClasses) == 1
             fractionConeBleachedFromIsom(2) = fractionPigmentBleached;
             fractionConeBleachedFromIsom(3) = 0;
         case 'SCone'
+            fractionConeBleachedFromIsom(1) = 0;
+            fractionConeBleachedFromIsom(2) = 0;
+            fractionConeBleachedFromIsom(3) = fractionPigmentBleached;
+        case 'LCone2Deg'
+            fractionConeBleachedFromIsom(1) = fractionPigmentBleached;
+            fractionConeBleachedFromIsom(2) = 0;
+            fractionConeBleachedFromIsom(3) = 0;
+        case 'MCone2Deg'
+            fractionConeBleachedFromIsom(1) = 0;
+            fractionConeBleachedFromIsom(2) = fractionPigmentBleached;
+            fractionConeBleachedFromIsom(3) = 0;
+        case 'SCone2Deg'
             fractionConeBleachedFromIsom(1) = 0;
             fractionConeBleachedFromIsom(2) = 0;
             fractionConeBleachedFromIsom(3) = fractionPigmentBleached;
@@ -268,6 +286,42 @@ for i = 1:length(photoreceptorClasses)
             
             %% Construct cones, pull out S cone
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
+            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
+            
+            % Add to the receptor vector
+            T_energyNormalized = [T_energyNormalized ; T_energy1(3,:)];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
+            nominalLambdaMax = [nominalLambdaMax lambdaMax(3)];
+        case 'LCone2Deg'
+            whichNomogram = 'StockmanSharpe';
+            lambdaMax = [558.9 530.3 420.7]';
+            
+            %% Construct cones, pull out L cone
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,2,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
+            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
+            
+            % Add to the receptor vector
+            T_energyNormalized = [T_energyNormalized ; T_energy1(1,:)];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
+            nominalLambdaMax = [nominalLambdaMax lambdaMax(1)];
+        case 'MCone2Deg'
+            whichNomogram = 'StockmanSharpe';
+            lambdaMax = [558.9 530.3 420.7]';
+            
+            %% Construct cones, pull out M cone
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,2,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
+            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
+            
+            % Add to the receptor vector
+            T_energyNormalized = [T_energyNormalized ; T_energy1(2,:)];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
+            nominalLambdaMax = [nominalLambdaMax lambdaMax(2)];
+        case 'SCone2Deg'
+            whichNomogram = 'StockmanSharpe';
+            lambdaMax = [558.9 530.3 420.7];
+            
+            %% Construct cones, pull out S cone
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,2,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsom);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
