@@ -13,11 +13,6 @@ University of Pennsylvania
 
 If you use this code in support of work in a published paper, please cite us. 
 
-We are working on publishing a paper that includes a description of the logic
-used in this code as well as examples of its use.  Once we have published our
-paper, that will be the appropriate work to cite.  For now, please use:
-
-  Spitschan, M., Aguirre, G.K., & Brainard D.H. (2015), The silent substitution toolbox,
-  https://github.com/spitschan/SilentSubstitutionToolbox.
+[Spitschan M, Aguirre GK, Brainard DH (2015) Selective Stimulation of Penumbral Cones Reveals Perception in the Shadow of Retinal Blood Vessels. PLoS ONE 10(4): e0124328. doi: 10.1371/journal.pone.0124328](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0124328)
 
 This software is licensed under the license specified in LICENSE.md (MIT License). The code may be used freely. Using it to compute robust modulation by silencing multiple photoreceptor classes is covered by a U.S. Provisional Patent and is subject to licensing.
