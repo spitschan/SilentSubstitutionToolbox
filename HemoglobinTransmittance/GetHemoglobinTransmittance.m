@@ -11,12 +11,12 @@ function [transmittance,absorptance,S] = GetHemoglobinTransmittance(S,oxyFractio
 %   'Prahl' - Based on data posted by Prahl and corresponding constants. 
 %             See  http://omlc.org/spectra/hemoglobin/.  [Default]
 %
-% See HemoglobinTransmissivityDemo for a layout of the calculations that are encapsulated
+% See HemoglobinTransmittanceDemo for a layout of the calculations that are encapsulated
 % here as well as an example of this in use.
 %
-% See also HemoglobinTransmissivityDemo, GetHemoglobin.
+% See also HemoglobinTransmittanceDemo, GetHemoglobin.
 %
-% 6/4/14  dhb  Wrote it, based on what ms and I worked out in HemoglobinTransmissivityDemo.
+% 6/4/14  dhb  Wrote it, based on what ms and I worked out in HemoglobinTransmittanceDemo.
 % 1/15/14 ms   Fixed error of 2.303 constant, which assumed our absorption
 %              coefficient was in natural log. ln 10 = 2.303.
 

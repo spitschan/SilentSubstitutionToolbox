@@ -106,7 +106,7 @@ saveas(theVanKampenFig, fullfile(figFolder, 'Oxyhemoglobin_vanKampen'), 'pdf');
 % photoreceptors is filtered by a vasculature that, if it were uniform,
 % would be equivalent to a layer of blood about 2 um in thickness at
 % eccentricities exceeding 1 mm (cf. their Fig. 2.7, p. 49). Their range of
-% mean blood thinkness is 0.0-3.0 um. We calculate the tranmissivity in
+% mean blood thinkness is 0.0-3.0 um. We calculate the transmittance in
 % this range.  Note, however, that this is different from the thickness
 % of a blood vessel itself -- it is an estimate of how thick a uniformly
 % spread layer of blood would be.
