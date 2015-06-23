@@ -57,15 +57,15 @@ end
 absorptivityPerCm_vanKampen = absorptivityLitersPerMmolPerCm_vanKampen*10;
 
 % According to Packer & Williams, blood vessels of 2 um lead to
-% transmissivity of 0.55 at 415 nm.  2 um is 0.0002 cm. So this gives an absorptance
+% transmittance of 0.55 at 415 nm.  2 um is 0.0002 cm. So this gives an absorptance
 % of 1310*(0.0002) = 0.2620.
 absorptance_vanKampen = absorptivityPerCm_vanKampen*0.0002;
 
-% To get transmissivity, we take 10^(-0.2620) and get 0.547. This
+% To get transmittance, we take 10^(-0.2620) and get 0.547. This
 % corresponds to the number given by Packer & Williams (2003). Yay!
-% Other points on our transmissivity plot match up pretty well with
-% the numberical values given by Packer and Williams for the transmissivity
-transmissivity_vanKampen = 10.^(-absorptance_vanKampen);
+% Other points on our transmittance plot match up pretty well with
+% the numberical values given by Packer and Williams for the transmittance
+transmittance_vanKampen = 10.^(-absorptance_vanKampen);
 
 % Plot out
 %
@@ -91,12 +91,12 @@ title({'HbO2' 'Absorptance for 2 um vessel' 'van Kampen & Zijlstra (1983)'});
 
 subplot(1, 3, 3);
 set(gca,'FontName','Helvetica','FontSize',16);
-plot(wls_vanKampen, transmissivity_vanKampen, '-k', 'LineWidth', 2);
-xlabel('Wavelength [nm]'); ylabel('Transmissivity'); xlim([380 700]); ylim([0 1]); pbaspect([1 1 1]);
-title({'HbO2' 'Transmissivity for 2 um vessel' 'van Kampen & Zijlstra (1983)'});
+plot(wls_vanKampen, transmittance_vanKampen, '-k', 'LineWidth', 2);
+xlabel('Wavelength [nm]'); ylabel('Transmittance'); xlim([380 700]); ylim([0 1]); pbaspect([1 1 1]);
+title({'HbO2' 'Transmittance for 2 um vessel' 'van Kampen & Zijlstra (1983)'});
 saveas(theVanKampenFig, fullfile(figFolder, 'Oxyhemoglobin_vanKampen'), 'pdf');
 
-%% Explore now the effect of diameter on transmissivity in a reasonable
+%% Explore now the effect of diameter on transmittance in a reasonable
 % range for retinal blood vessels. Snodderly, Weinhaus & Choi (1992, p.
 % 1188) note that 3 um is the smallest opening through which a human red
 % blood cell can pass undamaged. In their sample of macaque retina, the
@@ -116,19 +116,19 @@ UmToCm = 1e-4;
 theThicknessCm = linspace(minThicknessUm*UmToCm, maxThicknessUm*UmToCm, 10);
 for t = 1:length(theThicknessCm)
     absorptanceAcrossDiameter_vanKampen(:, t) = absorptivityPerCm_vanKampen*theThicknessCm(t);
-    transmissivityAcrossDiameter_vanKampen(:, t) = 10.^(-absorptanceAcrossDiameter_vanKampen(:, t));
+    transmittanceAcrossDiameter_vanKampen(:, t) = 10.^(-absorptanceAcrossDiameter_vanKampen(:, t));
 end
 
 % Plot this out
 theVariationAcrossDiameterFig = figure; hold on
 set(gcf,'Position',[100 100 figureWidth figureHeight]);
 set(gca,'FontName','Helvetica','FontSize',16);
-plot(wls_vanKampen, transmissivityAcrossDiameter_vanKampen(:, 1), '-b', 'LineWidth', 2);
-plot(wls_vanKampen, transmissivityAcrossDiameter_vanKampen(:, end), '-r', 'LineWidth', 2);
-plot(wls_vanKampen, transmissivityAcrossDiameter_vanKampen, '-k');
+plot(wls_vanKampen, transmittanceAcrossDiameter_vanKampen(:, 1), '-b', 'LineWidth', 2);
+plot(wls_vanKampen, transmittanceAcrossDiameter_vanKampen(:, end), '-r', 'LineWidth', 2);
+plot(wls_vanKampen, transmittanceAcrossDiameter_vanKampen, '-k');
 legend([num2str(theThicknessCm(1)/UmToCm) ' um'], [num2str(theThicknessCm(end)/UmToCm) ' um'], 'Location', 'SouthEast'); legend boxoff;
-xlabel('Wavelength [nm]'); ylabel('Transmissivity'); xlim([380 700]); ylim([0 1]); pbaspect([1 1 1]);
-title({'HbO2' 'Transmissivity' 'van Kampen & Zijlstra (1983)'});
+xlabel('Wavelength [nm]'); ylabel('Transmittance'); xlim([380 700]); ylim([0 1]); pbaspect([1 1 1]);
+title({'HbO2' 'Transmittance' 'van Kampen & Zijlstra (1983)'});
 saveas(theVariationAcrossDiameterFig,fullfile(figFolder,'Oxyhemoglobin_Thickness_vanKampen'),'pdf');
 
 %% Obtain the Prahl hemoglobin estimates.
@@ -161,7 +161,7 @@ absorptivityPerCm_deoxy_Prahl = absorptance_deoxy_Prahl/vesselThicknessCm;
 % % Let's calculate now the absorptance given a 2 um blood vessel.
 
 %
-% % Get transmissivity. See above in the Packer & Williams/van Kampen calculations for the logic.
+% % Get transmittance. See above in the Packer & Williams/van Kampen calculations for the logic.
 % transmittance_oxy_Prahl = 10.^(-absorptance_oxy_Prahl);
 %  = 10.^(-absorptance_deoxy_Prahl);
 
@@ -190,8 +190,8 @@ subplot(1, 3, 3); hold on
 set(gca,'FontName','Helvetica','FontSize',16);
 plot(wls_Prahl, transmittance_oxy_Prahl, '-k', 'LineWidth', 2);
 plot(wls_Prahl, transmittance_deoxy_Prahl, '-r', 'LineWidth', 2);
-xlabel('Wavelength [nm]'); ylabel('Transmissivity'); xlim([380 700]); ylim([0 1]); pbaspect([1 1 1]);
-title({'HbO2' 'Transmissivity for 2 um vessel' 'Prahl, Oregon Medical Laser Center'});
+xlabel('Wavelength [nm]'); ylabel('Transmittance'); xlim([380 700]); ylim([0 1]); pbaspect([1 1 1]);
+title({'HbO2' 'Transmittance for 2 um vessel' 'Prahl, Oregon Medical Laser Center'});
 legend({'Oxyhemoglobin', 'Deoxyhemoglobin'},'Location','SouthEast');
 saveas(thePrahlFig, fullfile(figFolder, 'Oxyhemoglobin_Prahl'),  'pdf');
 
@@ -201,9 +201,9 @@ set(gcf,'Position',[100 100 figureWidth figureHeight]);
 set(gca,'FontName','Helvetica','FontSize',16);
 plot(wls_Prahl, transmittance_oxy_Prahl, '-k', 'LineWidth', 2);
 plot(wls_Prahl, transmittance_deoxy_Prahl, '-r', 'LineWidth', 2);
-plot(wls_vanKampen, transmissivity_vanKampen, '-b', 'LineWidth', 2);
-xlabel('Wavelength [nm]'); ylabel('Transmissivity'); xlim([380 700]); ylim([0 1]); pbaspect([1 1 1]);
-title({'HbO2' 'Transmissivity' 'Comparison, 2 um vessel'});
+plot(wls_vanKampen, transmittance_vanKampen, '-b', 'LineWidth', 2);
+xlabel('Wavelength [nm]'); ylabel('Transmittance'); xlim([380 700]); ylim([0 1]); pbaspect([1 1 1]);
+title({'HbO2' 'Transmittance' 'Comparison, 2 um vessel'});
 legend('Prahl Oxy, Oregon Medical Laser Center', 'Prahl Deoxy, Oregon Medical Laser Center', 'van Kampen & Zijlstra (1983)', ...
     'Location', 'SouthEast');
 saveas(theComparisonFig, fullfile(figFolder, 'Oxyhemoglobin_Comparison_Prahl_vanKampen'), 'pdf');
@@ -270,7 +270,7 @@ for t = 1:length(thicknessesUm);
     nextColor = nextColor + 1;
 end
 xlabel('Wavelength [nm]');
-ylabel('Transmissivity');
+ylabel('Transmittance');
 title('Effect of vessel thickness and oxy fraction on transmittance');
 pbaspect([1 1 1]);
 saveas(theFigure, fullfile(figFolder, 'EffectOfOxyFractionAndThickness'),  'pdf');

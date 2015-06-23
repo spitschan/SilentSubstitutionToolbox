@@ -415,7 +415,7 @@ for i = 1:length(photoreceptorClasses)
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsomHemo);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
-            % Multiply with blood transmissivity, which is parametrized by
+            % Multiply with blood transmittance, which is parametrized by
             % the oxygenation fraction and vessel thickness.
             source = 'Prahl';
             trans_Hemoglobin = GetHemoglobinTransmittance(S,vesselOxyFraction,vesselOverallThicknessUm,source);
@@ -432,7 +432,7 @@ for i = 1:length(photoreceptorClasses)
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsomHemo);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
-            % Multiply with blood transmissivity
+            % Multiply with blood transmittance
             source = 'Prahl';
             trans_Hemoglobin = GetHemoglobinTransmittance(S,vesselOxyFraction,vesselOverallThicknessUm,source);
             
@@ -448,7 +448,7 @@ for i = 1:length(photoreceptorClasses)
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsomHemo);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
-            % Multiply with blood transmissivity
+            % Multiply with blood transmittance
             source = 'Prahl';
             trans_Hemoglobin = GetHemoglobinTransmittance(S,vesselOxyFraction,vesselOverallThicknessUm,source);
             
@@ -464,7 +464,7 @@ for i = 1:length(photoreceptorClasses)
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsomHemo);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
-            % Multiply with blood transmissivity, which is parametrized by
+            % Multiply with blood transmittance, which is parametrized by
             % the oxygenation fraction and vessel thickness.
             source = 'Prahl';
             trans_Hemoglobin = GetHemoglobinTransmittance(S,vesselOxyFraction,vesselOverallThicknessUm*2.303,source);
@@ -481,7 +481,7 @@ for i = 1:length(photoreceptorClasses)
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsomHemo);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
-            % Multiply with blood transmissivity
+            % Multiply with blood transmittance
             source = 'Prahl';
             trans_Hemoglobin = GetHemoglobinTransmittance(S,vesselOxyFraction,vesselOverallThicknessUm*2.303,source);
             
@@ -497,7 +497,7 @@ for i = 1:length(photoreceptorClasses)
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,lambdaMax+lambdaMaxShift,whichNomogram,[],[],[],fractionConeBleachedFromIsomHemo);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
-            % Multiply with blood transmissivity
+            % Multiply with blood transmittance
             source = 'Prahl';
             trans_Hemoglobin = GetHemoglobinTransmittance(S,vesselOxyFraction,vesselOverallThicknessUm*2.303,source);
             
