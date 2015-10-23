@@ -559,3 +559,7 @@ for i = 1:size(T_energyNormalized)
     T_energyNormalized(i,:) = T_energyNormalized(i,:)/max(T_energyNormalized(i,:));
 end
 
+%% Check
+if (length(nominalLambdaMax) ~= length(photoreceptorClasses))
+    error('Failed to fill in a nominalLambdaMax somewhere');
+end
