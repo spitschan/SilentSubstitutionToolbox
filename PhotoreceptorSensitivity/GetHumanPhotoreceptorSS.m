@@ -279,12 +279,13 @@ SSMConeNominalLambdaMax = 530.3;
 SSSConeNominalLambdaMax = 420.7;
 for i = 1:length(photoreceptorClasses)
     theClass = photoreceptorClasses{i};
+    whichClass = i;
     
     % Get lambdaMaxShift to use for this class.
     if (length(lambdaMaxShift) == 1)
         lambdaMaxShiftUse = lambdaMaxShift;
     elseif (length(lambdaMaxShift) == length(photoreceptorClasses))
-        lambdaMaxShiftUse = lambdaMaxShift(theClass);
+        lambdaMaxShiftUse = lambdaMaxShift(whichClass);
     else
         error('Input lambdaMaxShift does not have an allowable dimension.');
     end
