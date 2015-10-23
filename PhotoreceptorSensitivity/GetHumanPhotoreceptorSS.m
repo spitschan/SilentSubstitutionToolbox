@@ -56,8 +56,8 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %   D) Passed fractionBleached numbers don't affect rod, melanopsin, or tabulated cone calculations.
 %   We throw an error if either of these ever receives a non-zero value.
 %   E) If you pass lambdaMaxShift as a scalar, the same value of lambdaMaxShift is applied to all classes computed within a single call to this function.
-%   This seems unlikely to be a good behavior, but I am keeping it for backwards compatibility. You can pass lambdaMaxShift as a vector
-%   to specify a different shift for each photoreceptor class.
+%   This seems unlikely to be a good behavior, but I am keeping it for backwards compatibility. You can now also pass lambdaMaxShift as a vector
+%   to specify a different shift for each photoreceptor class, which seems more sensible. 
 %
 % 1/21/14   ms    Wrote it based on old code.
 % 5/24/14   dhb   Remove vestigal references to a returned labels variable.
@@ -69,7 +69,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %                 This now takes hemoglobin parameters.
 %                 Manuel did this but didn't leave a comment.  I pushed the
 %                 responsibility for prompting up to the caller.
-% 10/22/15  dhb   Added note about how the lambdaMaxShift parameter works.
+% 10/22/15  dhb   Added note about how the lambdaMaxShift parameter works when it is a scalar.
 %           dhb   Allow passing lambdaMax as a vector.
 %           dhb   Make return nominalLambdaMax take the shift into account,
 %                 and always fill in something.
