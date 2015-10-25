@@ -43,7 +43,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %                                     units.  These may be used to compute
 %                                     isomerizations from retinal illuminance
 %   nominalLambdaMax                - Peak of photopigment absorption spectrum spectral sensitivities (no density taken into account).
-%                                     This includes any shift in lambdaMax applied.  In a a few cases it is sort
+%                                     This does not take any shift in lambdaMax applied into account.  In a a few cases it is sort
 %                                     of made up because there was no explicit underlying absorption spectrum.
 %
 % NOTES:
@@ -74,6 +74,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %           dhb   Make return nominalLambdaMax take the shift into account,
 %                 and always fill in something.
 %           dhb   Apply lambdaMaxShift in a few cases where it did not apply before.
+% 10/25/15  dhb   Change back so that nominalLambdaMax returned does NOT take the shift into account.
 
 %% Set defaults
 
@@ -302,7 +303,8 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(1,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(1)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(1)];
+            
         case 'MCone'
             whichNomogram = 'StockmanSharpe';
             lambdaMaxSS = [SSLConeNominalLambdaMax SSMConeNominalLambdaMax SSSConeNominalLambdaMax]';
@@ -314,7 +316,8 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(2,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(2)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(2)];
+            
         case 'SCone'
             whichNomogram = 'StockmanSharpe';
             lambdaMaxSS = [SSLConeNominalLambdaMax SSMConeNominalLambdaMax SSSConeNominalLambdaMax]';
@@ -326,7 +329,8 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(3,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(3)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(3)];
+            
         case 'LCone2Deg'
             whichNomogram = 'StockmanSharpe';
             lambdaMaxSS = [SSLConeNominalLambdaMax SSMConeNominalLambdaMax SSSConeNominalLambdaMax]';
@@ -338,7 +342,8 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(1,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(1)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(1)];
+            
         case 'MCone2Deg'
             whichNomogram = 'StockmanSharpe';
             lambdaMaxSS = [SSLConeNominalLambdaMax SSMConeNominalLambdaMax SSSConeNominalLambdaMax]';
@@ -350,7 +355,8 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(2,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(2)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(2)];
+            
         case 'SCone2Deg'
             whichNomogram = 'StockmanSharpe';
             lambdaMaxSS = [SSLConeNominalLambdaMax SSMConeNominalLambdaMax SSSConeNominalLambdaMax]';
@@ -362,13 +368,14 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(3,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(3)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(3)];
+            
         case {'Melanopsin'}
             % Melanopsin
             photoreceptors = DefaultPhotoreceptors('LivingHumanMelanopsin');
             photoreceptors.nomogram.S = S;
-            nominalLambdaMaxTmp = photoreceptors.nomogram.lambdaMax+lambdaMaxShiftUse;
-            photoreceptors.nomogram.lambdaMax = nominalLambdaMaxTmp;
+            nominalLambdaMaxTmp = photoreceptors.nomogram.lambdaMax;
+            photoreceptors.nomogram.lambdaMax = nominalLambdaMaxTmp+lambdaMaxShiftUse;
             photoreceptors.fieldSizeDegrees = fieldSizeDegrees;
             photoreceptors.ageInYears = ageInYears;
             photoreceptors.pupilDiameter.value = pupilDiameterMm;
@@ -378,12 +385,13 @@ for i = 1:length(photoreceptorClasses)
             T_energyNormalized = [T_energyNormalized ; photoreceptors.energyFundamentals];
             T_quantalIsomerizations = [T_quantalIsomerizations ; photoreceptors.isomerizationAbsorptance];
             nominalLambdaMax = [nominalLambdaMax nominalLambdaMaxTmp];
+            
         case 'Rods'
             % Rods
             photoreceptors = DefaultPhotoreceptors('LivingHumanRod');
             photoreceptors.nomogram.S = S;
-            nominalLambdaMaxTmp = photoreceptors.nomogram.lambdaMax+lambdaMaxShiftUse;
-            photoreceptors.nomogram.lambdaMax = nominalLambdaMaxTmp;
+            nominalLambdaMaxTmp = photoreceptors.nomogram.lambdaMax;
+            photoreceptors.nomogram.lambdaMax = nominalLambdaMaxTmp+lambdaMaxShiftUse;
             photoreceptors.fieldSizeDegrees = fieldSizeDegrees;
             photoreceptors.ageInYears = ageInYears;
             photoreceptors.pupilDiameter.value = pupilDiameterMm;
@@ -394,7 +402,6 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; photoreceptors.isomerizationAbsorptance];
             nominalLambdaMax = [nominalLambdaMax nominalLambdaMaxTmp];
          
-        %%%%% NEED TO FIX NOMINAL LAMBDA MAX HERE AND BELOW.  %%%%%
         case 'LCone10DegTabulatedSS'
             % Load in the tabulated 10-deg S-S fundamentals
             targetRaw = load('T_cones_ss10');
@@ -424,28 +431,28 @@ for i = 1:length(photoreceptorClasses)
         case 'MelanopsinLegacy'
             % Construct the melanopsin receptor
             whichNomogram = 'StockmanSharpe';
-            lambdaMaxMel = 480+lambdaMaxShiftUse;
+            lambdaMaxMel = 480;
             
             % Make a call to ComputeCIEConeFundamentals() which makes appropriate calls
-            T_quanta_tmp = ComputeCIEConeFundamentals(S,10,ageInYears,3,lambdaMaxMel,whichNomogram);
+            T_quanta_tmp = ComputeCIEConeFundamentals(S,10,ageInYears,3,lambdaMaxMel+lambdaMaxShiftUse,whichNomogram);
             T_energyNormalized = [T_energyNormalized ; EnergyToQuanta(S,T_quanta_tmp(3,:)')'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; NaN*ones(size(T_quanta))];
             nominalLambdaMax = [nominalLambdaMax lambdaMaxMel];
+            
         case 'RodsLegacy'
             whichNomogram = 'StockmanSharpe';
             ageInYears = 32;
             pupilSize = 3;
             fieldSize = 10;
-            lambdaMaxRods = 500 +lambdaMaxShiftUse;;
+            lambdaMaxRods = 500;
             
             DORODS = true;
-            T_quanta_tmp = ComputeCIEConeFundamentals(S,fieldSize,ageInYears,pupilSize,lambdaMaxRods,whichNomogram,[],DORODS);
+            T_quanta_tmp = ComputeCIEConeFundamentals(S,fieldSize,ageInYears,pupilSize,lambdaMaxRods+lambdaMaxShiftUse,whichNomogram,[],DORODS);
             T_energyNormalized = [T_energyNormalized ; EnergyToQuanta(S,T_quanta_tmp')'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; NaN*ones(size(T_quanta))];
             nominalLambdaMax = [nominalLambdaMax lambdaMaxRods];
 
         case 'CIE1924VLambda'
-            
             % Load in the CIE 1959 scotopic luminosity function
             targetRaw = load('T_rods');
             T_energyNormalized = [T_energyNormalized ; SplineCmf(targetRaw.S_rods,targetRaw.T_rods,S,2)];
@@ -468,7 +475,8 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(1,:) .* trans_Hemoglobin'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:) .* trans_Hemoglobin'];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(1)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(1)];
+            
         case 'MConeHemo'
             whichNomogram = 'StockmanSharpe';
             lambdaMaxSS = [SSLConeNominalLambdaMax SSMConeNominalLambdaMax SSSConeNominalLambdaMax]';
@@ -484,7 +492,8 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(2,:) .* trans_Hemoglobin'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:) .* trans_Hemoglobin'];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(2)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(2)];
+            
         case 'SConeHemo'
             whichNomogram = 'StockmanSharpe';
             lambdaMaxSS = [SSLConeNominalLambdaMax SSMConeNominalLambdaMax SSSConeNominalLambdaMax]';
@@ -500,7 +509,8 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(3,:).* trans_Hemoglobin'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:) .* trans_Hemoglobin'];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(3)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(3)];
+            
         case 'LConeHemoLegacy'
             whichNomogram = 'StockmanSharpe';
             lambdaMaxSS = [SSLConeNominalLambdaMax SSMConeNominalLambdaMax SSSConeNominalLambdaMax]';
@@ -517,7 +527,8 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(1,:) .* trans_Hemoglobin'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:) .* trans_Hemoglobin'];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(1)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(1)];
+            
         case 'MConeHemoLegacy'
             whichNomogram = 'StockmanSharpe';
             lambdaMaxSS = [SSLConeNominalLambdaMax SSMConeNominalLambdaMax SSSConeNominalLambdaMax]';
@@ -533,7 +544,8 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(2,:) .* trans_Hemoglobin'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:) .* trans_Hemoglobin'];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(2)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(2)];
+            
         case 'SConeHemoLegacy'
             whichNomogram = 'StockmanSharpe';
             lambdaMaxSS = [SSLConeNominalLambdaMax SSMConeNominalLambdaMax SSSConeNominalLambdaMax]';
@@ -549,7 +561,7 @@ for i = 1:length(photoreceptorClasses)
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(3,:).* trans_Hemoglobin'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:) .* trans_Hemoglobin'];
-            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(3)+lambdaMaxShiftUse];
+            nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(3)];
     end
 end
 
