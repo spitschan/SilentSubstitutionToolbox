@@ -16,6 +16,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %   photoreceptorClasses (cell)     - Cell with names of photoreceptor classes.
 %                                     Supported options: 'LCone', 'MCone', 'SCone', 'Melanopsin', 'Rods', ...
 %                                                        'LCone10DegTabulatedSS', 'MCone10DegTabulatedSS', 'SCone10DegTabulatedSS', ...
+%                                                        'LCone2DegTabulatedSS', 'MCone2DegTabulatedSS', 'SCone2DegTabulatedSS', ...
 %                                                        'MelanopsinLegacy', 'RodsLegacy', 'CIE1924VLambda' ...
 %                                                        'LConeHemo', 'MConeHemo', 'SConeHemo'
 %                                     Default: {'LCone' ; 'MCone' ; 'SCone'}
@@ -75,6 +76,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %                 and always fill in something.
 %           dhb   Apply lambdaMaxShift in a few cases where it did not apply before.
 % 10/25/15  dhb   Change back so that nominalLambdaMax returned does NOT take the shift into account.
+% 12/4/15   ms    Added 2-deg Stockman-Sharp fundamentals.
 
 %% Set defaults
 
@@ -200,7 +202,7 @@ if length(photoreceptorClasses) > 1
                 if (fractionPigmentBleached(i) ~= 0)
                     error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
-            case {'LCone10DegTabulatedSS', 'MCone10DegTabulatedSS', 'SCone10DegTabulatedSS'}
+            case {'LCone10DegTabulatedSS', 'MCone10DegTabulatedSS', 'SCone10DegTabulatedSS' 'LCone2DegTabulatedSS', 'MCone2DegTabulatedSS', 'SCone2DegTabulatedSS'}
                 if (fractionPigmentBleached(i) ~= 0)
                     error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
@@ -428,6 +430,32 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; NaN*ones(size(T_quanta))];
             nominalLambdaMax = [nominalLambdaMax SSSConeNominalLambdaMax];
 
+        case 'LCone2DegTabulatedSS'
+            % Load in the tabulated 2-deg S-S fundamentals
+            targetRaw = load('T_cones_ss2');
+            T_energy_tmp = SplineCmf(targetRaw.S_cones_ss2,targetRaw.T_cones_ss2(1,:),S,2);
+            T_energyNormalized = [T_energyNormalized ; T_energy_tmp];
+            T_quanta = [T_quanta ; QuantaToEnergy(S,T_energy_tmp')'];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; NaN*ones(size(T_quanta))];
+            nominalLambdaMax = [nominalLambdaMax SSLConeNominalLambdaMax];
+
+        case 'MCone2DegTabulatedSS'
+            % Load in the tabulated 2-deg S-S fundamentals
+            targetRaw = load('T_cones_ss2');
+            T_energy_tmp = SplineCmf(targetRaw.S_cones_ss2,targetRaw.T_cones_ss2(2,:),S,2);
+            T_energyNormalized = [T_energyNormalized ; T_energy_tmp];
+            T_quanta = [T_quanta ; QuantaToEnergy(S,T_energy_tmp')'];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; NaN*ones(size(T_quanta))];
+            nominalLambdaMax = [nominalLambdaMax SSMConeNominalLambdaMax];
+
+        case 'SCone2DegTabulatedSS'
+            % Load in the tabulated 2-deg S-S fundamentals
+            targetRaw = load('T_cones_ss2');
+            T_energy_tmp = SplineCmf(targetRaw.S_cones_ss2,targetRaw.T_cones_ss2(3,:),S,2);
+            T_energyNormalized = [T_energyNormalized ; T_energy_tmp];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; NaN*ones(size(T_quanta))];
+            nominalLambdaMax = [nominalLambdaMax SSSConeNominalLambdaMax];
+            
         case 'MelanopsinLegacy'
             % Construct the melanopsin receptor
             whichNomogram = 'StockmanSharpe';
