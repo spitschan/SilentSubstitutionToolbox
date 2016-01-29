@@ -13,6 +13,9 @@ end
 if ~(isfield(theConeStruct, 'vesselThickness'));
     theConeStruct.vesselThickness = [];
 end
+if ~(isfield(theConeStruct, 'type'));
+    theConeStruct.type = 'CIE2006';
+end
 
 theConeStruct.lambdaMaxShift = [theConeStruct.Lshift theConeStruct.Mshift theConeStruct.Sshift theConeStruct.Melshift];
 
@@ -27,4 +30,5 @@ switch (theConeStruct.type)
     case 'StockmanSharpe10'
         load T_cones_ss10
         T_receptors(1:3,:) = SplineCmf(S_cones_ss10,T_cones_ss10,S);
+    otherwise
 end
