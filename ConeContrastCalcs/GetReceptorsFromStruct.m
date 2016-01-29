@@ -3,10 +3,19 @@ function T_receptors = GetReceptorsFromStruct(S, photoreceptorClasses, theConeSt
 %
 % Convert the cone struct to a set of cone spectral sensitivities.
 
+% Add fields if they have not been defined
+if ~(isfield(theConeStruct, 'fractionBleached'));
+    theConeStruct.fractionBleached = [0 0 0 0];
+end
+if ~(isfield(theConeStruct, 'oxygenationFraction'));
+    theConeStruct.oxygenationFraction = [];
+end
+if ~(isfield(theConeStruct, 'vesselThickness'));
+    theConeStruct.vesselThickness = [];
+end
+
 theConeStruct.lambdaMaxShift = [theConeStruct.Lshift theConeStruct.Mshift theConeStruct.Sshift theConeStruct.Melshift];
-theConeStruct.fractionBleached = [0 0 0 0];
-theConeStruct.oxygenationFraction = [];
-theConeStruct.vesselThickness = [];
+
 T_receptors = GetHumanPhotoreceptorSS(S, photoreceptorClasses, ...
     theConeStruct.fieldSizeDegrees, theConeStruct.observerAgeInYears, theConeStruct.pupilDiameterMm, theConeStruct.lambdaMaxShift, ...
     theConeStruct.fractionBleached, theConeStruct.oxygenationFraction, theConeStruct.vesselThickness);
