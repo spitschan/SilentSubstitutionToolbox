@@ -17,11 +17,6 @@ if ~(isfield(theConeStruct, 'type'));
     theConeStruct.type = 'CIE2006';
 end
 
-theConeStruct.lambdaMaxShift = [theConeStruct.Lshift theConeStruct.Mshift theConeStruct.Sshift theConeStruct.Melshift];
-
-T_receptors = GetHumanPhotoreceptorSS(S, photoreceptorClasses, ...
-    theConeStruct.fieldSizeDegrees, theConeStruct.observerAgeInYears, theConeStruct.pupilDiameterMm, theConeStruct.lambdaMaxShift, ...
-    theConeStruct.fractionBleached, theConeStruct.oxygenationFraction, theConeStruct.vesselThickness);
 
 switch (theConeStruct.type)
     case 'SmithPokorny10'
@@ -31,4 +26,8 @@ switch (theConeStruct.type)
         load T_cones_ss10
         T_receptors(1:3,:) = SplineCmf(S_cones_ss10,T_cones_ss10,S);
     otherwise
+        theConeStruct.lambdaMaxShift = [theConeStruct.Lshift theConeStruct.Mshift theConeStruct.Sshift theConeStruct.Melshift];
+        T_receptors = GetHumanPhotoreceptorSS(S, photoreceptorClasses, ...
+            theConeStruct.fieldSizeDegrees, theConeStruct.observerAgeInYears, theConeStruct.pupilDiameterMm, theConeStruct.lambdaMaxShift, ...
+            theConeStruct.fractionBleached, theConeStruct.oxygenationFraction, theConeStruct.vesselThickness);
 end
