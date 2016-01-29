@@ -20,7 +20,7 @@ end
 M = [0.15516 0.54308 -0.03287 ; -0.15516 0.45692 0.03287 ; 0 0 1];
 
 % Load the 1964 10° CMFs
-wls = (380:1:780)'; S = WlsToS(wls);
+wls = (380:1:780)';
 load T_xyz1964
 
 % Spline as necessary
