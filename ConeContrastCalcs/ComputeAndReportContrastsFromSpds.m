@@ -6,7 +6,7 @@ function contrasts = ComputeAndReportContrastsFromSpds(string,photoreceptorClass
 %
 % See also ComputeAndReportContrastsFromOLPrimaries.
 
-if (nargin < 8 | isempty(print))
+if (nargin < 6 | isempty(print))
     print = true;
 end
 
