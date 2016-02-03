@@ -46,7 +46,7 @@ legend([h1 h2], 'L [tab.]', 'M [tab.]', 'S [tab.]', 'L [nomogram]', 'M [nomogram
     'Location', 'SouthWest'); legend boxoff;
 set(gca, 'TickDir', 'out'); box off;
 xlim([375 785]); ylim([-10 1]);
-xlabel('Wavelength [nm]'); ylabel('log relative sensitivity');
+xlabel('Wavelength [nm]'); ylabel('log sensitivity');
 title({'Tabulated vs. nomogram absorbance' 'Logarithmic'})
 
 set(gcf, 'PaperPosition', [0 0 8 4]); %Position plot at left hand corner with width 8 and height 5.
