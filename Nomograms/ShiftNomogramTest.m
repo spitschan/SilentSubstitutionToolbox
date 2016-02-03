@@ -84,14 +84,14 @@ figNormalizedWaveNum = figure;
 hold on;
 % Plot in this normalized axis
 for ii = 1:3
-   h1(ii) = plot(wavenumberNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 3)
+   h1(ii) = plot(wavenumberNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2)
 end
 plot([1 1], [-0.01 1.01], '--k');
 pbaspect([1 1 1]);
 legend(h1, 'L [tab.]', 'M [tab.]', 'S [tab.]'); legend boxoff;
 set(gca, 'TickDir', 'out'); box off;
 xlim([0.5 1.5]); ylim([-0.01 1.01]);
-xlabel('Wavenumber [nm-1]'); ylabel('log relative sensitivity');
+xlabel('Wavenumber [nm^{-1}]'); ylabel('log relative sensitivity');
 title({'Stockman-Sharpe (2000) pigment absorbances' 'Normalized wavenumber representation'});
 set(gcf, 'PaperPosition', [0 0 4 4]); %Position plot at left hand corner with width 8 and height 5.
 set(gcf, 'PaperSize', [4 4]); %Set the paper to have width 8 and height 5.
