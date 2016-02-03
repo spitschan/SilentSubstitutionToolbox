@@ -91,7 +91,7 @@ pbaspect([1 1 1]);
 legend(h1, 'L [tab.]', 'M [tab.]', 'S [tab.]'); legend boxoff;
 set(gca, 'TickDir', 'out'); box off;
 xlim([0.5 1.5]); ylim([-0.01 1.01]);
-xlabel('Wavenumber [nm^{-1}]'); ylabel('log relative sensitivity');
+xlabel('Wavenumber [nm^{-1}]'); ylabel('Relative sensitivity');
 title({'Stockman-Sharpe (2000) pigment absorbances' 'Normalized wavenumber representation'});
 set(gcf, 'PaperPosition', [0 0 4 4]); %Position plot at left hand corner with width 8 and height 5.
 set(gcf, 'PaperSize', [4 4]); %Set the paper to have width 8 and height 5.
