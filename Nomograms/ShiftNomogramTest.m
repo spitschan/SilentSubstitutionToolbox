@@ -96,13 +96,13 @@ wavenumber = 1./wls;
 
 % Normalize the wave number
 for ii = 1:3
-   wavenumberNorm(ii, :) = wavenumber/wavenumber(maxIdx(ii)); 
+    wavenumberNorm(ii, :) = wavenumber/wavenumber(maxIdx(ii));
 end
 
 
 % Normalize the wave number
 for ii = 1:3
-   logFrequencyNorm(ii, :) = log10(wls) - log10(wls(maxIdx(ii))); 
+    logFrequencyNorm(ii, :) = log10(wls) - log10(wls(maxIdx(ii)));
 end
 
 figNormalizedWaveNum = figure;
@@ -111,7 +111,7 @@ subplot(1, 2, 1);
 hold on;
 % Plot in this normalized axis
 for ii = 1:3
-   h1(ii) = plot(wavenumberNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2);
+    h1(ii) = plot(wavenumberNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2);
 end
 plot([1 1], [-0.01 1.01], '--k');
 pbaspect([1 1 1]);
@@ -126,7 +126,7 @@ subplot(1, 2, 2);
 hold on;
 % Plot in this normalized axis
 for ii = 1:3
-   h1(ii) = plot(logFrequencyNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2);
+    h1(ii) = plot(logFrequencyNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2);
 end
 plot([0 0], [-0.01 1.01], '--k');
 pbaspect([1 1 1]);
@@ -136,7 +136,18 @@ xlim([-0.3 0.3]); ylim([-0.01 1.01]);
 xlabel('Normalized log wavelength [log nm]'); ylabel('Relative spectral sensitivity');
 title({'Stockman-Sharpe (2000) pigment absorbances' 'Normalized log wavelength representation'});
 
-
 set(gcf, 'PaperPosition', [0 0 8 4]); % Position plot at left hand corner with width 8 and height 4.
 set(gcf, 'PaperSize', [8 4]); % Set the paper to have width 8 and height 4.
 saveas(gcf, 'StockmanSharpe_NormalizedWaveNumberAndLogFrequency.png', 'png');
+
+%% Shift the tabulated spectral sensitivities in a log-wavelength, log-sensitivity plane
+lambdaMaxShift = 2;
+for ii = 1:3
+    log10_T_StockmanSharpeAbsorbance_Shifted(ii, :) = ShiftFundamental(wls, log10(T_StockmanSharpeAbsorbance(ii, :)), lambdaMaxShift); % 2 nm shift
+    [~, maxIdx1] = max(log10(T_StockmanSharpeAbsorbance(ii, :)));
+    [~, maxIdx2] = max(log10_T_StockmanSharpeAbsorbance_Shifted(ii, :));
+    fprintf('\n');
+    fprintf('\t*** lambda-max shift: %.2f nm\n', lambdaMaxShift);
+    fprintf('\t>>> Old lambda-max: %.2f nm\n', wls(maxIdx1));
+    fprintf('\t>>> New lambda-max: %.2f nm\n', wls(maxIdx2));
+end
