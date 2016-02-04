@@ -20,6 +20,17 @@ T_StockmanSharpeAbsorbance = 10.^SplineCmf(S_log10coneabsorbance_ss,T_log10conea
 lambdaMaxNominalStockmanSharpeNomogram = [558.9 530.3 420.7]';
 T_nomogramAbsorbance = StockmanSharpeNomogram(S,lambdaMaxNominalStockmanSharpeNomogram);
 
+% Make sure nomogram peaks at the expected places
+%
+% Each of these checks should come back as 1, which they
+% do
+check1 = StockmanSharpeNomogram([558.9 1 1],558.9);
+check2 = StockmanSharpeNomogram([530.3 1 1],530.3);
+check3 = StockmanSharpeNomogram([420.7 1 1],420.7);
+if (abs(check1-1) > 1e-6 |  abs(check2-1) > 1e-6 | abs(check3-1) > 1e-6)
+    error('Failed basic check');
+end
+
 % Plot the absorbances
 theLMSCols = [232 21 21 ; 33 143 51 ;  99 118 230]/255;
 figTabulatedVsNomogram = figure;
@@ -35,6 +46,11 @@ xlim([375 785]); ylim([-0.01 1.01]);
 xlabel('Wavelength [nm]'); ylabel('Relative sensitivity');
 title({'Tabulated vs. nomogram absorbance' 'Linear'});
 
+% Compare this one with Stockman & Sharpe 2000, Figure 12.  The deviation
+% looks a little larger here but their plot has those huge points which
+% make it hard to see the differences.  Note that in our tabular S cone
+% absorbance, we linear extrapolate at long wavelengths just to keep code
+% from crashing when it doesn't find the wavelength sampling acorss cones.
 subplot(1, 2, 2);
 hold on;
 for ii = 1:3
@@ -45,7 +61,7 @@ pbaspect([1 1 1]);
 legend([h1 h2], 'L [tab.]', 'M [tab.]', 'S [tab.]', 'L [nomogram]', 'M [nomogram]', 'S [nomogram]', ...
     'Location', 'SouthWest'); legend boxoff;
 set(gca, 'TickDir', 'out'); box off;
-xlim([375 785]); ylim([-10 1]);
+xlim([375 785]); ylim([-8 1]);
 xlabel('Wavelength [nm]'); ylabel('log sensitivity');
 title({'Tabulated vs. nomogram absorbance' 'Logarithmic'})
 
@@ -84,7 +100,7 @@ figNormalizedWaveNum = figure;
 hold on;
 % Plot in this normalized axis
 for ii = 1:3
-   h1(ii) = plot(wavenumberNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2)
+   h1(ii) = plot(wavenumberNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2);
 end
 plot([1 1], [-0.01 1.01], '--k');
 pbaspect([1 1 1]);
