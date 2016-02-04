@@ -141,7 +141,7 @@ set(gcf, 'PaperSize', [8 4]); % Set the paper to have width 8 and height 4.
 saveas(gcf, 'StockmanSharpe_NormalizedWaveNumberAndLogFrequency.png', 'png');
 
 %% Shift the tabulated spectral sensitivities in a log-wavelength, log-sensitivity plane
-lambdaMaxShift = 2;
+lambdaMaxShift = -30;
 for ii = 1:3
     log10_T_StockmanSharpeAbsorbance_Shifted(ii, :) = ShiftFundamental(wls, log10(T_StockmanSharpeAbsorbance(ii, :)), lambdaMaxShift); % 2 nm shift
     [~, maxIdx1] = max(log10(T_StockmanSharpeAbsorbance(ii, :)));
@@ -151,3 +151,27 @@ for ii = 1:3
     fprintf('\t>>> Old lambda-max: %.2f nm\n', wls(maxIdx1));
     fprintf('\t>>> New lambda-max: %.2f nm\n', wls(maxIdx2));
 end
+
+for ii = 1:3
+    subplot(1, 3, ii);
+    hold on;
+    
+    % Plot the unshifted cone fundamental
+    h1(ii) = plot(wls, log10(T_StockmanSharpeAbsorbance(ii, :)), '-', 'Color', 'k', 'LineWidth', 2);
+    
+    % Plot the shifted cone fundamental
+    h2(ii) = plot(wls, log10_T_StockmanSharpeAbsorbance_Shifted(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2);
+    
+    xlabel('Normalized log wavelength [log nm]'); ylabel('Relative spectral sensitivity');
+    set(gca, 'TickDir', 'out'); box off;
+    xlim([375 785]); ylim([-8 1]);
+    xlabel('Wavelength [nm]'); ylabel('log spectral sensitivity');
+    title({'Shifted spectral sensitivities' [num2str(lambdaMaxShift) ' nm']});
+    legend([h1(ii) h2(ii)], 'Unshifted', 'Shifted', 'Location', 'SouthWest'); legend boxoff;
+    pbaspect([1 1 1]);
+end
+
+
+set(gcf, 'PaperPosition', [0 0 9 3]); % Position plot at left hand corner with width 8 and height 4.
+set(gcf, 'PaperSize', [9 3]); % Set the paper to have width 8 and height 4.
+saveas(gcf, 'StockmanSharpe_ShiftTabulatedTest.png', 'png');
