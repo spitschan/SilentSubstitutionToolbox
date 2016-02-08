@@ -1,8 +1,13 @@
-%% ShiftNomogramTest.m
+function ShiftNomogramTest
+% ShiftNomogramTest
 %
-% Program to test shifting nomograms.
+% Program to test shifting nomograms and
+% related.
 %
 % 2/3/16    ms      Wrote it.
+
+%% Initialize
+close all;
 
 %% Define some parameters
 S = [380 2 201]; wls = SToWls(S);
@@ -43,7 +48,7 @@ end
 pbaspect([1 1 1]);
 set(gca, 'TickDir', 'out'); box off;
 xlim([375 785]); ylim([-0.01 1.01]);
-xlabel('Wavelength [nm]'); ylabel('Relative spectral sensitivity');
+xlabel('Wavelength [nm]'); ylabel('Photopigment absorbance');
 title({'Tabulated vs. nomogram absorbance' 'Linear'});
 
 % Compare this one with Stockman & Sharpe (2000), Fig. 12.  The deviation
@@ -65,14 +70,17 @@ legend([h1 h2], 'L [tab.]', 'M [tab.]', 'S [tab.]', 'L [nomogram]', 'M [nomogram
     'Location', 'SouthWest'); legend boxoff;
 set(gca, 'TickDir', 'out'); box off;
 xlim([375 785]); ylim([-8 1]);
-xlabel('Wavelength [nm]'); ylabel('log spectral sensitivity');
+xlabel('Wavelength [nm]'); ylabel('Log photopigment absorbance');
 title({'Tabulated vs. nomogram absorbance' 'Logarithmic'})
 
 set(gcf, 'PaperPosition', [0 0 8 4]); % Position plot at left hand corner with width 8 and height 4.
-set(gcf, 'PaperSize', [8 4]); % Set the paper to have width 8 and height 4.
+set(gcf, 'PaperSize', [8 4]);         % Set the paper to have width 8 and height 4.
 saveas(gcf, 'StockmanSharpe_TabulatedVsNomogramLMSFundamentals.png', 'png');
 
 %% Plot the densities as a function of wavenumber normalized to the maximum wavenumber
+%
+% Also try log wavenumber normalization.
+%
 % Neitz & Neitz (2011, http://www.ncbi.nlm.nih.gov/pubmed/21167193) write:
 % "The variability in normal pigments makes understanding the photopigment
 % complement of color anomalous individuals more complicated; however, the
@@ -87,6 +95,9 @@ saveas(gcf, 'StockmanSharpe_TabulatedVsNomogramLMSFundamentals.png', 'png');
 %
 % We are doing this here, namely convert to a wavenumber axis, normalize by
 % maximum sensitivity.
+%
+% Stockman & Sharpe (2000), however prefer the log wavelength
+% normalization.
 
 % Wavenumber is given as the reciprocal of wavelength.
 wavenumber = 1./wls;
@@ -94,22 +105,18 @@ wavenumber = 1./wls;
 % Find the indices of maximum sensitivity
 [~, maxIdx] = max(T_StockmanSharpeAbsorbance, [], 2);
 
-% Normalize the wave number
+% Normalize the wave number and log wavelength
 for ii = 1:3
     wavenumberNorm(ii, :) = wavenumber/wavenumber(maxIdx(ii));
+    logWavelengthNorm(ii, :) = log10(wls) - log10(wls(maxIdx(ii)));
 end
 
-
-% Normalize the wave number
-for ii = 1:3
-    logFrequencyNorm(ii, :) = log10(wls) - log10(wls(maxIdx(ii)));
-end
-
+% Plot normalized pigment absorbances
+%
+% First wavenumber
 figNormalizedWaveNum = figure;
-% Normalized wave number
 subplot(1, 2, 1);
 hold on;
-% Plot in this normalized axis
 for ii = 1:3
     h1(ii) = plot(wavenumberNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2);
 end
@@ -121,12 +128,11 @@ xlim([0.5 1.5]); ylim([-0.01 1.01]);
 xlabel('Normalized wavenumber [nm^{-1}]'); ylabel('Relative spectral sensitivity');
 title({'Stockman-Sharpe (2000) pigment absorbances' 'Normalized wavenumber representation'});
 
-% Log frequency
+% Then log wavelength
 subplot(1, 2, 2);
 hold on;
-% Plot in this normalized axis
 for ii = 1:3
-    h1(ii) = plot(logFrequencyNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2);
+    h1(ii) = plot(logWavelengthNorm(ii, :), T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2);
 end
 plot([0 0], [-0.01 1.01], '--k');
 pbaspect([1 1 1]);
@@ -135,15 +141,17 @@ set(gca, 'TickDir', 'out'); box off;
 xlim([-0.3 0.3]); ylim([-0.01 1.01]);
 xlabel('Normalized log wavelength [log nm]'); ylabel('Relative spectral sensitivity');
 title({'Stockman-Sharpe (2000) pigment absorbances' 'Normalized log wavelength representation'});
-
 set(gcf, 'PaperPosition', [0 0 8 4]); % Position plot at left hand corner with width 8 and height 4.
 set(gcf, 'PaperSize', [8 4]); % Set the paper to have width 8 and height 4.
-saveas(gcf, 'StockmanSharpe_NormalizedWaveNumberAndLogFrequency.png', 'png');
+saveas(gcf, 'StockmanSharpe_NormalizedWaveNumberAndLogWavelength.png', 'png');
 
-%% Shift the tabulated spectral sensitivities in a log-wavelength, log-sensitivity plane
-lambdaMaxShift = -30;
+%% Shift the tabulated spectral absorbances in a log-wavelength, log-sensitivity plane
+lambdaMaxShift = 30;
 for ii = 1:3
-    log10_T_StockmanSharpeAbsorbance_Shifted(ii, :) = ShiftFundamental(wls, log10(T_StockmanSharpeAbsorbance(ii, :)), lambdaMaxShift); % 2 nm shift
+    logWavelengthNew = logWavelengthNorm(ii, :) + log10(wls(maxIdx(ii))+lambdaMaxShift);
+    wlsNew = 10.^logWavelengthNew;
+    log10_T_StockmanSharpeAbsorbance_Shifted(ii, :) = interp1(wlsNew, log10(T_StockmanSharpeAbsorbance(ii, :)), wls, 'linear','extrap');
+
     [~, maxIdx1] = max(log10(T_StockmanSharpeAbsorbance(ii, :)));
     [~, maxIdx2] = max(log10_T_StockmanSharpeAbsorbance_Shifted(ii, :));
     fprintf('\n');
@@ -152,26 +160,101 @@ for ii = 1:3
     fprintf('\t>>> New lambda-max: %.2f nm\n', wls(maxIdx2));
 end
 
+% Plot to check shifts
+figShifted = figure;
 for ii = 1:3
+    
     subplot(1, 3, ii);
     hold on;
     
-    % Plot the unshifted cone fundamental
+    % Plot the unshifted cone absorbance
     h1(ii) = plot(wls, log10(T_StockmanSharpeAbsorbance(ii, :)), '-', 'Color', 'k', 'LineWidth', 2);
     
-    % Plot the shifted cone fundamental
+    % Plot the shifted cone absorbance
     h2(ii) = plot(wls, log10_T_StockmanSharpeAbsorbance_Shifted(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 2);
     
-    xlabel('Normalized log wavelength [log nm]'); ylabel('Relative spectral sensitivity');
+    xlabel('Normalized log wavelength [log nm]'); ylabel('Pigment absorbance');
     set(gca, 'TickDir', 'out'); box off;
     xlim([375 785]); ylim([-8 1]);
     xlabel('Wavelength [nm]'); ylabel('log spectral sensitivity');
-    title({'Shifted spectral sensitivities' [num2str(lambdaMaxShift) ' nm']});
+    title({'Shifted photopigment absorbances' [num2str(lambdaMaxShift) ' nm']});
     legend([h1(ii) h2(ii)], 'Unshifted', 'Shifted', 'Location', 'SouthWest'); legend boxoff;
     pbaspect([1 1 1]);
 end
-
-
 set(gcf, 'PaperPosition', [0 0 9 3]); % Position plot at left hand corner with width 8 and height 4.
 set(gcf, 'PaperSize', [9 3]); % Set the paper to have width 8 and height 4.
-saveas(gcf, 'StockmanSharpe_ShiftTabulatedTest.png', 'png');
+saveas(figShifted, 'StockmanSharpe_ShiftTabulatedTest.png', 'png');
+
+%% Fit the tabulated absorbances as nomogram mixtures
+
+% Some initialization information
+params0.whichNomogram = 'Baylor';
+theLambdaMaxes = [558.9 530.3 420.7];
+
+% Set fmincon options
+options = optimset('fmincon');
+options = optimset(options,'Diagnostics','off','Display','off','LargeScale','off','Algorithm','active-set');
+
+% For each pigment type (L, M, S)
+for ii = 1:3
+    % Initialize parameters
+    params0.lambdaMax1 = theLambdaMaxes(ii);
+    params0.lambdaMax2 = theLambdaMaxes(ii)-5;
+    params0.weight1 = 0.5;
+    
+    % Extract absorbance to fit
+    theAbsorbance = T_StockmanSharpeAbsorbance(ii,:);
+
+    % Initial guess and bounds
+    x0 = ParamsToX(params0);
+    vlb = [x0(1)-20 x0(1)-20 0];
+    vub = [x0(1)+20 x0(1)+20 1];
+
+    % Search
+    x1 = fmincon(@(x)FitNomogramErrorFunction(x,S,theAbsorbance,params0),x0,[],[],[],[],vlb,vub,[],options)
+    params(ii) = XToParams(x1,params0);
+    theAbsorbancePred(ii,:) = ComputeNomogramPred(params(ii),S);
+end 
+
+figFitVsNomogram = figure;
+hold on;
+for ii = 1:3
+    plot(wls, T_StockmanSharpeAbsorbance(ii, :), 'Color', theLMSCols(ii, :), 'LineWidth', 3);
+    plot(wls, theAbsorbancePred(ii, :), 'Color', 'k', 'LineWidth', 1.5);
+end
+pbaspect([1 1 1]);
+set(gca, 'TickDir', 'out'); box off;
+xlim([375 785]); ylim([-0.01 1.01]);
+xlabel('Wavelength [nm]'); ylabel('Photopigment absorbance');
+title({'Tabulated vs. fit' 'Linear'});
+
+end
+
+function f = FitNomogramErrorFunction(x,S,theAbsorbance,params0)
+
+params = XToParams(x,params0);
+theAbsorbancePred = ComputeNomogramPred(params,S);
+theDiff2 = (theAbsorbance-theAbsorbancePred).^2;
+f = sqrt(mean(theDiff2));
+
+end
+
+function absorbancePred = ComputeNomogramPred(params,S)
+
+absorbancePred = params.weight1*PhotopigmentNomogram(S,params.lambdaMax1,params.whichNomogram) + ...
+    (1-params.weight1)*PhotopigmentNomogram(S,params.lambdaMax2,params.whichNomogram);
+
+end
+
+function x = ParamsToX(params)
+x(1) = params.lambdaMax1;
+x(2) = params.lambdaMax2;
+x(3) = params.weight1;
+end
+
+function params = XToParams(x,params0)
+    params.whichNomogram = params0.whichNomogram;
+    params.lambdaMax1 = x(1);
+    params.lambdaMax2 = x(2);
+    params.weight1 = x(3);
+end
