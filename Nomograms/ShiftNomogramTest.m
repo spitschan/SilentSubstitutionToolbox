@@ -146,9 +146,12 @@ set(gcf, 'PaperSize', [8 4]); % Set the paper to have width 8 and height 4.
 saveas(gcf, 'StockmanSharpe_NormalizedWaveNumberAndLogWavelength.png', 'png');
 
 %% Shift the tabulated spectral absorbances in a log-wavelength, log-sensitivity plane
-lambdaMaxShift = -30;
+lambdaMaxShift = 30;
 for ii = 1:3
-    log10_T_StockmanSharpeAbsorbance_Shifted(ii, :) = ShiftFundamental(wls, log10(T_StockmanSharpeAbsorbance(ii, :)), lambdaMaxShift); % 2 nm shift
+    logWavelengthNew = logWavelengthNorm(ii, :) + log10(wls(maxIdx(ii))+lambdaMaxShift);
+    wlsNew = 10.^logWavelengthNew;
+    log10_T_StockmanSharpeAbsorbance_Shifted(ii, :) = interp1(wlsNew, log10(T_StockmanSharpeAbsorbance(ii, :)), wls, 'linear','extrap');
+
     [~, maxIdx1] = max(log10(T_StockmanSharpeAbsorbance(ii, :)));
     [~, maxIdx2] = max(log10_T_StockmanSharpeAbsorbance_Shifted(ii, :));
     fprintf('\n');
