@@ -185,6 +185,24 @@ set(gcf, 'PaperPosition', [0 0 9 3]); % Position plot at left hand corner with w
 set(gcf, 'PaperSize', [9 3]); % Set the paper to have width 8 and height 4.
 saveas(figShifted, 'StockmanSharpe_ShiftTabulatedTest.png', 'png');
 
+
+%% Test if the shifting also works in our wrapper routine GetHumanPhotoreceptorSS
+S = [380 2 201]; wls = SToWls(S);
+lambdaMaxShift = [-5 10 5]; % Example values
+T_energyNormalized1 = GetHumanPhotoreceptorSS(S, {'LConeTabulated' 'MConeTabulated', 'SConeTabulated'}, 30, 32, 6, [0 0 0], [], [], []);
+T_energyNormalized2 = GetHumanPhotoreceptorSS(S, {'LConeTabulated' 'MConeTabulated', 'SConeTabulated'}, 30, 32, 6, lambdaMaxShift, [], [], []);
+
+for ii = 1:3
+    [~, maxIdx1] = max(log10(T_energyNormalized1(ii, :)));
+    [~, maxIdx2] = max(T_energyNormalized2(ii, :));
+    fprintf('\n');
+    fprintf('\t*** lambda-max shift: %.2f nm\n', lambdaMaxShift(ii));
+    fprintf('\t>>> Old lambda-max [after filtering]: %.2f nm\n', wls(maxIdx1));
+    fprintf('\t>>> New lambda-max [after filtering]: %.2f nm\n', wls(maxIdx2));
+end
+fprintf('*** NOTE THAT DUE TO PRE-RECEPTORAL FILTERING, THESE VALUES WILL NOT BE CORRESPOND TO THE SHIFT IN THE PEAK ABSORBANCE. ***\n');
+
+
 %% Fit the tabulated absorbances as nomogram mixtures
 
 % Some initialization information
