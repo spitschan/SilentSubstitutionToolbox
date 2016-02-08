@@ -151,7 +151,7 @@ for ii = 1:3
     logWavelengthNew = logWavelengthNorm(ii, :) + log10(wls(maxIdx(ii))+lambdaMaxShift);
     wlsNew = 10.^logWavelengthNew;
     log10_T_StockmanSharpeAbsorbance_Shifted(ii, :) = interp1(wlsNew, log10(T_StockmanSharpeAbsorbance(ii, :)), wls, 'linear','extrap');
-
+    
     [~, maxIdx1] = max(log10(T_StockmanSharpeAbsorbance(ii, :)));
     [~, maxIdx2] = max(log10_T_StockmanSharpeAbsorbance_Shifted(ii, :));
     fprintf('\n');
@@ -202,6 +202,21 @@ for ii = 1:3
 end
 fprintf('*** NOTE THAT DUE TO PRE-RECEPTORAL FILTERING, THESE VALUES WILL NOT BE CORRESPOND TO THE SHIFT IN THE PEAK ABSORBANCE. ***\n');
 
+%% Finally, let's see if we get the 10° Stockman-Sharpe fundamentals when we pass in the right parameters
+S = [380 2 201]; wls = SToWls(S);
+T_energyNormalized_SST = GetHumanPhotoreceptorSS(S, {'LConeTabulated' 'MConeTabulated', 'SConeTabulated'}, 10, 32, 3, [0 0 0], [], [], []);
+T_quantal_PTB = ComputeCIEConeFundamentals(S,10,32,3);
+T_energy_PTB = EnergyToQuanta(S,T_quantal_PTB')';
+for ii = 1:3
+    T_energyNormalized_PTB(ii, :) = T_energy_PTB(ii, :)/max(T_energy_PTB(ii, :));
+end
+load T_cones_ss10
+figure;
+hold on;
+plot(wls, T_energyNormalized_SST, '-k');
+plot(SToWls(S_cones_ss10), T_cones_ss10, '-r');
+plot(wls, T_energyNormalized_PTB, '-b');
+
 
 %% Fit the tabulated absorbances as nomogram mixtures
 
@@ -222,17 +237,17 @@ for ii = 1:3
     
     % Extract absorbance to fit
     theAbsorbance = T_StockmanSharpeAbsorbance(ii,:);
-
+    
     % Initial guess and bounds
     x0 = ParamsToX(params0);
     vlb = [x0(1)-20 x0(1)-20 0];
     vub = [x0(1)+20 x0(1)+20 1];
-
+    
     % Search
     x1 = fmincon(@(x)FitNomogramErrorFunction(x,S,theAbsorbance,params0),x0,[],[],[],[],vlb,vub,[],options)
     params(ii) = XToParams(x1,params0);
     theAbsorbancePred(ii,:) = ComputeNomogramPred(params(ii),S);
-end 
+end
 
 figFitVsNomogram = figure;
 hold on;
@@ -271,8 +286,8 @@ x(3) = params.weight1;
 end
 
 function params = XToParams(x,params0)
-    params.whichNomogram = params0.whichNomogram;
-    params.lambdaMax1 = x(1);
-    params.lambdaMax2 = x(2);
-    params.weight1 = x(3);
+params.whichNomogram = params0.whichNomogram;
+params.lambdaMax1 = x(1);
+params.lambdaMax2 = x(2);
+params.weight1 = x(3);
 end
