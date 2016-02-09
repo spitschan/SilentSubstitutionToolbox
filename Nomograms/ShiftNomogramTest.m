@@ -147,11 +147,16 @@ saveas(gcf, 'StockmanSharpe_NormalizedWaveNumberAndLogWavelength.png', 'png');
 
 %% Shift the tabulated spectral absorbances in a log-wavelength, log-sensitivity plane
 lambdaMaxShift = 30;
+log10_T_StockmanSharpeAbsorbance_Shifted = ShiftPhotopigmentAbsorbance(wls,log10(T_StockmanSharpeAbsorbance),[lambdaMaxShift lambdaMaxShift lambdaMaxShift]);
 for ii = 1:3
+<<<<<<< Updated upstream
     logWavelengthNew = logWavelengthNorm(ii, :) + log10(wls(maxIdx(ii))+lambdaMaxShift);
     wlsNew = 10.^logWavelengthNew;
     log10_T_StockmanSharpeAbsorbance_Shifted(ii, :) = interp1(wlsNew, log10(T_StockmanSharpeAbsorbance(ii, :)), wls, 'linear','extrap');
     
+=======
+
+>>>>>>> Stashed changes
     [~, maxIdx1] = max(log10(T_StockmanSharpeAbsorbance(ii, :)));
     [~, maxIdx2] = max(log10_T_StockmanSharpeAbsorbance_Shifted(ii, :));
     fprintf('\n');
