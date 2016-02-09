@@ -15,7 +15,8 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %                                     Default: [380 2 201]
 %   photoreceptorClasses (cell)     - Cell with names of photoreceptor classes.
 %                                     Supported options: 'LCone', 'MCone', 'SCone', 'Melanopsin', 'Rods', ...
-%                                                        'LConeTabulatedAbsorbance', 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance', ...                                                      
+%                                                        'LConeTabulatedAbsorbance', 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance', ...
+%                                                        'LConeTabulatedHemo', 'MConeTabulatedHemo', 'SConeTabulatedHemo', ...
 %                                                        'LCone10DegTabulatedSS', 'MCone10DegTabulatedSS', 'SCone10DegTabulatedSS', ...
 %                                                        'LCone2DegTabulatedSS', 'MCone2DegTabulatedSS', 'SCone2DegTabulatedSS', ...
 %                                                        'MelanopsinLegacy', 'RodsLegacy', 'CIE1924VLambda' ...
@@ -78,6 +79,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %           dhb   Apply lambdaMaxShift in a few cases where it did not apply before.
 % 10/25/15  dhb   Change back so that nominalLambdaMax returned does NOT take the shift into account.
 % 12/4/15   ms    Added 2-deg Stockman-Sharp fundamentals.
+% 2/9/16    ms    Added penumbral cones from tabulated absorbances
 
 %% Set defaults
 
@@ -207,7 +209,7 @@ if length(photoreceptorClasses) > 1
                 if (fractionPigmentBleached(i) ~= 0)
                     error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
-            case {'LConeTabulatedAbsorbance', 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance'}
+            case {'LConeTabulatedAbsorbance', 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance' 'LConeTabulatedAbsorbanceHemo', 'MConeTabulatedAbsorbanceHemo', 'SConeTabulatedAbsorbanceHemo'}
                 if (fractionPigmentBleached(i) ~= 0)
                     error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
@@ -617,6 +619,42 @@ for i = 1:length(photoreceptorClasses)
             
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(3,:)];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
+            nominalLambdaMax = [nominalLambdaMax NaN];
+        case 'LConeTabulatedAbsorbanceHemo'
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[lambdaMaxShiftUse 0 0]);
+            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
+            
+            % Multiply with blood transmittance
+            source = 'Prahl';
+            trans_Hemoglobin = GetHemoglobinTransmittance(S,vesselOxyFraction,vesselOverallThicknessUm,source);
+            
+            % Add to the receptor vector
+            T_energyNormalized = [T_energyNormalized ; T_energy1(1,:).* trans_Hemoglobin'];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
+            nominalLambdaMax = [nominalLambdaMax NaN];
+        case 'MConeTabulatedAbsorbanceHemo'
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[0 lambdaMaxShiftUse 0]);
+            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
+            
+            % Multiply with blood transmittance
+            source = 'Prahl';
+            trans_Hemoglobin = GetHemoglobinTransmittance(S,vesselOxyFraction,vesselOverallThicknessUm,source);
+            
+            % Add to the receptor vector
+            T_energyNormalized = [T_energyNormalized ; T_energy1(2,:).* trans_Hemoglobin'];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
+            nominalLambdaMax = [nominalLambdaMax NaN];
+        case 'SConeTabulatedAbsorbanceHemo'
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[0 0 lambdaMaxShiftUse]);
+            T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
+            
+            % Multiply with blood transmittance
+            source = 'Prahl';
+            trans_Hemoglobin = GetHemoglobinTransmittance(S,vesselOxyFraction,vesselOverallThicknessUm,source);
+            
+            % Add to the receptor vector
+            T_energyNormalized = [T_energyNormalized ; T_energy1(3,:).* trans_Hemoglobin'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
     end
