@@ -149,14 +149,6 @@ saveas(gcf, 'StockmanSharpe_NormalizedWaveNumberAndLogWavelength.png', 'png');
 lambdaMaxShift = 30;
 log10_T_StockmanSharpeAbsorbance_Shifted = ShiftPhotopigmentAbsorbance(wls,log10(T_StockmanSharpeAbsorbance),[lambdaMaxShift lambdaMaxShift lambdaMaxShift]);
 for ii = 1:3
-<<<<<<< Updated upstream
-    logWavelengthNew = logWavelengthNorm(ii, :) + log10(wls(maxIdx(ii))+lambdaMaxShift);
-    wlsNew = 10.^logWavelengthNew;
-    log10_T_StockmanSharpeAbsorbance_Shifted(ii, :) = interp1(wlsNew, log10(T_StockmanSharpeAbsorbance(ii, :)), wls, 'linear','extrap');
-    
-=======
-
->>>>>>> Stashed changes
     [~, maxIdx1] = max(log10(T_StockmanSharpeAbsorbance(ii, :)));
     [~, maxIdx2] = max(log10_T_StockmanSharpeAbsorbance_Shifted(ii, :));
     fprintf('\n');
@@ -194,8 +186,8 @@ saveas(figShifted, 'StockmanSharpe_ShiftTabulatedTest.png', 'png');
 %% Test if the shifting also works in our wrapper routine GetHumanPhotoreceptorSS
 S = [380 2 201]; wls = SToWls(S);
 lambdaMaxShift = [-5 10 5]; % Example values
-T_energyNormalized1 = GetHumanPhotoreceptorSS(S, {'LConeTabulated' 'MConeTabulated', 'SConeTabulated'}, 30, 32, 6, [0 0 0], [], [], []);
-T_energyNormalized2 = GetHumanPhotoreceptorSS(S, {'LConeTabulated' 'MConeTabulated', 'SConeTabulated'}, 30, 32, 6, lambdaMaxShift, [], [], []);
+T_energyNormalized1 = GetHumanPhotoreceptorSS(S, {'LConeTabulatedAbsorbance' 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance'}, 30, 32, 6, [0 0 0], [], [], []);
+T_energyNormalized2 = GetHumanPhotoreceptorSS(S, {'LConeTabulatedAbsorbance' 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance'}, 30, 32, 6, lambdaMaxShift, [], [], []);
 
 for ii = 1:3
     [~, maxIdx1] = max(log10(T_energyNormalized1(ii, :)));
@@ -208,20 +200,24 @@ end
 fprintf('*** NOTE THAT DUE TO PRE-RECEPTORAL FILTERING, THESE VALUES WILL NOT BE CORRESPOND TO THE SHIFT IN THE PEAK ABSORBANCE. ***\n');
 
 %% Finally, let's see if we get the 10° Stockman-Sharpe fundamentals when we pass in the right parameters
-S = [380 2 201]; wls = SToWls(S);
-T_energyNormalized_SST = GetHumanPhotoreceptorSS(S, {'LConeTabulated' 'MConeTabulated', 'SConeTabulated'}, 10, 32, 3, [0 0 0], [], [], []);
+S = [380 2 201]; 
+S = WlsToS((390:5:780)');
+wls = SToWls(S);
+T_energyNormalized_SST = GetHumanPhotoreceptorSS(S, {'LConeTabulatedAbsorbance' 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance'}, 10, 32, 3, [0 0 0], [], [], []);
 T_quantal_PTB = ComputeCIEConeFundamentals(S,10,32,3);
 T_energy_PTB = EnergyToQuanta(S,T_quantal_PTB')';
+load T_cones_ss10
+T_cones_ss10_spline = SplineCmf(S_cones_ss10,T_cones_ss10,S);
 for ii = 1:3
     T_energyNormalized_PTB(ii, :) = T_energy_PTB(ii, :)/max(T_energy_PTB(ii, :));
+    T_cones_ss10_spline(ii,:) = T_cones_ss10_spline(ii,:)/max(T_cones_ss10_spline(ii,:));
 end
-load T_cones_ss10
 figure;
 hold on;
 plot(wls, T_energyNormalized_SST, '-k');
-plot(SToWls(S_cones_ss10), T_cones_ss10, '-r');
 plot(wls, T_energyNormalized_PTB, '-b');
-
+plot(SToWls(S_cones_ss10), T_cones_ss10, '-r');
+plot(wls, T_cones_ss10_spline, '-g');
 
 %% Fit the tabulated absorbances as nomogram mixtures
 
