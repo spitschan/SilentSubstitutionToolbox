@@ -203,14 +203,18 @@ fprintf('*** NOTE THAT DUE TO PRE-RECEPTORAL FILTERING, THESE VALUES WILL NOT BE
 S = [380 2 201]; 
 S = WlsToS((390:5:780)');
 wls = SToWls(S);
-T_energyNormalized_SST = GetHumanPhotoreceptorSS(S, {'LConeTabulatedAbsorbance' 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance'}, 10, 32, 3, [0 0 0], [], [], []);
+[T_energyNormalized_SST, T_quantalNormalized_SST] = GetHumanPhotoreceptorSS(S, {'LConeTabulatedAbsorbance' 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance'}, 10, 32, 3, [0 0 0], [], [], []);
 T_quantal_PTB = ComputeCIEConeFundamentals(S,10,32,3);
 T_energy_PTB = EnergyToQuanta(S,T_quantal_PTB')';
 load T_cones_ss10
-T_cones_ss10_spline = SplineCmf(S_cones_ss10,T_cones_ss10,S);
+T_cones_ss10_spline = SplineCmf(S_cones_ss10,T_cones_ss10,S,2);
+T_cones_ss10_spline_quantal = QuantaToEnergy(S,T_cones_ss10_spline')';
+
 for ii = 1:3
     T_energyNormalized_PTB(ii, :) = T_energy_PTB(ii, :)/max(T_energy_PTB(ii, :));
+    T_quantalNormalized_SST(ii, :) = T_quantalNormalized_SST(ii, :)/max(T_quantalNormalized_SST(ii, :));
     T_cones_ss10_spline(ii,:) = T_cones_ss10_spline(ii,:)/max(T_cones_ss10_spline(ii,:));
+    T_cones_ss10_spline_quantal(ii,:) = T_cones_ss10_spline_quantal(ii,:)/max(T_cones_ss10_spline_quantal(ii,:));
 end
 figure;
 hold on;
@@ -218,6 +222,46 @@ plot(wls, T_energyNormalized_SST, '-k');
 plot(wls, T_energyNormalized_PTB, '-b');
 plot(SToWls(S_cones_ss10), T_cones_ss10, '-r');
 plot(wls, T_cones_ss10_spline, '-g');
+
+% See if we agree with CIEConeFundamentalsTest.m
+figure;
+
+% Do exact what is done in CIEConeFundamentalsTest
+targetRaw = load('T_cones_ss10');
+T_targetEnergy = SplineCmf(targetRaw.S_cones_ss10,targetRaw.T_cones_ss10,S,2);
+T_targetQuantal10 = QuantaToEnergy(S,T_targetEnergy')';
+
+for i = 1:3
+    T_targetQuantal10(i,:) = T_targetQuantal10(i,:)/max(T_targetQuantal10(i,:));
+end
+T_predictQuantalCIE10 = ComputeCIEConeFundamentals(S,10,32,3);
+
+subplot(1, 2, 1);
+hold on;
+for ii = 1:3
+plot(wls, (T_targetQuantal10(ii, :)-T_predictQuantalCIE10(ii, :))', 'Color', theLMSCols(ii, :))
+end
+xlim([380 780]); ylim([-1.5e-3 1.5e-3]);
+pbaspect([1 1 1]);
+xlabel('Wavelength [nm]');
+ylabel('\Delta');
+title('CIEConeFundamentalsTest.m');
+
+subplot(1, 2, 2);
+hold on;
+for ii = 1:3
+plot(wls, (T_cones_ss10_spline_quantal(ii, :)-T_quantalNormalized_SST(ii, :))', 'Color', theLMSCols(ii, :))
+end
+xlim([380 780]); ylim([-1.5e-3 1.5e-3]);
+pbaspect([1 1 1]);
+xlabel('Wavelength [nm]');
+ylabel('\Delta');
+title('ShiftNomogramTest.m');
+
+set(gcf, 'PaperPosition', [0 0 8 4]); % Position plot at left hand corner with width 8 and height 4.
+set(gcf, 'PaperSize', [8 4]); % Set the paper to have width 8 and height 4.
+saveas(gcf, 'StockmanSharpe_ComparisonCIEConeFundamentalsTest.png', 'png');
+
 
 %% Fit the tabulated absorbances as nomogram mixtures
 
