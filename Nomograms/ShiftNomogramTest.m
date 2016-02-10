@@ -184,7 +184,6 @@ saveas(figShifted, 'StockmanSharpe_ShiftTabulatedTest.png', 'png');
 
 
 %% Test if the shifting also works in our wrapper routine GetHumanPhotoreceptorSS
-S = [380 2 201]; wls = SToWls(S);
 lambdaMaxShift = [-5 10 5]; % Example values
 T_energyNormalized1 = GetHumanPhotoreceptorSS(S, {'LConeTabulatedAbsorbance' 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance'}, 30, 32, 6, [0 0 0], [], [], []);
 T_energyNormalized2 = GetHumanPhotoreceptorSS(S, {'LConeTabulatedAbsorbance' 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance'}, 30, 32, 6, lambdaMaxShift, [], [], []);
@@ -201,7 +200,6 @@ fprintf('*** NOTE THAT DUE TO PRE-RECEPTORAL FILTERING, THESE VALUES WILL NOT BE
 
 %% Finally, let's see if we get the 10° Stockman-Sharpe fundamentals when we pass in the right parameters
 S = [380 2 201]; 
-S = WlsToS((390:5:780)');
 wls = SToWls(S);
 [T_energyNormalized_SST, T_quantalNormalized_SST] = GetHumanPhotoreceptorSS(S, {'LConeTabulatedAbsorbance' 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance'}, 10, 32, 3, [0 0 0], [], [], []);
 T_quantal_PTB = ComputeCIEConeFundamentals(S,10,32,3);
@@ -289,7 +287,7 @@ for ii = 1:3
     vub = [x0(1)+20 x0(1)+20 1];
     
     % Search
-    x1 = fmincon(@(x)FitNomogramErrorFunction(x,S,theAbsorbance,params0),x0,[],[],[],[],vlb,vub,[],options)
+    x1 = fmincon(@(x)FitNomogramErrorFunction(x,S,theAbsorbance,params0),x0,[],[],[],[],vlb,vub,[],options);
     params(ii) = XToParams(x1,params0);
     theAbsorbancePred(ii,:) = ComputeNomogramPred(params(ii),S);
 end
