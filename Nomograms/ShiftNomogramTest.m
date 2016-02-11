@@ -260,6 +260,41 @@ set(gcf, 'PaperPosition', [0 0 8 4]); % Position plot at left hand corner with w
 set(gcf, 'PaperSize', [8 4]); % Set the paper to have width 8 and height 4.
 saveas(gcf, 'StockmanSharpe_ComparisonCIEConeFundamentalsTest.png', 'png');
 
+%% Look at different ways of shifting peak pigment absorbance
+% Get Stockman-Sharpe tabulated absorbance
+load T_log10coneabsorbance_ss
+T_StockmanSharpeAbsorbance = 10.^SplineCmf(S_log10coneabsorbance_ss,T_log10coneabsorbance_ss,S,2);
+
+theShifts = [-25:1:25];
+for c = 1:length(theShifts)
+    lambdaMaxShift = theShifts(c);
+    
+    % Interpolation in log wl
+    T_StockmanSharpeAbsorbance_Shift1 = ShiftPhotopigmentAbsorbance(S, T_StockmanSharpeAbsorbance, [lambdaMaxShift lambdaMaxShift lambdaMaxShift]);
+    
+    % Linear interpolation as in Asano et al. (2016)
+    for a = 1:3
+        T_StockmanSharpeAbsorbance_Shift2(a, :) = interp1(wls+lambdaMaxShift, T_StockmanSharpeAbsorbance(a, :), wls, 'spline')';
+    end
+    
+    % Calculate the sum of squared differences
+    diffs(c, :) = sum(((T_StockmanSharpeAbsorbance_Shift1-T_StockmanSharpeAbsorbance_Shift2).^2), 2);
+end
+
+% Plot the shifts
+for i = 1:3
+    h0(i) = plot(theShifts, diffs(:, i), 'Color', theLMSCols(i, :), 'LineWidth', 2); hold on;
+end
+xlabel('Shift in \lambda_{max} [nm]');
+ylabel('Sum of squared differences');
+title('Linear vs. log-normalized shifting');
+set(gca, 'TickDir', 'out'); box off;
+legend(h0, {'L', 'M', 'S'}, 'Location', 'North'); legend boxoff;
+pbaspect([1 1 1]);
+
+set(gcf, 'PaperPosition', [0 0 4 4]); % Position plot at left hand corner with width 8 and height 4.
+set(gcf, 'PaperSize', [4 4]); % Set the paper to have width 8 and height 4.
+saveas(gcf, 'StockmanSharpe_ShiftComparison.png', 'png');
 
 %% Fit the tabulated absorbances as nomogram mixtures
 
