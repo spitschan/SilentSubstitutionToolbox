@@ -259,9 +259,11 @@ title('ShiftNomogramTest.m');
 set(gcf, 'PaperPosition', [0 0 8 4]); % Position plot at left hand corner with width 8 and height 4.
 set(gcf, 'PaperSize', [8 4]); % Set the paper to have width 8 and height 4.
 saveas(gcf, 'StockmanSharpe_ComparisonCIEConeFundamentalsTest.png', 'png');
+close(gcf);
 
 %% Look at different ways of shifting peak pigment absorbance
 % Get Stockman-Sharpe tabulated absorbance
+figure;
 load T_log10coneabsorbance_ss
 T_StockmanSharpeAbsorbance = 10.^SplineCmf(S_log10coneabsorbance_ss,T_log10coneabsorbance_ss,S,2);
 
@@ -270,7 +272,7 @@ for c = 1:length(theShifts)
     lambdaMaxShift = theShifts(c);
     
     % Interpolation in log wl
-    T_StockmanSharpeAbsorbance_Shift1 = ShiftPhotopigmentAbsorbance(S, T_StockmanSharpeAbsorbance, [lambdaMaxShift lambdaMaxShift lambdaMaxShift]);
+    T_StockmanSharpeAbsorbance_Shift1 = ShiftPhotopigmentAbsorbance(S, T_StockmanSharpeAbsorbance, [lambdaMaxShift lambdaMaxShift lambdaMaxShift], 'log');
     
     % Linear interpolation as in Asano et al. (2016)
     for a = 1:3
@@ -295,6 +297,7 @@ pbaspect([1 1 1]);
 set(gcf, 'PaperPosition', [0 0 4 4]); % Position plot at left hand corner with width 8 and height 4.
 set(gcf, 'PaperSize', [4 4]); % Set the paper to have width 8 and height 4.
 saveas(gcf, 'StockmanSharpe_ShiftComparison.png', 'png');
+close(gcf);
 
 %% Fit the tabulated absorbances as nomogram mixtures
 
