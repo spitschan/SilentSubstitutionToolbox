@@ -122,6 +122,10 @@ if isempty(whichPrimariesToPin)
             vlb(b) = primaryHeadRoom;
         end
     end
+    vub = 2*backgroundPrimary;
+    vub(vub > 1) = 1;   vlb = backgroundPrimary-(vub-backgroundPrimary);
+    vlb(vlb < primaryHeadRoom) = primaryHeadRoom;
+    vub(vub > 1-primaryHeadRoom) = 1-primaryHeadRoom;
     %plot(vub, '-r'); hold on
     %plot(vlb, '-b');
     %plot(backgroundPrimary, '-k')
