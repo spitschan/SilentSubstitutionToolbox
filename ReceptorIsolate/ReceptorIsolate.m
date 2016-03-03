@@ -105,13 +105,18 @@ boundIndex = [whichPrimariesToPin whichPrimariesToVary];
 % The following piece of code may also only work just right if we're
 % not pinning primaries.
 if isempty(whichPrimariesToPin)
-    vub = 2*backgroundPrimary;
-    vub(vub > 1) = 1;   vlb = backgroundPrimary-(vub-backgroundPrimary);
-    vlb(vlb < primaryHeadRoom) = primaryHeadRoom;
-    vub(vub > 1-primaryHeadRoom) = 1-primaryHeadRoom;
-    %plot(vub, '-r'); hold on
-    %plot(vlb, '-b');
-    %plot(backgroundPrimary, '-k')
+    for b = 1:size(backgroundPrimary, 1)
+        if backgroundPrimary(b) > 0.5
+            vub(b) = 1-primaryHeadRoom;
+            vlb(b) = backgroundPrimary(b)-(1-backgroundPrimary(b)-primaryHeadRoom);
+        elseif backgroundPrimary(b) < 0.5
+            vub(b) = backgroundPrimary(b)+(backgroundPrimary(b)-primaryHeadRoom);
+            vlb(b) = primaryHeadRoom;
+        elseif backgroundPrimary(b) == 0.5
+            vub(b) = 1-primaryHeadRoom;
+            vlb(b) = primaryHeadRoom;
+        end
+    end
 else
     vlb = [initialPrimary(whichPrimariesToPin) ; ones(size(backgroundPrimary(whichPrimariesToVary)))*primaryHeadRoom];
     vub = [initialPrimary(whichPrimariesToPin) ; ones(size(backgroundPrimary(whichPrimariesToVary)))-primaryHeadRoom];
