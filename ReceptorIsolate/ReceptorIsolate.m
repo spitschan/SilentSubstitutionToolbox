@@ -61,6 +61,8 @@ function [isolatingPrimary] = ReceptorIsolate(T_receptors,whichReceptorsToIsolat
 %          dhb      Change error function a little to avoid numerical issues.
 % 8/27/13  ll       Fix minor typo in variable name
 % 12/12/13 dhb      Clean up comments etc.
+% 3/10/16  ms, dhb  Generalize ms's fix to bounds for asymmetric
+%                   backgrounds to work when primaries are pinned.  Not actually tested.
 
 % Check whether the desired contrasts were passed, and if so check
 % consistency of its dimensions.
@@ -88,14 +90,6 @@ backgroundReceptorsZero = backgroundReceptors(whichReceptorsToZero);
 Aeq = T_receptors(whichReceptorsToZero,:)*B_primary;
 beq = backgroundReceptorsZero;
 
-%% Set up constraints on primary variation, some may stay pinned at their
-% background values.  For example, for spectral
-% functions we may not want big wiggles at the ends of the visible
-% spectrum, where the sensitivities are low.
-whichPrimariesToVary = setdiff(1:size(B_primary,2),whichPrimariesToPin);
-boundIndex = [whichPrimariesToPin whichPrimariesToVary];
-[~,sortIndex] = sort(boundIndex);
-
 % Since our modulations are symmetric, we need to make sure that we're not
 % out of gamut if our background is not constant across wl band. For a
 % half-on background, both the positive and the negative poles of a
@@ -104,24 +98,24 @@ boundIndex = [whichPrimariesToPin whichPrimariesToVary];
 %
 % The following piece of code may also only work just right if we're
 % not pinning primaries.
-if isempty(whichPrimariesToPin)
-    for b = 1:size(backgroundPrimary, 1)
-        if backgroundPrimary(b) > 0.5
-            vub(b) = 1-primaryHeadRoom;
-            vlb(b) = backgroundPrimary(b)-(1-backgroundPrimary(b)-primaryHeadRoom);
-        elseif backgroundPrimary(b) < 0.5
-            vub(b) = backgroundPrimary(b)+(backgroundPrimary(b)-primaryHeadRoom);
-            vlb(b) = primaryHeadRoom;
-        elseif backgroundPrimary(b) == 0.5
-            vub(b) = 1-primaryHeadRoom;
-            vlb(b) = primaryHeadRoom;
-        end
+for b = 1:size(backgroundPrimary, 1)
+    if backgroundPrimary(b) > 0.5
+        vub(b) = 1-primaryHeadRoom;
+        vlb(b) = backgroundPrimary(b)-(1-primaryHeadRoom-backgroundPrimary(b));
+    elseif backgroundPrimary(b) < 0.5
+        vub(b) = backgroundPrimary(b)+(backgroundPrimary(b)-primaryHeadRoom);
+        vlb(b) = primaryHeadRoom;
+    elseif backgroundPrimary(b) == 0.5
+        vub(b) = 1-primaryHeadRoom;
+        vlb(b) = primaryHeadRoom;
     end
-else
-    vlb = [initialPrimary(whichPrimariesToPin) ; ones(size(backgroundPrimary(whichPrimariesToVary)))*primaryHeadRoom];
-    vub = [initialPrimary(whichPrimariesToPin) ; ones(size(backgroundPrimary(whichPrimariesToVary)))-primaryHeadRoom];
-    vlb = vlb(sortIndex);
-    vub = vub(sortIndex);
+end
+
+% If we are pinning some primaries, pin them by forcing their upper and
+% lower bounds to match their initial value.
+if (~isempty(whichPrimariesToPin))
+    vlb(whichPrimariesToPin) = initialPrimary(whichPrimariesToPin);
+    vub(whichPrimariesToPin) = initialPrimary(whichPrimariesToPin);
 end
 
 %% Construct constraint matrix.  This enforces the
