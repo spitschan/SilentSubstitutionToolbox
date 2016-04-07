@@ -621,7 +621,7 @@ for i = 1:length(photoreceptorClasses)
             T_energyNormalized = [T_energyNormalized ; T_energy1(3,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
-        case 'LConeTabulatedAbsorbanceHemo'
+        case 'LConeTabulatedAbsorbanceHemoPenumbral'
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
@@ -633,7 +633,7 @@ for i = 1:length(photoreceptorClasses)
             T_energyNormalized = [T_energyNormalized ; T_energy1(1,:).* trans_Hemoglobin'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
-        case 'MConeTabulatedAbsorbanceHemo'
+        case 'MConeTabulatedAbsorbanceHemoPenumbral'
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
@@ -645,7 +645,7 @@ for i = 1:length(photoreceptorClasses)
             T_energyNormalized = [T_energyNormalized ; T_energy1(2,:).* trans_Hemoglobin'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
-        case 'SConeTabulatedAbsorbanceHemo'
+        case 'SConeTabulatedAbsorbancePenumbral'
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
