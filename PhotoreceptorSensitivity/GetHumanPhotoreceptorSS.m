@@ -124,10 +124,10 @@ if (nargin < 6 | isempty(lambdaMaxShift))
     lambdaMaxShift = 0;
 end
 if (length(lambdaMaxShift) == 1 & length(photoreceptorClasses) ~= 1 & lambdaMaxShift ~= 0)
-    error('A scalar but non-zero lambdaMaxShift was passed.  This will not lead to good things.  Fix it.')
+    error('\t * A scalar but non-zero lambdaMaxShift was passed.  This will not lead to good things.  Fix it.')
 end
 if (length(lambdaMaxShift) ~= 1 & length(lambdaMaxShift) ~= length(photoreceptorClasses))
-    error('lambdaMaxShift passed as a vector with length not equally to number of photoreceptor classes.');
+    error('\t * lambdaMaxShift passed as a vector with length not equally to number of photoreceptor classes.');
 end
 
 % Fraction pigment bleached
@@ -199,19 +199,19 @@ if length(photoreceptorClasses) > 1
                 fractionConeBleachedFromIsomHemo(3) = fractionPigmentBleached(i);
             case {'Melanopsin', 'MelanopsinLegacy'}
                 if (fractionPigmentBleached(i) ~= 0)
-                    error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
+                    error('\t * Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
             case {'Rods', 'RodsLegacy', 'CIE1924VLambda'}
                 if (fractionPigmentBleached(i) ~= 0)
-                    error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
+                    error('\t * Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
             case {'LCone10DegTabulatedSS', 'MCone10DegTabulatedSS', 'SCone10DegTabulatedSS' 'LCone2DegTabulatedSS', 'MCone2DegTabulatedSS', 'SCone2DegTabulatedSS'}
                 if (fractionPigmentBleached(i) ~= 0)
-                    error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
+                    error('\t * Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
-            case {'LConeTabulatedAbsorbance', 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance' 'LConeTabulatedAbsorbanceHemo', 'MConeTabulatedAbsorbanceHemo', 'SConeTabulatedAbsorbanceHemo' 'LConeTabulatedAbsorbance2Deg', 'MConeTabulatedAbsorbance2Deg', 'SConeTabulatedAbsorbance2Deg'  'LConeTabulatedAbsorbance10Deg', 'MConeTabulatedAbsorbance10Deg', 'SConeTabulatedAbsorbance10Deg'}
+            case {'LConeTabulatedAbsorbance', 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance' 'LConeTabulatedAbsorbancePenumbral', 'MConeTabulatedAbsorbancePenumbral', 'SConeTabulatedAbsorbancePenumbral' 'LConeTabulatedAbsorbance2Deg', 'MConeTabulatedAbsorbance2Deg', 'SConeTabulatedAbsorbance2Deg'  'LConeTabulatedAbsorbance10Deg', 'MConeTabulatedAbsorbance10Deg', 'SConeTabulatedAbsorbance10Deg'}
                 if (fractionPigmentBleached(i) ~= 0)
-                    error('Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
+                    error('\t * Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
             otherwise
                 error('Unknown photoreceptor class passed');
@@ -621,7 +621,7 @@ for i = 1:length(photoreceptorClasses)
             T_energyNormalized = [T_energyNormalized ; T_energy1(3,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
-        case 'LConeTabulatedAbsorbanceHemoPenumbral'
+        case 'LConeTabulatedAbsorbancePenumbral'
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
@@ -633,7 +633,7 @@ for i = 1:length(photoreceptorClasses)
             T_energyNormalized = [T_energyNormalized ; T_energy1(1,:).* trans_Hemoglobin'];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
-        case 'MConeTabulatedAbsorbanceHemoPenumbral'
+        case 'MConeTabulatedAbsorbancePenumbral'
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
@@ -717,5 +717,5 @@ end
 
 %% Check
 if (length(nominalLambdaMax) ~= length(photoreceptorClasses))
-    error('Failed to fill in a nominalLambdaMax somewhere');
+    error('\t * Failed to fill in a nominalLambdaMax somewhere');
 end
