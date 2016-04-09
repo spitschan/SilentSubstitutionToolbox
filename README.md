@@ -11,7 +11,7 @@ to produce on nominally silenced photoreceptors.
 *Developers*: Manuel Spitschan, Geoffrey K. Aguirre & David H. Brainard,
 University of Pennsylvania
 
-If you use this code in support of work in a published paper, please cite us. 
+If you use this code in support of work in a published paper, please cite us:
 
 [Spitschan M, Aguirre GK, Brainard DH (2015) Selective Stimulation of Penumbral Cones Reveals Perception in the Shadow of Retinal Blood Vessels. PLoS ONE 10(4): e0124328. doi: 10.1371/journal.pone.0124328](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0124328)
 
