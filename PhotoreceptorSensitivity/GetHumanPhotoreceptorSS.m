@@ -598,7 +598,13 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:) .* trans_Hemoglobin'];
             nominalLambdaMax = [nominalLambdaMax lambdaMaxSS(3)];
         case 'LConeTabulatedAbsorbance'
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
+            indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
+            indDiffParams.shiftType = 'linear';
+            indDiffParams.dlens = 0;
+            indDiffParams.dmac = 0;
+            indDiffParams.dphotopigment = [0 0 0];
+            
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -606,6 +612,12 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
         case 'MConeTabulatedAbsorbance'
+            indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
+            indDiffParams.shiftType = 'linear';
+            indDiffParams.dlens = 0;
+            indDiffParams.dmac = 0;
+            indDiffParams.dphotopigment = [0 0 0];
+            
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
@@ -614,6 +626,12 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
         case 'SConeTabulatedAbsorbance'
+            indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
+            indDiffParams.shiftType = 'linear';
+            indDiffParams.dlens = 0;
+            indDiffParams.dmac = 0;
+            indDiffParams.dphotopigment = [0 0 0];
+            
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
