@@ -124,10 +124,10 @@ if (nargin < 6 | isempty(lambdaMaxShift))
     lambdaMaxShift = 0;
 end
 if (length(lambdaMaxShift) == 1 & length(photoreceptorClasses) ~= 1 & lambdaMaxShift ~= 0)
-    error('\t * A scalar but non-zero lambdaMaxShift was passed.  This will not lead to good things.  Fix it.')
+    error('* A scalar but non-zero lambdaMaxShift was passed.  This will not lead to good things.  Fix it.')
 end
 if (length(lambdaMaxShift) ~= 1 & length(lambdaMaxShift) ~= length(photoreceptorClasses))
-    error('\t * lambdaMaxShift passed as a vector with length not equally to number of photoreceptor classes.');
+    error('* lambdaMaxShift passed as a vector with length not equally to number of photoreceptor classes.');
 end
 
 % Fraction pigment bleached
