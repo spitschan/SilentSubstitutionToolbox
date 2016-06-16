@@ -121,7 +121,7 @@ end
 % Shift of pigment lambda max from nominal value, and some
 % sanity checks on what we get.
 if (nargin < 6 | isempty(lambdaMaxShift))
-    lambdaMaxShift = 0;
+    lambdaMaxShift = zeros(1, length(photoreceptorClasses));
 end
 if (length(lambdaMaxShift) == 1 & length(photoreceptorClasses) ~= 1 & lambdaMaxShift ~= 0)
     error('* A scalar but non-zero lambdaMaxShift was passed.  This will not lead to good things.  Fix it.')
