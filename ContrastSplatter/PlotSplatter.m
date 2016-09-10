@@ -44,7 +44,7 @@ end
 
 if isempty(maxContrast)
     for k = 1:length(contrastMap)
-        maxContrast{k} = [-0.1 0.1];
+        maxContrast{k} = [-0.2 0.2];
     end
 end
 
@@ -89,14 +89,14 @@ for k = 1:length(contrastMap)
     
     % Find and plot extreme points
     [r, c] = find(contrastMap{k}==max(contrastMap{k}(:)));
-    plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'k');
+    %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'k');
     
     [r, c] = find(contrastMap{k}==min(contrastMap{k}(:)));
-    plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'w');
+    %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'w');
     
     % Add a cross hair
-    plot(repmat(targetAge, 1, length(lambdaMaxShiftRange)), nominalLambdaMax(k)+lambdaMaxShiftRange, '--k');
-    plot(ageRange, repmat(nominalLambdaMax(k), 1, length(ageRange)), '--k');
+    plot(repmat(targetAge, 1, length(lambdaMaxShiftRange)), nominalLambdaMax(k)+lambdaMaxShiftRange, '-k');
+    plot(ageRange, repmat(nominalLambdaMax(k), 1, length(ageRange)), '-k');
     
     %% Get the confidence ellipses: 95%
     lambdaMaxSD = GetLambdaMaxEstimateSD(photoreceptorClasses{k}, 'M&W');
@@ -117,7 +117,7 @@ for k = 1:length(contrastMap)
     %colormap(gray); imagesc(x1,x2,F); hold on;
     [~, x, y] = error_ellipse([lambdaMaxSD.^2 0 ; 0 ageSD.^2], mu, 'conf', 0.9545);
     
-    plot(y, x, '-k'); hold on;
+    %plot(y, x, '-k'); hold on;
     
     % For any given x, y position in contrastMap, test if it's in the
     % error_ellipse. This gives us the 95% confidence interval.
@@ -135,10 +135,10 @@ for k = 1:length(contrastMap)
     
     % Find and plot extreme points
     [r, c] = find(contrastMap{k}==max(contrastMap{k}(indexMap)));
-    plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'k');
+    %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'k');
     
     [r, c] = find(contrastMap{k}==min(contrastMap{k}(indexMap)));
-    plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'w');
+    %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'w');
     
     %% Get the confidence ellipses: 99%
     lambdaMaxSD = GetLambdaMaxEstimateSD(photoreceptorClasses{k}, 'M&W');
@@ -154,9 +154,9 @@ for k = 1:length(contrastMap)
     
     % Get the stepsize to normalize the pdf to get pmf
     stepSize = median(diff(x1))*median(diff(x2));
-    [~, x, y] = error_ellipse([lambdaMaxSD.^2 0 ; 0 ageSD.^2], mu, 'conf', 0.9973);
+    %[~, x, y] = error_ellipse([lambdaMaxSD.^2 0 ; 0 ageSD.^2], mu, 'conf', 0.9973);
     
-    plot(y, x, '-k'); hold on;
+    %plot(y, x, '-k'); hold on;
     
     % For any given x, y position in contrastMap, test if it's in the
     % error_ellipse. This gives us the 95% confidence interval.
@@ -174,10 +174,10 @@ for k = 1:length(contrastMap)
     
     % Find and plot extreme points
     [r, c] = find(contrastMap{k}==max(contrastMap{k}(indexMap)));
-    plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'k');
+    %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'k');
     
     [r, c] = find(contrastMap{k}==min(contrastMap{k}(indexMap)));
-    plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'w');
+    %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'w');
     
     % Add a color bar
     s1Pos = get(s1,'position');
@@ -187,7 +187,7 @@ for k = 1:length(contrastMap)
     else
         xlabel(h2, 'Contrast');
     end
-    xlim([18 80]);
+    xlim([20 60]);
     set(s1,'position',s1Pos);
     pbaspect([1 1 1]);
     
@@ -200,7 +200,7 @@ if SAVEPLOTS
     %% Save plots
     set(theFig, 'Color', [1 1 1]);
     set(theFig, 'InvertHardCopy', 'off');
-    set(theFig, 'PaperPosition', [0 0 15 8]);
-    set(theFig, 'PaperSize', [15 8]);
-    saveas(theFig, plotFileName, 'pdf');
+    set(theFig, 'PaperPosition', [0 0 15 5]);
+    set(theFig, 'PaperSize', [15 5]);
+    saveas(theFig, plotFileName, 'png');
 end

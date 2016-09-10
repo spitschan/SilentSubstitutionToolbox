@@ -476,11 +476,11 @@ for i = 1:length(photoreceptorClasses)
             
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
-            
+      
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(1,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
-            nominalLambdaMax = [nominalLambdaMax NaN];
+            nominalLambdaMax = [nominalLambdaMax 555.3];
         case 'MConeTabulatedAbsorbance'
             if length(photoreceptorClasses) == 1  
                 indDiffParams.lambdaMaxShift = [0 lambdaMaxShift 0];
@@ -492,13 +492,13 @@ for i = 1:length(photoreceptorClasses)
             indDiffParams.dmac = 0;
             indDiffParams.dphotopigment = [0 0 0];
             
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(2,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
-            nominalLambdaMax = [nominalLambdaMax NaN];
+            nominalLambdaMax = [nominalLambdaMax 525.1];
         case 'SConeTabulatedAbsorbance'
             if length(photoreceptorClasses) == 1  
                 indDiffParams.lambdaMaxShift = [0 0 lambdaMaxShift];
@@ -510,15 +510,15 @@ for i = 1:length(photoreceptorClasses)
             indDiffParams.dmac = 0;
             indDiffParams.dphotopigment = [0 0 0];
             
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(3,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
-            nominalLambdaMax = [nominalLambdaMax NaN];
+            nominalLambdaMax = [nominalLambdaMax 419.5];
         case 'LConeTabulatedAbsorbancePenumbral'
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Multiply with blood transmittance

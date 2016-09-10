@@ -77,7 +77,7 @@ if isempty(photoreceptorClasses)
 end
 
 if isempty(lambdaMaxShiftRange)
-    lambdaMaxShiftRange = -5:0.5:5;
+    lambdaMaxShiftRange = -10:0.5:10;
 end
 
 if isempty(ageRange)
