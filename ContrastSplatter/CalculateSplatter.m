@@ -49,6 +49,8 @@ function [contrastMap, nominalLambdaMax, ageRange, lambdaMaxShiftRange] = Calcul
 % 5/26/14   dhb   New calling form for GetHumanPhotoreceptorSS.
 % 11/21/14  ms    Cleaned up and commented
 
+NPhotoreceptorClasses = length(photoreceptorClasses);
+
 %%  Check if all variables have been passed with a value, otherwise assign defaults.
 if isempty(S)
     S = [380 2 201];
@@ -91,12 +93,12 @@ if isempty(pupilDiameterMm)
 end
 
 if (isempty(fractionBleached))
-    fractionBleached = zeros(3,1);
+    fractionBleached = zeros(NPhotoreceptorClasses,1);
 end
 
 
 %% Iterate over photoreceptor classes (k), then over lambda-max shift (m), then over age (n)
-for k = 1:length(photoreceptorClasses)
+for k = 1:NPhotoreceptorClasses
     [X, Y] = meshgrid(ageRange, lambdaMaxShiftRange);
     X = X(:);
     Y = Y(:);
