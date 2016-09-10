@@ -464,7 +464,7 @@ for i = 1:length(photoreceptorClasses)
             nominalLambdaMax = [nominalLambdaMax SSSConeNominalLambdaMax];
 
         case 'LConeTabulatedAbsorbance'
-            if length(photoreceptorClasses) = 1  
+            if length(photoreceptorClasses) == 1  
                 indDiffParams.lambdaMaxShift = [lambdaMaxShift 0 0];
             else
                 indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
@@ -482,7 +482,7 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
         case 'MConeTabulatedAbsorbance'
-            if length(photoreceptorClasses) = 1  
+            if length(photoreceptorClasses) == 1  
                 indDiffParams.lambdaMaxShift = [0 lambdaMaxShift 0];
             else
                 indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
@@ -500,7 +500,7 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
         case 'SConeTabulatedAbsorbance'
-            if length(photoreceptorClasses) = 1  
+            if length(photoreceptorClasses) == 1  
                 indDiffParams.lambdaMaxShift = [0 0 lambdaMaxShift];
             else
                 indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);

@@ -75,11 +75,11 @@ if isempty(photoreceptorClasses)
 end
 
 if isempty(lambdaMaxShiftRange)
-    lambdaMaxShiftRange = -10:0.2:10;
+    lambdaMaxShiftRange = -5:0.5:5;
 end
 
 if isempty(ageRange)
-    ageRange = 1:80;
+    ageRange = 20:60;
 end
 
 if isempty(fieldSizeDegrees)
@@ -100,13 +100,12 @@ for k = 1:length(photoreceptorClasses)
     [X, Y] = meshgrid(ageRange, lambdaMaxShiftRange);
     X = X(:);
     Y = Y(:);
-    nObservers = length(X);
+    NObservers = length(X)
     
     % Preassign memory
-    T_energy = zeros(nObservers, S(3));
-    for i = 1:nObservers
-        [T_energy(i, :), ~, nominalLambdaMax(k)] = GetHumanPhotoreceptorSS(S, {photoreceptorClasses{k}}, ...
-            fieldSizeDegrees, X(i), pupilDiameterMm, Y(i), fractionBleached(k));
+    T_energy = zeros(NObservers, S(3));
+    for i = 1:NObservers
+        [T_energy(i, :), ~, nominalLambdaMax(k)] = GetHumanPhotoreceptorSS(S, {photoreceptorClasses{k}}, fieldSizeDegrees, X(i), pupilDiameterMm, Y(i), fractionBleached(k));
     end
     tmp = (T_energy*(modulationSpd-backgroundSpd))./(T_energy*backgroundSpd);
     tmp2 = reshape(tmp, length(lambdaMaxShiftRange), length(ageRange));
