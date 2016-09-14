@@ -462,9 +462,9 @@ for i = 1:length(photoreceptorClasses)
             T_energyNormalized = [T_energyNormalized ; T_energy_tmp];
             T_quantalIsomerizations = [T_quantalIsomerizations ; NaN*ones(size(T_quanta))];
             nominalLambdaMax = [nominalLambdaMax SSSConeNominalLambdaMax];
-
+            
         case 'LConeTabulatedAbsorbance'
-            if length(photoreceptorClasses) == 1  
+            if length(photoreceptorClasses) == 1
                 indDiffParams.lambdaMaxShift = [lambdaMaxShift 0 0];
             else
                 indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
@@ -476,13 +476,13 @@ for i = 1:length(photoreceptorClasses)
             
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
-      
+            
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(1,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
             nominalLambdaMax = [nominalLambdaMax 555.3];
         case 'MConeTabulatedAbsorbance'
-            if length(photoreceptorClasses) == 1  
+            if length(photoreceptorClasses) == 1
                 indDiffParams.lambdaMaxShift = [0 lambdaMaxShift 0];
             else
                 indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
@@ -500,7 +500,7 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
             nominalLambdaMax = [nominalLambdaMax 525.1];
         case 'SConeTabulatedAbsorbance'
-            if length(photoreceptorClasses) == 1  
+            if length(photoreceptorClasses) == 1
                 indDiffParams.lambdaMaxShift = [0 0 lambdaMaxShift];
             else
                 indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
@@ -518,6 +518,16 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
             nominalLambdaMax = [nominalLambdaMax 419.5];
         case 'LConeTabulatedAbsorbancePenumbral'
+            if length(photoreceptorClasses) == 1
+                indDiffParams.lambdaMaxShift = [0 0 lambdaMaxShift];
+            else
+                indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
+            end
+            indDiffParams.shiftType = 'linear';
+            indDiffParams.dlens = 0;
+            indDiffParams.dmac = 0;
+            indDiffParams.dphotopigment = [0 0 0];
+            
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
@@ -530,6 +540,16 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
         case 'MConeTabulatedAbsorbancePenumbral'
+            if length(photoreceptorClasses) == 1
+                indDiffParams.lambdaMaxShift = [0 0 lambdaMaxShift];
+            else
+                indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
+            end
+            indDiffParams.shiftType = 'linear';
+            indDiffParams.dlens = 0;
+            indDiffParams.dmac = 0;
+            indDiffParams.dphotopigment = [0 0 0];
+            
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
@@ -542,6 +562,16 @@ for i = 1:length(photoreceptorClasses)
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
         case 'SConeTabulatedAbsorbancePenumbral'
+            if length(photoreceptorClasses) == 1
+                indDiffParams.lambdaMaxShift = [0 0 lambdaMaxShift];
+            else
+                indDiffParams.lambdaMaxShift = lambdaMaxShift(1:3);
+            end
+            indDiffParams.shiftType = 'linear';
+            indDiffParams.dlens = 0;
+            indDiffParams.dmac = 0;
+            indDiffParams.dphotopigment = [0 0 0];
+            
             [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
