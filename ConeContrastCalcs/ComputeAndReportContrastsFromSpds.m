@@ -15,11 +15,12 @@ if (nargin < 6 | isempty(postreceptoralCombinations))
     postreceptoralCombinations = [];
 end
 
-% Throw an error
+% Throw an error if the dimensions are inconsistent
 if size(postreceptoralCombinations, 2) ~= size(T_receptors, 1)
     error('Postreceptoral combinations are not well specified. Check dimensions.');
 end
 
+% Calculate the contrasts
 backgroundReceptors = T_receptors*backgroundSpd;
 modulationReceptors = T_receptors*(modulationSpd-backgroundSpd);
 contrasts = modulationReceptors ./ backgroundReceptors;
