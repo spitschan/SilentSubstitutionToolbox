@@ -1,4 +1,4 @@
-function [contrasts postreceptoralContrasts] = ComputeAndReportContrastsFromSpds(string,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
+function [contrasts postreceptoralContrasts postreceptoralStrings] = ComputeAndReportContrastsFromSpds(string,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
 % contrasts = ComputeAndReportContrastsFromSpds(string,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
 %
 % Report out contrasts function. Assumes that the modulationSpd is the spd
@@ -53,4 +53,5 @@ for ii = 1:NCombinations
     end
     % Print out the contrasts
     fprintf('\t%s, <strong>%s</strong>: contrast = %0.1f%%\n',string,theString,100*postreceptoralContrasts(ii));
+    postreceptoralStrings{ii} = theString;
 end
