@@ -38,8 +38,9 @@ fprintf('\n');
 
 % Print out postreceptoral contrasts
 NCombinations = size(postreceptoralCombinations, 1);
-postreceptoralContrasts = postreceptoralCombinations' \ contrasts;
 for ii = 1:NCombinations
+    postreceptoralContrasts(ii) = postreceptoralCombinations(ii, :)' \ contrasts;
+    
     % Assemble the string
     theReceptors = find(postreceptoralCombinations(ii, :));
     theString = [];
