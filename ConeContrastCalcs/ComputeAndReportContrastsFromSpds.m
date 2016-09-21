@@ -20,13 +20,16 @@ if size(postreceptoralCombinations, 2) ~= size(T_receptors, 1)
     error('Postreceptoral combinations are not well specified. Check dimensions.');
 end
 
+% Print out some information
+fprintf('\n<strong>%s</strong>\n', string);
+
 % Calculate the contrasts
 backgroundReceptors = T_receptors*backgroundSpd;
 modulationReceptors = T_receptors*(modulationSpd-backgroundSpd);
 contrasts = modulationReceptors ./ backgroundReceptors;
 if (print)
     for j = 1:size(T_receptors,1)
-        fprintf('\t%s, <strong>%s</strong>: contrast = %0.1f%%\n',string,photoreceptorClasses{j},100*contrasts(j));
+        fprintf('* <strong>%s</strong>: contrast = %0.1f%%\n',photoreceptorClasses{j},100*contrasts(j));
     end
 end
 
@@ -52,6 +55,6 @@ for ii = 1:NCombinations
         end
     end
     % Print out the contrasts
-    fprintf('\t%s, <strong>%s</strong>: contrast = %0.1f%%\n',string,theString,100*postreceptoralContrasts(ii));
+    fprintf('* <strong>%s</strong>: contrast = %0.1f%%\n',theString,100*postreceptoralContrasts(ii));
     postreceptoralStrings{ii} = theString;
 end
