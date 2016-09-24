@@ -13,11 +13,17 @@ end
 
 if (nargin < 6 | isempty(postreceptoralCombinations))
     postreceptoralCombinations = [];
+    postreceptoralStrings = {''};
+    DO_POSTRECEPTORAL = false;
+else
+    DO_POSTRECEPTORAL = true;
 end
 
-% Throw an error if the dimensions are inconsistent
-if size(postreceptoralCombinations, 2) ~= size(T_receptors, 1)
-    error('Postreceptoral combinations are not well specified. Check dimensions.');
+if DO_POSTRECEPTORAL
+    % Throw an error if the dimensions are inconsistent
+    if size(postreceptoralCombinations, 2) ~= size(T_receptors, 1)
+        error('Postreceptoral combinations are not well specified. Check dimensions.');
+    end
 end
 
 % Print out some information
@@ -36,6 +42,7 @@ end
 % Let this breathe
 fprintf('\n');
 
+<<<<<<< HEAD
 % Print out postreceptoral contrasts
 NCombinations = size(postreceptoralCombinations, 1);
 for ii = 1:NCombinations
@@ -50,12 +57,35 @@ for ii = 1:NCombinations
                 theString = [theString ' + ' photoreceptorClasses{theReceptors(jj)}];
             elseif sign(postreceptoralCombinations(ii, theReceptors(jj))) == -1
                 theString = [theString ' - ' photoreceptorClasses{theReceptors(jj)}];
+=======
+if DO_POSTRECEPTORAL
+    % Print out postreceptoral contrasts
+    NCombinations = size(postreceptoralCombinations, 1);
+    postreceptoralContrasts = postreceptoralCombinations' \ contrasts;
+    for ii = 1:NCombinations
+        % Assemble the string
+        theReceptors = find(postreceptoralCombinations(ii, :));
+        theString = [];
+        for jj = 1:length(theReceptors)
+            if jj > 1
+                if sign(postreceptoralCombinations(ii, theReceptors(jj))) == 1
+                    theString = [theString ' + ' photoreceptorClasses{theReceptors(jj)}];
+                elseif sign(postreceptoralCombinations(ii, theReceptors(jj))) == -1
+                    theString = [theString ' - ' photoreceptorClasses{theReceptors(jj)}];
+                end
+            else
+                theString = [theString photoreceptorClasses{theReceptors(jj)}];
+>>>>>>> Fix some inconsistencies
             end
-        else
-            theString = [theString photoreceptorClasses{theReceptors(jj)}];
         end
+        % Print out the contrasts
+        fprintf('\t%s, <strong>%s</strong>: contrast = %0.1f%%\n',string,theString,100*postreceptoralContrasts(ii));
+        postreceptoralStrings{ii} = theString;
     end
+<<<<<<< HEAD
     % Print out the contrasts
     fprintf('* <strong>%s</strong>: contrast = %0.1f%%\n',theString,100*postreceptoralContrasts(ii));
     postreceptoralStrings{ii} = theString;
+=======
+>>>>>>> Fix some inconsistencies
 end
