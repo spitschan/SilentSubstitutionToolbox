@@ -42,22 +42,6 @@ end
 % Let this breathe
 fprintf('\n');
 
-<<<<<<< HEAD
-% Print out postreceptoral contrasts
-NCombinations = size(postreceptoralCombinations, 1);
-for ii = 1:NCombinations
-    postreceptoralContrasts(ii) = postreceptoralCombinations(ii, :)' \ contrasts;
-    
-    % Assemble the string
-    theReceptors = find(postreceptoralCombinations(ii, :));
-    theString = [];
-    for jj = 1:length(theReceptors)
-        if jj > 1
-            if sign(postreceptoralCombinations(ii, theReceptors(jj))) == 1
-                theString = [theString ' + ' photoreceptorClasses{theReceptors(jj)}];
-            elseif sign(postreceptoralCombinations(ii, theReceptors(jj))) == -1
-                theString = [theString ' - ' photoreceptorClasses{theReceptors(jj)}];
-=======
 if DO_POSTRECEPTORAL
     % Print out postreceptoral contrasts
     NCombinations = size(postreceptoralCombinations, 1);
@@ -75,17 +59,10 @@ if DO_POSTRECEPTORAL
                 end
             else
                 theString = [theString photoreceptorClasses{theReceptors(jj)}];
->>>>>>> Fix some inconsistencies
             end
         end
         % Print out the contrasts
-        fprintf('\t%s, <strong>%s</strong>: contrast = %0.1f%%\n',string,theString,100*postreceptoralContrasts(ii));
+        fprintf('* <strong>%s</strong>: contrast = %0.1f%%\n',theString,100*postreceptoralContrasts(ii));
         postreceptoralStrings{ii} = theString;
     end
-<<<<<<< HEAD
-    % Print out the contrasts
-    fprintf('* <strong>%s</strong>: contrast = %0.1f%%\n',theString,100*postreceptoralContrasts(ii));
-    postreceptoralStrings{ii} = theString;
-=======
->>>>>>> Fix some inconsistencies
 end
