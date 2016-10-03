@@ -12,7 +12,7 @@ if (nargin < 7 | isempty(print))
 end
 
 if (nargin < 6 | isempty(postreceptoralCombinations))
-    postreceptoralCombinations = [];
+    postreceptoralContrasts = [];
     postreceptoralStrings = {''};
     DO_POSTRECEPTORAL = false;
 else
