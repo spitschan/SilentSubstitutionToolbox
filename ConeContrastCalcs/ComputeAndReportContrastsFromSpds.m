@@ -35,7 +35,7 @@ modulationReceptors = T_receptors*(modulationSpd-backgroundSpd);
 contrasts = modulationReceptors ./ backgroundReceptors;
 if (print)
     for j = 1:size(T_receptors,1)
-        fprintf('* <strong>%s</strong>: contrast = %0.1f%%\n',photoreceptorClasses{j},100*contrasts(j));
+        fprintf('  * <strong>%s</strong>: contrast = %0.1f%%\n',photoreceptorClasses{j},100*contrasts(j));
     end
 end
 
