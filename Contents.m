@@ -1,10 +1,10 @@
-% SilentSubstitutionToolbox - A toolbox for silent substitution calculations.
+% SilentSubstitutionToolbox - Toolbox to simulate colorimetric observers for evaluation of photoreceptor isolation
 %
-% Manuel Spitschan, Geoffrey Aguirre, David Brainard (c) 2014.
-%
-% If you make use of this software in a publication, please cite
-%   Spitschan, M.,  Aguirre, G.K. & Brainard D.H. (2014), Manuscript in
-%   preparation.
+% If you use this code in support of work in a published paper, please cite us:
+% 
+% Spitschan M, Aguirre GK, Brainard DH (2015) Selective Stimulation of
+% Penumbral Cones Reveals Perception in the Shadow of Retinal Blood
+% Vessels. PLoS ONE 10(4): e0124328. doi: 10.1371/journal.pone.0124328
 %
 % Demos
 % -------------------------
@@ -14,12 +14,12 @@
 %   HemoglobinTransmittanceDemo - Demos how we compute hemoglobin transmittance.
 %   LightSafetyDemo      - Demos light safety calculations.
 %
-% ReceptorIsolate Functions
+% ReceptorIsolate functions
 % -------------------------
 %   ReceptorIsolate     - Function that finds isolating device primary
 %                         settings
 %
-% PhotoreceptorSensitivity Functions
+% PhotoreceptorSensitivity functions
 % -----------------------------
 %   GetHumanPhotoreceptorSS - Wrapper around PTB functions to obtain
 %                         photoreceptor spectral sensitivities
@@ -30,14 +30,19 @@
 %   GetConeFractionBleachedFromSpectrum - Calculates proportion of pigment bleached for a
 %                         given background spectrum
 %
-% HemoglobinTransmittance Functions
+% HemoglobinTransmittance functions
 % -----------------------------
 %   GetHemoglobinTransmittance
 %                       - Returns hemoglobin transmittance
 %   GetHemoglobin       - Wrapper function to get hemoglobin
 %                         extinction/absorptivity/absorption functions
 %
-% ContrastSplatter Functions
+% HumanEyelidTransmittance functions
+% -----------------------------
+%   HumanEyelidTransmittanceBierman
+%                       - Bierman model for Human eyelid transmittance
+%
+% ContrastSplatter functions
 % -----------------------------
 %   CalculateSplatter   - Calculates contrast splatter maps
 %   SaveSplatter        - Saves contrast splatter maps SaveSplatterConfidenceBounds    
@@ -65,7 +70,7 @@
 %   ReceptorIsolate/ReceptorIsolateDemoOutput
 %                       - Data and plots produced by ReceptorIsolateDemo
 %
-% External Functions
+% External functions
 % ---------------------
 %     error_ellipse       - Plots an error ellipse. No known license.
 %                           http://www.mathworks.com/matlabcentral/fileexchange/4705-error-ellipse
