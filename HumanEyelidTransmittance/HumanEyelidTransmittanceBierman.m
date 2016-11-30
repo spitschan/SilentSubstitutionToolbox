@@ -16,7 +16,7 @@
 % The folder `xSrc` contains files with tabulated data necessary for this
 % demo program:
 %
-% ? Data from Bierman, Figueiro & Rea (2011):
+% - Data from Bierman, Figueiro & Rea (2011):
 %
 %   1) Bierman2011_EyelidTransFromAvgCoef.txt - Predicted eyelid
 %   transmittance calculated from the average coefficients. Corresponds to
@@ -49,7 +49,7 @@
 %
 % - Data from Moseley, Bayliss & Fielder (1988):
 %
-%   1) Moseley1988_EyelidTransmittance.txt ? Eyelid transmittance spectra
+%   1) Moseley1988_EyelidTransmittance.txt - Eyelid transmittance spectra
 %   for 3 adults (Fig. 1A in their paper). This was digitized using
 %   WebPlotDigitizer (Nov 28, 2016). Full reference: Moseley, M. J.,
 %   Bayliss, S. C., & Fielder, A. R. (1988). Light transmission through the
