@@ -29,8 +29,8 @@ For an overview of the functions contained within, please look at `Contents.m`.
 
 #### 7. Version history
 
-[v1.1](https://github.com/spitschan/SilentSubstitutionToolbox/releases/tag/v1.1), January 29, 2015
-[v1.0](https://github.com/spitschan/SilentSubstitutionToolbox/releases/tag/v1.0), December 14, 2014
+* [v1.1](https://github.com/spitschan/SilentSubstitutionToolbox/releases/tag/v1.1) (January 29, 2015)
+* [v1.0](https://github.com/spitschan/SilentSubstitutionToolbox/releases/tag/v1.0) (December 14, 2014)
 
 #### 7. Questions, Feedback?
 Please open an issue on the GitHub page for this toolbox. For other questions, [email Manuel Spitschan](spitschan@stanford.edu).
