@@ -25,7 +25,7 @@ tbUse('SilentSubstitutionToolbox');
 ```
 
 #### 6. Use
-For an overview of the functions contained within, please look at `Contents.m`.
+For an overview of the functions contained within this toolbox, please look at `Contents.m`.
 
 #### 7. Version history
 
