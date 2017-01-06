@@ -6,14 +6,16 @@ MATLAB toolbox to compute estimates of human photoreceptor spectral sensitivitie
 #### 2. License
 This software is licensed under the license specified in `LICENSE.md` (MIT License). The code may be used freely. Using it to compute robust modulations by silencing multiple photoreceptor classes is covered by a U.S. Patent Application (United States Patent Application 20160073922) and is subject to licensing.
 
-
 #### 3. Developers
-Developed by Manuel Spitschan (Lead Developer; Stanford University, 2016-now, University of Pennsylvania, 2012-2016); Geoffrey K. Aguirre (University of Pennsylvania), David H. Brainard (University of Pennsylvania).
+This software was developed by: 
+* [Manuel Spitschan](https://github.com/spitschan) (Lead Developer; Stanford University, 2016-now, University of Pennsylvania, 2012-2016)
+* [Geoffrey K. Aguirre](https://github.com/gkaguirre) (University of Pennsylvania)
+* [David H. Brainard](https://github.com/DavidBrainard) (University of Pennsylvania)
 
 #### 4. Citing
 If you use this code in support of work in a published paper, please cite us:
 
-Spitschan M, Aguirre GK, Brainard DH (2015) Selective Stimulation of Penumbral Cones Reveals Perception in the Shadow of Retinal Blood Vessels. _PLoS ONE 10_(4): e0124328. [doi: 10.1371/journal.pone.0124328](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0124328)
+* Spitschan M, Aguirre GK, Brainard DH (2015) Selective Stimulation of Penumbral Cones Reveals Perception in the Shadow of Retinal Blood Vessels. _PLoS ONE 10_(4): e0124328. [doi: 10.1371/journal.pone.0124328](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0124328)
 
 #### 5. Dependencies and pre-requisites
 The *Silent Substitution Toolbox* relies on functions from [Psychtoolbox-3](https://github.com/Psychtoolbox-3/Psychtoolbox-3) and the [Brainard Lab Toolbox](https://github.com/BrainardLab/BrainardLabToolbox). These dependencies can be obtained manually and put on the path. Alternatively, they can be obtained using [ToolboxToolbox](https://github.com/ToolboxHub/ToolboxToolbox) (TbTb). Once TbTb is installed, simply run:
