@@ -1,3 +1,5 @@
+tbUse('SilentSubstitutionToolbox');
+
 receptorObj = SSTReceptorHuman('obsAgeYrs', 30);
 NSamples = 1000;
 receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
@@ -13,57 +15,48 @@ for ii = 1:NSamples
     T_receptors = receptorObj.Ts{ii}.T_energyNormalized;
     for jj = 1:size(receptorObj.Ts{ii}.T_energyNormalized, 1)
         contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
+        lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
+        postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
     end
 end
 
-axLims = [-0.08 0.08];
-subplot(1, 3, 1);
-% Reference lines
-hold on;
-plot([0 0], axLims, '-k', axLims, [0 0], '-k');
-plot(contrasts(1, :), contrasts(2, :), '.k');
-xlim(axLims); ylim(axLims);
-pbaspect([1 1 1]);
-box off;
-set(gca, 'TickDir', 'out');
-xlabel('L cone contrast'); ylabel('M cone contrast');
-e2 = FitEllipse(contrasts([1:2], :)', 2);
+%%
+rgbL = [0.8941    0.1020    0.1098];
+rgbM = [0.3020    0.6863    0.2902];
+rgbS = [0.2157    0.4941    0.7216];
 
-% Fit ellipse and plot
-plot(e2(1,:), e2(2,:), '-r', 'LineWidth', 2);
+axLims = [-0.03 0.03];
 
+%%
+figLM = figure;
+XAxLims = [-0.025 0.025];
+YAxLims = [-0.025 0.025];
 
+ScatterplotWithHistogram(contrasts(1, :), contrasts(2, :), ...
+    'XLim', XAxLims, 'YLim', YAxLims, 'BinWidth', 0.004, ...
+    'XLabel', 'L contrast', 'YLabel', 'M contrast', ...
+    'XRefLines', [XAxLims ; 0 0], ...
+    'YRefLines', [0 0 ; YAxLims], ...
+    'Color', [rgbL ; rgbM]);
 
-%
-subplot(1, 3, 2);
-hold on;
-plot([0 0], axLims, '-k', axLims, [0 0], '-k');
-plot(contrasts(2, :), contrasts(3, :),'.k');
-xlim(axLims); ylim(axLims);
-pbaspect([1 1 1]);
-box off;
-set(gca, 'TickDir', 'out');
-xlabel('M cone contrast'); ylabel('S cone contrast');
+set(figLM, 'PaperPosition', [0 0 6 6]);
+set(figLM, 'PaperSize', [6 6]);
+saveas(figLM, 'LMContrast.png', 'png');
 
-% Fit ellipse and plot
-e2 = FitEllipse(contrasts([2:3], :)', 2);
+%%
+figS = figure;
+XAxLims = [-0.02 0.02];
+YAxLims = [-0.01 0.08];
 
-% Fit ellipse and plot
-plot(e2(1,:), e2(2,:), '-r', 'LineWidth', 2);
+ScatterplotWithHistogram(lmContrast(1, :), contrasts(3, :), ...
+    'XLim', XAxLims, 'YLim', YAxLims, 'BinWidth', 0.004, ...
+    'XLabel', 'L+M contrast', 'YLabel', 'S contrast', ...
+    'XRefLines', [XAxLims ; 0 0], ...
+    'YRefLines', [0 0 ; YAxLims], ...
+    'Color', [0.5 0.5 0.5 ; rgbS]);
 
+set(figS, 'PaperPosition', [0 0 6 6]);
+set(figS, 'PaperSize', [6 6]);
+saveas(figS, 'SContrast.png', 'png');
 
-subplot(1, 3, 3);
-hold on;
-plot([0 0], axLims, '-k', axLims, [0 0], '-k');
-plot(contrasts(1, :), contrasts(3, :), '.k');
-xlim(axLims); ylim(axLims);
-pbaspect([1 1 1]);
-box off;
-set(gca, 'TickDir', 'out');
-xlabel('L cone contrast'); ylabel('S cone contrast');
-
-% Fit ellipse and plot
-e2 = FitEllipse(contrasts([1 3], :)', 2);
-
-% Fit ellipse and plot
-plot(e2(1,:), e2(2,:), '-r', 'LineWidth', 2);
+!open SContrast.png

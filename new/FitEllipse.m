@@ -8,7 +8,7 @@ conf = 2*normcdf(STD)-1;     %# covers around 95% of population
 scale = chi2inv(conf,2);     %# inverse chi-squared with dof=#dimensions
 
 Cov = cov(X0) * scale;
-[V D] = eig(Cov)/length(B);
+[V D] = eig(Cov);
 [D order] = sort(diag(D), 'descend');
 D = diag(D);
 V = V(:, order);
