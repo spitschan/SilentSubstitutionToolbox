@@ -3,8 +3,7 @@ tbUse('SilentSubstitutionToolbox');
 receptorObj = SSTReceptorHuman('obsAgeYrs', 30);
 
 %%
-theRGB = DefaultReceptorColors;
-
+theRGB = SSTDefaultReceptorColors;
 
 %%
 % Load data
@@ -26,7 +25,6 @@ for ii = 1:size(receptorObj.Ts, 2)
     lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
     postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
 end
-
 
 % Plot parametric variations
 for ii = 1:size(contrasts, 1)
