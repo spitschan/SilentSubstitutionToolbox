@@ -46,6 +46,7 @@ classdef SSTReceptorHuman < SSTReceptor;
             obj = makeSpectralSensitivities(obj);
         end
         makeSpectralSensitivitiesStochastic(obj, varargin);
+        makeSpectralSensitivitiesParametricVariation(obj, varargin);
     end
     
     % Get methods for dependent properties

@@ -1,4 +1,7 @@
 function ScatterPlotWithHistogram(x, y, varargin)
+% ScatterPlotWithHistogram(x, y, varargin)
+%
+% Maks a scatter lot with histograms in the margins.
 
 % Parse vargin for options passed here
 p = inputParser;
@@ -9,6 +12,8 @@ p.addParameter('XLabel', 'X', @ischar);
 p.addParameter('YLabel', 'Y', @ischar);
 p.addParameter('XRefLines', [], @isnumeric);
 p.addParameter('YRefLines', [], @isnumeric);
+p.addParameter('XNominalContrast', [], @isnumeric);
+p.addParameter('YNominalContrast', [], @isnumeric)
 p.addParameter('Color', [1 0 0 ; 0 0 1], @isnumeric);
 
 p.KeepUnmatched = true;
@@ -25,30 +30,34 @@ ah1 = subplot(2, 2, 4);
 hold on;
 histy = histogram(y, 'Orientation','horizontal', 'Normalization', 'probability', 'BinWidth', 0.001);
 histy.FaceColor = p.Results.Color(2, :);
+plot([0 0], [miny maxy], '-k');
 
 box off; pbaspect([1 1 1]);
 set(gca, 'TickDir', 'out');
 set(gca, 'YAxisLocation', 'right');
 xlabel('Probability');
+set(gca, 'Color', [0.9 0.9 0.9]);
 
 %% X histogram
 ah2 = subplot(2, 2, 1);
 hold on;
 histx = histogram(x, 'Normalization', 'probability', 'BinWidth', 0.001);
 histx.FaceColor = p.Results.Color(1, :);
+plot([minx maxx], [0 0], '-k');
 
 box off; pbaspect([1 1 1]);
 set(gca, 'TickDir', 'out');
 set(gca, 'XAxisLocation', 'top');
 ylabel('Probability');
+set(gca, 'Color', [0.9 0.9 0.9]);
 
 %% Scatterplot
 ah3 = subplot(2, 2, 3);
 hold on;
 
 % Add reference lines
-plot(p.Results.XRefLines(1, :), p.Results.XRefLines(2, :), '-k');
-plot(p.Results.YRefLines(1, :), p.Results.YRefLines(2, :), '-k');
+plot(p.Results.XRefLines(1, :), p.Results.XRefLines(2, :), ':k');
+plot(p.Results.YRefLines(1, :), p.Results.YRefLines(2, :), ':k');
 
 % Add scatter plot
 scatter(x, y, 8, p.Results.Color(1, :), '.');
@@ -58,18 +67,20 @@ ylabel(p.Results.YLabel);
 set(gca, 'TickDir', 'out');
 box off; pbaspect([1 1 1]);
 
-%% Work on histograms
+%% FIx the histogram
 % Figure out the maximum robability and add a little headroom
 maxp =  max([histx.Values histy.Values])*1.2;
 
-% Add mean and median symbols
+% Add mean, median and nominal symbols
 subplot(2, 2, 1);
 plot([mean(histx.Data) mean(histx.Data)], [0 maxp], '-r');
 plot([median(histx.Data) median(histx.Data)], [0 maxp], '-k');
+plot([p.Results.XNominalContrast p.Results.XNominalContrast], [0 maxp], ':k');
 
 subplot(2, 2, 4);
 plot([0 maxp], [mean(histy.Data) mean(histy.Data)], '-r');
 plot([0 maxp], [median(histy.Data) median(histy.Data)], '-k');
+plot([0 maxp], [p.Results.YNominalContrast p.Results.YNominalContrast], ':k');
 
 subplot(2, 2, 3);
 plot(mean(histx.Data), mean(histy.Data), '+r');
