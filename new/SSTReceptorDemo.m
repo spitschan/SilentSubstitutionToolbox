@@ -1,6 +1,13 @@
 tbUse('SilentSubstitutionToolbox');
 
 receptorObj = SSTReceptorHuman('obsAgeYrs', 30);
+
+%% Parametric variation
+receptorObj.makeSpectralSensitivitiesParametricVariation('WhichParameter', 'dlens');
+
+% Set up all other parameters
+
+%% Stochastic sampling
 NSamples = 1000;
 receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
 
@@ -16,8 +23,8 @@ for ii = 1:NSamples
     for jj = 1:size(receptorObj.Ts{ii}.T_energyNormalized, 1)
         contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
     end
-            lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
-        postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
+    lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
+    postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
 end
 
 %%
@@ -58,7 +65,7 @@ YAxLims = [-0.01 0.08];
 XNominalContrast = 0;
 YNominalContrast = 0;
 
-e(contrasts(1, :), contrasts(3, :), ...
+ScatterplotWithHistogram(contrasts(1, :), contrasts(3, :), ...
     'XLim', XAxLims, 'YLim', YAxLims, 'BinWidth', 0.004, ...
     'XLabel', 'L+M contrast', 'YLabel', 'S contrast', ...
     'XRefLines', [XAxLims ; YNominalContrast YNominalContrast], ...
