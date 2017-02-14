@@ -1,4 +1,4 @@
-function obj = makeSpectralSensitivitiesParametricVariation(obj, varargin)
+function [obj parv, parvlabel, parvlabellong] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
 
 % Parse vargin for options passed here
 p = inputParser;
@@ -15,29 +15,60 @@ NTitrations = p.Results.NTitrations;
 % indDiffParams.lambdaMaxShift - vector of values (in nm) to shift lambda max of each photopigment absorbance by.
 % indDiffParams.shiftType - 'linear' (default) or 'log'.
 
-switch p.Results.WhichParameter
-    case 'dlens'
-        theRange = linspace(-50, 50, NTitrations);
-        
-        % Sample
-        for ii = 1:NTitrations
-            indDiffParams = DefaultIndDiffParams;
-            indDiffParams.dlens = theRange(ii);
+% Fill the individual differences struct with values.
+indDiffParams.dlens = 0;
+indDiffParams.dmac = 0;
+indDiffParams.dphotopigment = [0 0 0];
+indDiffParams.lambdaMaxShift = [0 0 0];
+indDiffParams.shiftType = 'linear';
 
-            % Get the cone fundamentals
-            [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations] = ComputeCIEConeFundamentals(obj.S,...
-                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-                false,[],[],indDiffParams);
-            T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
-            T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
-            
-            % obj = makeSpectralSensitivities(obj)
-            obj.Ts{ii}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
-            obj.Ts{ii}.T_quantalAbsorptions = T_quantalAbsorptions;
-            obj.Ts{ii}.T_quantalIsomerizations = T_quantalIsomerizations;
-            obj.Ts{ii}.T_energy = T_energy;
-            obj.Ts{ii}.T_energyNormalized = T_energyNormalized;
-        end
+% Sample
+for ii = 1:NTitrations
+    switch p.Results.WhichParameter
+        case 'dlens'
+            parv = linspace(-50, 50, NTitrations);
+            indDiffParams = DefaultIndDiffParams;
+            indDiffParams.dlens = parv(ii);
+            parvlabel = '%D_{lens}';
+            parvlabellong = 'Lens density';
+        case 'dmac'
+            parv = linspace(-50, 50, NTitrations);
+            indDiffParams = DefaultIndDiffParams;
+            indDiffParams.dmac = parv(ii);
+            parvlabel = '%D_{macula}';
+            parvlabellong = 'Macular density';
+        case 'dphotopigment'
+            parv = linspace(-50, 50, NTitrations);
+            indDiffParams = DefaultIndDiffParams;
+            indDiffParams.dphotopigment = [parv(ii) parv(ii) parv(ii)];
+            parvlabel = '%D_{photopigment}';
+            parvlabellong =  'Photopigment optical density';
+        case 'lambdaMaxShift'
+            parv = linspace(-2, 2, NTitrations);
+            indDiffParams = DefaultIndDiffParams;
+            indDiffParams.lambdaMaxShift = [parv(ii) parv(ii) parv(ii)];
+            parvlabel = '\Delta\lambda_{max}';
+            parvlabellong = {'Peak spectral sensitivity' '\lambda_{max}'};
+        case 'obsPupilDiameterMm'
+            parv = linspace(3, 9, NTitrations);
+            indDiffParams = DefaultIndDiffParams;
+            parvlabel = 'Pupil diameter [mm]';
+            parvlabellong = 'Pupil diameter';
+    end
+    
+    % Get the cone fundamentals
+    [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations] = ComputeCIEConeFundamentals(obj.S,...
+        obj.fieldSizeDeg,obj.obsAgeInYrs,parv(ii),[],[],[], ...
+        false,[],[],indDiffParams);
+    T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
+    T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
+    
+    % obj = makeSpectralSensitivities(obj)
+    obj.Ts{ii}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
+    obj.Ts{ii}.T_quantalAbsorptions = T_quantalAbsorptions;
+    obj.Ts{ii}.T_quantalIsomerizations = T_quantalIsomerizations;
+    obj.Ts{ii}.T_energy = T_energy;
+    obj.Ts{ii}.T_energyNormalized = T_energyNormalized;
 end
 
 % % The standard deviations are given in Table 5 in Asano et al. 2015

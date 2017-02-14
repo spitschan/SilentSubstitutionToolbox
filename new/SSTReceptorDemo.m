@@ -3,7 +3,7 @@ tbUse('SilentSubstitutionToolbox');
 receptorObj = SSTReceptorHuman('obsAgeYrs', 30);
 
 %%
-theRGB = SSTDefaultReceptorColors;
+theRGB = DefaultReceptorColors;
 
 %%
 % Load data
@@ -13,25 +13,49 @@ tmp = load('/Users/spitschan/Documents/MATLAB/toolboxes/SilentSubstitutionToolbo
 modSpd = tmp.spd;
 
 %% Parametric variation
-NTitrations = 50;
-receptorObj.makeSpectralSensitivitiesParametricVariation('WhichParameter', 'dlens', 'NTitrations', NTitrations);
+NTitrations = 30;
+yAxLims = [-0.06 0.06];
 
-% Calculate contrast
-for ii = 1:size(receptorObj.Ts, 2)
-    T_receptors = receptorObj.Ts{ii}.T_energyNormalized;
-    for jj = 1:size(receptorObj.Ts{ii}.T_energyNormalized, 1)
-        contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
+%% Set up all other parameters
+theIndDiffParams = {'dlens' 'dmac' 'dphotopigment' 'lambdaMaxShift', 'obsPupilDiameterMm'};
+for ss = 1:length(theIndDiffParams)
+    % Vary the parameter
+    [~, parv, parvlabel, parvlabellong] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
+        'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
+    
+    if parv(1) < 0
+        xAxLims = [parv(1)*1.1 parv(end)*1.1];
+    else
+        xAxLims = [parv(1)*0.9 parv(end)*1.1];
     end
-    lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
-    postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
+    
+    % Calculate contrast
+    for ii = 1:size(receptorObj.Ts, 2)
+        T_receptors = receptorObj.Ts{ii}.T_energyNormalized;
+        for jj = 1:size(receptorObj.Ts{ii}.T_energyNormalized, 1)
+            contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
+        end
+        lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
+        postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
+    end
+    
+    subplot(1, length(theIndDiffParams), ss);
+    hold on;
+    plot(xAxLims, [0 0], ':k');
+    % Plot parametric variations
+    for ii = 1:size(contrasts, 1)
+        plot(parv, contrasts(ii, :)', '-o', 'Color', theRGB(ii, :), 'MarkerEdgeColor', 'k', ...
+            'MarkerFaceColor', theRGB(ii, :)); hold on;
+    end
+    
+    % Add title and tweak plots
+    title(parvlabellong);
+    box off;
+    xlabel(parvlabel);
+    xlim(xAxLims);
+    ylim(yAxLims);
+    pbaspect([1 1 1]);
 end
-
-% Plot parametric variations
-for ii = 1:size(contrasts, 1)
-    plot(contrasts(ii, :)', '-o', 'Color', theRGB(ii, :)); hold on;
-end
-
-% Set up all other parameters
 
 %% Stochastic sampling
 NSamples = 1000;
