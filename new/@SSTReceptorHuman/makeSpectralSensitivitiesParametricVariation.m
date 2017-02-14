@@ -3,8 +3,10 @@ function obj = makeSpectralSensitivitiesParametricVariation(obj, varargin)
 % Parse vargin for options passed here
 p = inputParser;
 p.addParameter('WhichParameter', 'dlens', @ischar);
+p.addParameter('NTitrations', 50, @isnumeric);
 p.KeepUnmatched = true;
 p.parse(varargin{:});
+NTitrations = p.Results.NTitrations;
 
 % We use a few individual difference parameters
 % indDiffParams.dlens - deviation in % from CIE computed peak lens density
@@ -15,22 +17,19 @@ p.parse(varargin{:});
 
 switch p.Results.WhichParameter
     case 'dlens'
-        NTitrations = 30;
         theRange = linspace(-50, 50, NTitrations);
         
         % Sample
         for ii = 1:NTitrations
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.dlens = theRange(ii);
-            theRange(ii)
+
             % Get the cone fundamentals
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
             T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
             T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
-            
-            plot(T_energy'); hold on;
             
             % obj = makeSpectralSensitivities(obj)
             obj.Ts{ii}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
