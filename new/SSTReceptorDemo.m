@@ -55,6 +55,7 @@ for ss = 1:length(theIndDiffParams)
     xlim(xAxLims);
     ylim(yAxLims);
     pbaspect([1 1 1]);
+    set(gca, 'TickDir', 'out');
 end
 
 %% Stochastic sampling
@@ -89,12 +90,12 @@ ScatterplotWithHistogram(300+contrasts(1, :), contrasts(2, :), ...
     'YRefLines', [XNominalContrast XNominalContrast ; YAxLims], ...
     'XNominalContrast', XNominalContrast, ...
     'YNominalContrast', YNominalContrast, ...
-    'Color', [rgbL ; rgbM]);
+    'Color', [theRGB(1, :) ; theRGB(2, :)]);
 
 set(figLM, 'PaperPosition', [0 0 6 6]);
 set(figLM, 'PaperSize', [6 6]);
-set(gcf, 'Color', 'w');
-set(gcf, 'InvertHardcopy', 'off');
+set(figLM, 'Color', 'w');
+set(figLM, 'InvertHardcopy', 'off');
 saveas(figLM, 'LMContrast.png', 'png');
 saveas(figLM, 'LMContrast.pdf', 'pdf');
 
@@ -117,6 +118,6 @@ ScatterplotWithHistogram(contrasts(1, :), contrasts(3, :), ...
 
 set(figS, 'PaperPosition', [0 0 6 6]);
 set(figS, 'PaperSize', [6 6]);
-set(gcf, 'Color', 'w');
-set(gcf, 'InvertHardcopy', 'off');
+set(figS, 'Color', 'w');
+set(figS, 'InvertHardcopy', 'off');
 saveas(figS, 'SContrast.png', 'png');
