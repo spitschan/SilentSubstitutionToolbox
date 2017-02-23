@@ -1,4 +1,4 @@
-function [obj parv, parvlabel, parvlabellong] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
+function [obj parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
 
 % Parse vargin for options passed here
 p = inputParser;
@@ -31,37 +31,61 @@ for ii = 1:NTitrations
             indDiffParams.dlens = parv(ii);
             parvlabel = '%D_{lens}';
             parvlabellong = 'Lens density';
+            [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
+                false,[],[],indDiffParams);
         case 'dmac'
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.dmac = parv(ii);
             parvlabel = '%D_{macula}';
             parvlabellong = 'Macular density';
+            [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
+                false,[],[],indDiffParams);
         case 'dphotopigment'
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.dphotopigment = [parv(ii) parv(ii) parv(ii)];
             parvlabel = '%D_{photopigment}';
             parvlabellong =  'Photopigment optical density';
+            [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
+                false,[],[],indDiffParams);
         case 'lambdaMaxShift'
             parv = linspace(-2, 2, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.lambdaMaxShift = [parv(ii) parv(ii) parv(ii)];
             parvlabel = '\Delta\lambda_{max}';
             parvlabellong = {'Peak spectral sensitivity' '\lambda_{max}'};
+            [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
+                false,[],[],indDiffParams);
         case 'obsPupilDiameterMm'
             parv = linspace(3, 9, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             parvlabel = 'Pupil diameter [mm]';
             parvlabellong = 'Pupil diameter';
+            [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,parv(ii),[],[],[], ...
+                false,[],[],indDiffParams);
     end
     
     % Get the cone fundamentals
-    [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations] = ComputeCIEConeFundamentals(obj.S,...
-        obj.fieldSizeDeg,obj.obsAgeInYrs,parv(ii),[],[],[], ...
-        false,[],[],indDiffParams);
     T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
     T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
+    switch p.Results.WhichParameter
+        case 'dlens'
+            parvreal(:, ii) = adjIndDiffParams.lens;
+        case 'dmac'
+            parvreal(:, ii) = adjIndDiffParams.mac;
+        case 'dphotopigment'
+            parvreal(:, ii) = adjIndDiffParams.dphotopigment;
+        case 'lambdaMaxShift'
+            parvreal(:, ii) = indDiffParams.lambdaMaxShift;
+        case 'obsPupilDiameterMm'
+            parvreal(:, ii) = parv(ii);
+    end
     
     % obj = makeSpectralSensitivities(obj)
     obj.Ts{ii}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
@@ -69,6 +93,7 @@ for ii = 1:NTitrations
     obj.Ts{ii}.T_quantalIsomerizations = T_quantalIsomerizations;
     obj.Ts{ii}.T_energy = T_energy;
     obj.Ts{ii}.T_energyNormalized = T_energyNormalized;
+    obj.Ts{ii}.adjIndDiffParams = adjIndDiffParams;
 end
 
 % % The standard deviations are given in Table 5 in Asano et al. 2015

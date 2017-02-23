@@ -1,26 +1,28 @@
 tbUse('SilentSubstitutionToolbox');
-%%
+clearvars; close all; clc;
+
+%% Set up receptor object
 receptorObj = SSTReceptorHuman('obsAgeYrs', 30);
 
-%%
+%% Get some colors
 theRGB = DefaultReceptorColors;
 
-%%
-% Load data
+%% Load data
 tmp = load('/Users/spitschan/Documents/MATLAB/toolboxes/SilentSubstitutionToolbox/ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_bg.mat');
 bgSpd = tmp.spd;
 tmp = load('/Users/spitschan/Documents/MATLAB/toolboxes/SilentSubstitutionToolbox/ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_mod.mat');
 modSpd = tmp.spd;
 
 %% Parametric variation
-NTitrations = 30;
+NTitrations = 16;
 yAxLims = [-0.06 0.06];
 
 %% Set up all other parameters
+figParv = figure;
 theIndDiffParams = {'dlens' 'dmac' 'dphotopigment' 'lambdaMaxShift', 'obsPupilDiameterMm'};
 for ss = 1:length(theIndDiffParams)
     % Vary the parameter
-    [~, parv, parvlabel, parvlabellong] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
+    [~, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
         'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
     
     if parv(1) < 0
@@ -57,6 +59,11 @@ for ss = 1:length(theIndDiffParams)
     pbaspect([1 1 1]);
     set(gca, 'TickDir', 'out');
 end
+set(figParv, 'PaperPosition', [0 0 13 3.5]);
+set(figParv, 'PaperSize', [13 3.5]);
+set(figParv, 'Color', 'w');
+set(figParv, 'InvertHardcopy', 'off');
+saveas(figParv, 'ParvFig.png', 'png');
 
 %% Stochastic sampling
 NSamples = 1000;
@@ -97,7 +104,6 @@ set(figLM, 'PaperSize', [6 6]);
 set(figLM, 'Color', 'w');
 set(figLM, 'InvertHardcopy', 'off');
 saveas(figLM, 'LMContrast.png', 'png');
-saveas(figLM, 'LMContrast.pdf', 'pdf');
 
 %% L+M vs. S
 figS = figure;
@@ -114,7 +120,7 @@ ScatterplotWithHistogram(contrasts(1, :), contrasts(3, :), ...
     'YRefLines', [XNominalContrast XNominalContrast ; YAxLims], ...
     'XNominalContrast', XNominalContrast, ...
     'YNominalContrast', YNominalContrast, ...
-    'Color', [rgbL ; rgbM]);
+    'Color', [theRGB(1, :) ; theRGB(3, :)]);
 
 set(figS, 'PaperPosition', [0 0 6 6]);
 set(figS, 'PaperSize', [6 6]);
