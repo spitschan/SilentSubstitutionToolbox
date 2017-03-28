@@ -49,7 +49,7 @@ for ss = 1:length(theIndDiffParams)
         plot(parv, contrasts(ii, :)', '-o', 'Color', theRGB(ii, :), 'MarkerEdgeColor', 'k', ...
             'MarkerFaceColor', theRGB(ii, :)); hold on;
     end
-    
+
     % Add title and tweak plots
     title(parvlabellong);
     box off;

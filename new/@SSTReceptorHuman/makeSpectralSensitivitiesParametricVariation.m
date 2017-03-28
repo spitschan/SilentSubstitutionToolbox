@@ -29,7 +29,7 @@ for ii = 1:NTitrations
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.dlens = parv(ii);
-            parvlabel = '%D_{lens}';
+            parvlabel = '%\DeltaD_{lens}';
             parvlabellong = 'Lens density';
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
@@ -38,7 +38,7 @@ for ii = 1:NTitrations
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.dmac = parv(ii);
-            parvlabel = '%D_{macula}';
+            parvlabel = '%\DeltaD_{mac}';
             parvlabellong = 'Macular density';
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
@@ -47,8 +47,8 @@ for ii = 1:NTitrations
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.dphotopigment = [parv(ii) parv(ii) parv(ii)];
-            parvlabel = '%D_{photopigment}';
-            parvlabellong =  'Photopigment optical density';
+            parvlabel = '%\DeltaD_{pigment}';
+            parvlabellong =  {'Photopigment' ; 'optical density'};
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
@@ -57,7 +57,7 @@ for ii = 1:NTitrations
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.lambdaMaxShift = [parv(ii) parv(ii) parv(ii)];
             parvlabel = '\Delta\lambda_{max}';
-            parvlabellong = {'Peak spectral sensitivity' '\lambda_{max}'};
+            parvlabellong = {'Peak sensitivity' '\lambda_{max}'};
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
