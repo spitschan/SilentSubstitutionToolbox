@@ -33,10 +33,15 @@ theObservers = {'ASB' 'ASO' 'GKA' 'MXS' ...
     'ASB' 'ASO' 'GKA' 'MXS [1]' 'MXS [2]'...
     'ASB' 'ASO' 'GKA' 'MXS' ...
     'ASB' 'ASO' 'GKA' 'MXS [1]' 'MXS [2]' ...
-    'ASB' 'ASO' 'GKA' 'MXS'}
+    'ASB' 'ASO' 'GKA' 'MXS'};
+theContrastLevels = {[400] [400] [400] [400] ...
+    [25 50 100 200 400] [25 50 100 200 400] [25 50 100 200 400] [25 50 100 200 400] [25 50 100 200 400] ...
+    [400] [400] [400] [400] ...
+    [25 50 100 200 400] [25 50 100 200 400] [25 50 100 200 400] [25 50 100 200 400] [25 50 100 200 400] ...
+    [0.25 0.5 1 2] [0.25 0.5 1 2] [0.25 0.5 1 2] [0.25 0.5 1 2]};
 
 fid = fopen('~/Desktop/test.csv', 'w');
-fprintf(fid, 'Stimulus,Observer,Luminance,SD,Chromaticity x,SD,Chromaticity y,SD,L contrast [%s],SD,M contrast [%s],SD,S contrast [%s],SD,LMS contrast [%s],SD,L-M contrast [%s],SD\n', '%', '%', '%', '%', '%');
+fprintf(fid, 'Stimulus,Observer,Nominal contrast,Luminance,SD,Chromaticity x,SD,Chromaticity y,SD,L contrast [%s],SD,M contrast [%s],SD,S contrast [%s],SD,LMS contrast [%s],SD,L-M contrast [%s],SD\n', '%', '%', '%', '%', '%');
 
 
 currDir = pwd;
@@ -48,81 +53,91 @@ for d = 1:length(theDataPaths)
     theFolders = dir(fullfile(dropboxBasePath, dataPath));
     
     % Increment the counter
-    c = 1;
     clear contrasts;
     clear postRecepContrasts;
     clear luminance;
     clear chromaticity;
     
+    for k = length(theFolders):-1:1
+        % remove non-folders
+        if ~theFolders(k).isdir
+            theFolders(k) = [ ];
+            continue;
+        end
+        
+        % remove folders starting with .
+        fname = theFolders(k).name;
+        if fname(1) == '.'
+            theFolders(k) = [ ];
+        end
+    end
+    
     % Iterate over the folders
     for f = 1:length(theFolders)
-        if ~strcmpi(theFolders(f).name, '.') && ~strcmpi(theFolders(f).name, '..')
-            fprintf('>> Validation %s\n', theFolders(f).name);
+        fprintf('>> Validation %s\n', theFolders(f).name);
+        
+        % Go to the folder
+        if isdir(fullfile(dropboxBasePath, dataPath, theFolders(f).name))
+            cd(fullfile(dropboxBasePath, dataPath, theFolders(f).name));
+        end
+        
+        % Find the only MAT file there is going to be
+        theMATFile = dir([pwd '/*.mat']);
+        
+        if ~isempty(theMATFile)
+            % Load the MAT file
+            tmp = load(theMATFile.name);
             
-            % Go to the folder
-            if isdir(fullfile(dropboxBasePath, dataPath, theFolders(f).name))
-                cd(fullfile(dropboxBasePath, dataPath, theFolders(f).name));
+            % Extract the infomation
+            S = tmp.cals{1}.describe.cache.data(32).describe.S;
+            wls = SToWls(S);
+            observerAgeInYrs = tmp.cals{1}.describe.cache.REFERENCE_OBSERVER_AGE;
+            fractionBleached = tmp.cals{1}.describe.cache.data(observerAgeInYrs).describe.fractionBleached;
+            pupilDiameterMm = tmp.cals{1}.describe.cache.data(observerAgeInYrs).describe.params.pupilDiameterMm;
+            fieldSizeDegrees = tmp.cals{1}.describe.cache.data(observerAgeInYrs).describe.params.fieldSizeDegrees;
+            
+            
+            % Calculate luminance and chromaticity
+            % Load the CIE functions
+            load T_xyz1931
+            T_xyz = SplineCmf(S_xyz1931,683*T_xyz1931,WlsToS(wls));
+            
+            % Calculate luminance and chromaticy
+            luminance(f) = T_xyz(2, :)*bgSpd;
+            chromaticity(:, f) = (T_xyz([1 2], :)*bgSpd)/sum((T_xyz*bgSpd));
+            
+            
+            % Set up the receptor object
+            receptorObj = SSTReceptorHuman('obsAgeYrs', observerAgeInYrs, 'fieldSizeDeg', fieldSizeDegrees, 'obsPupilDiameterMm', pupilDiameterMm);
+            T_rec = receptorObj.T.T_energyNormalized;
+            T_val = tmp.cals{1}.describe.cache.data(observerAgeInYrs).describe.T_receptors;
+            
+            % Calculate the numerical difference between the assumed and the
+            % reconstructed receptor sensitivities
+            for ii = 1:size(T_rec, 1)-1
+                tmp1 = sum(T_rec(1, :) - T_val(1, :));
+                if tmp1 > 0
+                    error('Error: Couldn''t reconstruct receptor sensitivities...');
+                end
             end
             
-            % Find the only MAT file there is going to be
-            theMATFile = dir([pwd '/*.mat']);
-            
-            if ~isempty(theMATFile)
-                % Load the MAT file
-                tmp = load(theMATFile.name);
-                
-                % Extract the infomation
-                S = tmp.cals{1}.describe.cache.data(32).describe.S;
-                wls = SToWls(S);
-                observerAgeInYrs = tmp.cals{1}.describe.cache.REFERENCE_OBSERVER_AGE;
-                fractionBleached = tmp.cals{1}.describe.cache.data(observerAgeInYrs).describe.fractionBleached;
-                pupilDiameterMm = tmp.cals{1}.describe.cache.data(observerAgeInYrs).describe.params.pupilDiameterMm;
-                fieldSizeDegrees = tmp.cals{1}.describe.cache.data(observerAgeInYrs).describe.params.fieldSizeDegrees;
-                
- 
+            NContrastLevels = size(tmp.cals{end}.modulationAllMeas, 2)-1;
+            for kk = 2:NContrastLevels+1
                 bgSpd = tmp.cals{1}.modulationBGMeas.meas.pr650.spectrum; hold on;
-                modSpd = tmp.cals{1}.modulationMaxMeas.meas.pr650.spectrum;
-
-                plot(wls, bgSpd);
-                plot(wls, modSpd);
-                
-                % Calculate luminance and chromaticity
-                % Load the CIE functions
-                load T_xyz1931
-                T_xyz = SplineCmf(S_xyz1931,683*T_xyz1931,WlsToS(wls));
-                
-                % Calculate luminance and chromaticy
-                luminance(c) = T_xyz(2, :)*bgSpd;
-                chromaticity(:, c) = (T_xyz([1 2], :)*bgSpd)/sum((T_xyz*bgSpd));
-                
-                
-                
-                % Set up the receptor object
-                receptorObj = SSTReceptorHuman('obsAgeYrs', observerAgeInYrs, 'fieldSizeDeg', fieldSizeDegrees, 'obsPupilDiameterMm', pupilDiameterMm);
-                T_rec = receptorObj.T.T_energyNormalized;
-                T_val = tmp.cals{1}.describe.cache.data(observerAgeInYrs).describe.T_receptors;
-                
-                % Calculate the numerical difference between the assumed and the
-                % reconstructed receptor sensitvities
-                for ii = 1:size(T_rec, 1)-1
-                    tmp1 = sum(T_rec(1, :) - T_val(1, :));
-                    if tmp1 > 0
-                        error('Error: Couldn''t reconstruct receptor sensitivities...');
-                    end
-                end
+                modSpd = tmp.cals{1}.modulationAllMeas(1, kk).meas.pr650.spectrum;
                 
                 % Calculate the nominal contrast
                 for jj = 1:size(T_rec, 1)
-                    contrasts(:, c) = (T_rec*(modSpd-bgSpd))./(T_rec*bgSpd);
+                    contrasts{kk-1}(:, f) = (T_rec*(modSpd-bgSpd))./(T_rec*bgSpd);
                 end
-                postRecepContrasts(:, c) = [1 1 1 ; 1 -1 0]' \ contrasts(:, c);
-                
+                postRecepContrasts{kk-1}(:, f) = [1 1 1 ; 1 -1 0]' \ contrasts{kk-1}(:, f);
                 
                 % Increment the counter
-                c = c+1;
             end
             
+            
         end
+        c = c+1;
     end
     % Take the average
     lumMean = mean(luminance);
@@ -130,26 +145,40 @@ for d = 1:length(theDataPaths)
     chromMean = mean(chromaticity, 2);
     chromSD = std(chromaticity, [], 2);
     
-    contrastsMean = mean(contrasts, 2);
-    contrastsSD = std(contrasts, [], 2);
-    postRecepContrastsMean = mean(postRecepContrasts, 2);
-    postRecepContrastsSD = std(postRecepContrasts, [], 2);
-    
-    M = [];
-    M = [M lumMean lumSD chromMean(1) chromSD(1) chromMean(2) chromSD(2)];
-    for m = 1:length(contrastsMean)
-        M = [M 100*contrastsMean(m) 100*contrastsSD(m)];
-    end
-    for m = 1:length(postRecepContrastsMean)
-        M = [M 100*postRecepContrastsMean(m) 100*postRecepContrastsSD(m)];
+    for ii = 1:NContrastLevels
+        contrastsMean(:, ii) = mean(contrasts{ii}, 2);
+        contrastsSD(:, ii) = std(contrasts{ii}, [], 2);
+        postRecepContrastsMean(:, ii) = mean(postRecepContrasts{ii}, 2);
+        postRecepContrastsSD(:, ii) = std(postRecepContrasts{ii}, [], 2);
     end
     
-    fprintf(fid, '%s,%s,', theStimuli{d}, theObservers{d});
-    for ii = 1:length(M);
-        fprintf(fid, '%.2f,', M(ii));
+    Mb = [];
+    for ii = 1:NContrastLevels
+        M = [];
+        M = [M lumMean lumSD chromMean(1) chromSD(1) chromMean(2) chromSD(2)];
+        for m = 1:size(contrastsMean, 1)
+            M = [M 100*contrastsMean(m, ii) 100*contrastsSD(m, ii)];
+        end
+        for m = 1:size(postRecepContrastsMean, 1)
+            M = [M 100*postRecepContrastsMean(m, ii) 100*postRecepContrastsSD(m, ii)];
+        end
+        Mb = [Mb ; M];
+    end
+    
+    
+    for ii = 1:NContrastLevels
+        fprintf(fid, '%s,%s,%i,', theStimuli{d}, theObservers{d}, theContrastLevels{d}(ii));
+        for jj = 1:size(Mb, 2)
+            if ii > 1 && jj < 7
+                fprintf(fid, ',');
+            else
+                fprintf(fid, '%.2f,', Mb(ii, jj));
+            end
+        end
+        fprintf(fid, '\n');
     end
     fprintf(fid, '\n');
-    
+    fprintf(fid, '\n');
 end
 cd(currDir);
 fclose(fid);
