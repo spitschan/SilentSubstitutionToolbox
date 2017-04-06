@@ -7,7 +7,8 @@ function ScatterPlotWithHistogram(x, y, varargin)
 p = inputParser;
 p.addParameter('XLim', [min(x) max(x)], @isnumeric);
 p.addParameter('YLim', [min(y) max(y)], @isnumeric);
-p.addParameter('BinWidth', 0.001, @isnumeric);
+p.addParameter('XBinWidth', 0.001, @isnumeric);
+p.addParameter('YBinWidth', 0.001, @isnumeric);
 p.addParameter('XLabel', 'X', @ischar);
 p.addParameter('YLabel', 'Y', @ischar);
 p.addParameter('XRefLines', [], @isnumeric);
@@ -28,7 +29,7 @@ maxy = p.Results.YLim(2);
 %% Y histogram
 ah1 = subplot(2, 2, 4);
 hold on;
-histy = histogram(y, 'Orientation','horizontal', 'Normalization', 'probability', 'BinWidth', 0.001);
+histy = histogram(y, 'Orientation','horizontal', 'Normalization', 'probability', 'BinWidth', p.Results.XBinWidth);
 histy.FaceColor = p.Results.Color(2, :);
 plot([0 0], [miny maxy], '-k');
 
@@ -41,7 +42,7 @@ set(gca, 'Color', [0.9 0.9 0.9]);
 %% X histogram
 ah2 = subplot(2, 2, 1);
 hold on;
-histx = histogram(x, 'Normalization', 'probability', 'BinWidth', 0.001);
+histx = histogram(x, 'Normalization', 'probability', 'BinWidth', p.Results.YBinWidth);
 histx.FaceColor = p.Results.Color(1, :);
 plot([minx maxx], [0 0], '-k');
 
