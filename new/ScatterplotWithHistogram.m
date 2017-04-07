@@ -57,8 +57,13 @@ ah3 = subplot(2, 2, 3);
 hold on;
 
 % Add reference lines
-plot(p.Results.XRefLines(1, :), p.Results.XRefLines(2, :), ':k');
-plot(p.Results.YRefLines(1, :), p.Results.YRefLines(2, :), ':k');
+if ~isempty(p.Results.XRefLines)
+    plot(p.Results.XRefLines(1, :), p.Results.XRefLines(2, :), ':k');
+end
+
+if ~isempty(p.Results.YRefLines)
+    plot(p.Results.YRefLines(1, :), p.Results.YRefLines(2, :), ':k');
+end
 
 % Add scatter plot
 scatter(x, y, 8, p.Results.Color(1, :), '.');
@@ -76,12 +81,16 @@ maxp =  max([histx.Values histy.Values])*1.2;
 subplot(2, 2, 1);
 plot([mean(histx.Data) mean(histx.Data)], [0 maxp], '-r');
 plot([median(histx.Data) median(histx.Data)], [0 maxp], '-k');
-plot([p.Results.XNominalContrast p.Results.XNominalContrast], [0 maxp], ':k');
+if ~isempty(p.Results.XNominalContrast)
+    plot([p.Results.XNominalContrast p.Results.XNominalContrast], [0 maxp], ':k');
+end
 
 subplot(2, 2, 4);
 plot([0 maxp], [mean(histy.Data) mean(histy.Data)], '-r');
 plot([0 maxp], [median(histy.Data) median(histy.Data)], '-k');
-plot([0 maxp], [p.Results.YNominalContrast p.Results.YNominalContrast], ':k');
+if ~isempty(p.Results.YNominalContrast)
+    plot([0 maxp], [p.Results.YNominalContrast p.Results.YNominalContrast], ':k');
+end
 
 subplot(2, 2, 3);
 plot(mean(histx.Data), mean(histy.Data), '+r');

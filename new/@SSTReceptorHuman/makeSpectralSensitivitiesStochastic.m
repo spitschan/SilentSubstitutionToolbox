@@ -32,7 +32,7 @@ for ii = 1:NSamples
     indDiffParams.dlens = randn(s1)*dlensSD;
     indDiffParams.dmac = randn(s2)*dmaculaSD;
     indDiffParams.dphotopigment = [randn(s3)*dLConeSD randn(s4)*dMConeSD randn(s5)*dSConeSD];
-    indDiffParams.lambdaMaxShift = [randn(s3)*lMaxLConeSD randn(s4)*lMaxMConeSD randn(s5)*lMaxSConeSD];
+    indDiffParams.lambdaMaxShift = [randn(s6)*lMaxLConeSD randn(s7)*lMaxMConeSD randn(s8)*lMaxSConeSD];
     indDiffParams.shiftType = 'linear';
     [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations] = ComputeCIEConeFundamentals(obj.S,...
         obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
