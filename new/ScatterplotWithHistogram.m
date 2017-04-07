@@ -18,7 +18,7 @@ p.addParameter('YNominalContrast', [], @isnumeric)
 p.addParameter('Color', [1 0 0 ; 0 0 1], @isnumeric);
 p.addParameter('PlotMean', false, @islogical);
 p.addParameter('PlotMedian', false, @islogical);
-
+p.addParameter('MaxP', [], @isnumeric);
 
 p.KeepUnmatched = true;
 p.parse(varargin{:});
@@ -78,7 +78,11 @@ box off; pbaspect([1 1 1]);
 
 %% FIx the histogram
 % Figure out the maximum robability and add a little headroom
+if isempty(p.Results.MaxP)
 maxp =  max([histx.Values histy.Values])*1.2;
+else
+   maxp = p.Results.MaxP;
+end
 
 % Add mean, median and nominal symbols
 subplot(2, 2, 1);
