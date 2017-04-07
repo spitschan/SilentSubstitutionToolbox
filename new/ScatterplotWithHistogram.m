@@ -16,6 +16,9 @@ p.addParameter('YRefLines', [], @isnumeric);
 p.addParameter('XNominalContrast', [], @isnumeric);
 p.addParameter('YNominalContrast', [], @isnumeric)
 p.addParameter('Color', [1 0 0 ; 0 0 1], @isnumeric);
+p.addParameter('PlotMean', false, @islogical);
+p.addParameter('PlotMedian', false, @islogical);
+
 
 p.KeepUnmatched = true;
 p.parse(varargin{:});
@@ -79,22 +82,34 @@ maxp =  max([histx.Values histy.Values])*1.2;
 
 % Add mean, median and nominal symbols
 subplot(2, 2, 1);
-plot([mean(histx.Data) mean(histx.Data)], [0 maxp], '-r');
-plot([median(histx.Data) median(histx.Data)], [0 maxp], '-k');
+if p.Results.PlotMean
+    plot([mean(histx.Data) mean(histx.Data)], [0 1000], '-r');
+end
+if p.Results.PlotMedian
+    plot([median(histx.Data) median(histx.Data)], [0 1000], '-k');
+end
 if ~isempty(p.Results.XNominalContrast)
-    plot([p.Results.XNominalContrast p.Results.XNominalContrast], [0 maxp], ':k');
+    plot([p.Results.XNominalContrast p.Results.XNominalContrast], [0 1000], ':k');
 end
 
 subplot(2, 2, 4);
-plot([0 maxp], [mean(histy.Data) mean(histy.Data)], '-r');
-plot([0 maxp], [median(histy.Data) median(histy.Data)], '-k');
+if p.Results.PlotMean
+    plot([0 1000], [mean(histy.Data) mean(histy.Data)], '-r');
+end
+if p.Results.PlotMedian
+    plot([0 1000], [median(histy.Data) median(histy.Data)], '-k');
+end
 if ~isempty(p.Results.YNominalContrast)
-    plot([0 maxp], [p.Results.YNominalContrast p.Results.YNominalContrast], ':k');
+    plot([0 1000], [p.Results.YNominalContrast p.Results.YNominalContrast], ':k');
 end
 
 subplot(2, 2, 3);
-plot(mean(histx.Data), mean(histy.Data), '+r');
-plot(median(histx.Data), median(histy.Data), '+k');
+if p.Results.PlotMean
+    plot(mean(histx.Data), mean(histy.Data), '+r');
+end
+if p.Results.PlotMedian
+    plot(median(histx.Data), median(histy.Data), '+k');
+end
 
 % Adjust the axis limits
 ah1.XLim = [0 maxp];
