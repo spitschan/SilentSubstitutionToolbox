@@ -16,7 +16,7 @@ NSamples = p.Results.NSamples;
 
 % The standard deviations are given in Table 5 in Asano et al. 2015
 dlensSD = 18.7;
-dmaculaSD = 10;%36.5;
+dmaculaSD = 25;
 dLConeSD = 9.0;
 dMConeSD = 9.0;
 dSConeSD = 7.4;

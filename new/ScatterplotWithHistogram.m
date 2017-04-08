@@ -19,6 +19,7 @@ p.addParameter('Color', [1 0 0 ; 0 0 1], @isnumeric);
 p.addParameter('PlotMean', false, @islogical);
 p.addParameter('PlotMedian', false, @islogical);
 p.addParameter('MaxP', [], @isnumeric);
+p.addParameter('PlotMarginals', true, @islogical);
 
 p.KeepUnmatched = true;
 p.parse(varargin{:});
@@ -30,33 +31,37 @@ miny = p.Results.YLim(1);
 maxy = p.Results.YLim(2);
 
 %% Y histogram
-ah1 = subplot(2, 2, 4);
-hold on;
-histy = histogram(y, 'Orientation','horizontal', 'Normalization', 'probability', 'BinWidth', p.Results.YBinWidth);
-histy.FaceColor = p.Results.Color(2, :);
-plot([0 0], [miny maxy], '-k');
-
-box off; pbaspect([1 1 1]);
-set(gca, 'TickDir', 'out');
-set(gca, 'YAxisLocation', 'right');
-xlabel('Probability');
-set(gca, 'Color', [0.9 0.9 0.9]);
-
-%% X histogram
-ah2 = subplot(2, 2, 1);
-hold on;
-histx = histogram(x, 'Normalization', 'probability', 'BinWidth', p.Results.XBinWidth);
-histx.FaceColor = p.Results.Color(1, :);
-plot([minx maxx], [0 0], '-k');
-
-box off; pbaspect([1 1 1]);
-set(gca, 'TickDir', 'out');
-set(gca, 'XAxisLocation', 'top');
-ylabel('Probability');
-set(gca, 'Color', [0.9 0.9 0.9]);
+if p.Results.PlotMarginals
+    ah1 = subplot(2, 2, 4);
+    hold on;
+    histy = histogram(y, 'Orientation','horizontal', 'Normalization', 'probability', 'BinWidth', p.Results.YBinWidth);
+    histy.FaceColor = p.Results.Color(2, :);
+    plot([0 0], [miny maxy], '-k');
+    
+    box off; pbaspect([1 1 1]);
+    set(gca, 'TickDir', 'out');
+    set(gca, 'YAxisLocation', 'right');
+    xlabel('Probability');
+    set(gca, 'Color', [0.9 0.9 0.9]);
+    
+    %% X histogram
+    ah2 = subplot(2, 2, 1);
+    hold on;
+    histx = histogram(x, 'Normalization', 'probability', 'BinWidth', p.Results.XBinWidth);
+    histx.FaceColor = p.Results.Color(1, :);
+    plot([minx maxx], [0 0], '-k');
+    
+    box off; pbaspect([1 1 1]);
+    set(gca, 'TickDir', 'out');
+    set(gca, 'XAxisLocation', 'top');
+    ylabel('Probability');
+    set(gca, 'Color', [0.9 0.9 0.9]);
+end
 
 %% Scatterplot
-ah3 = subplot(2, 2, 3);
+if p.Results.PlotMarginals
+    ah3 = subplot(2, 2, 3);
+end
 hold on;
 
 % Add reference lines
@@ -76,38 +81,42 @@ ylabel(p.Results.YLabel);
 set(gca, 'TickDir', 'out');
 box off; pbaspect([1 1 1]);
 
-%% FIx the histogram
+%% Fix the histogram
 % Figure out the maximum robability and add a little headroom
 if isempty(p.Results.MaxP)
-maxp =  max([histx.Values histy.Values])*1.2;
+    maxp =  max([histx.Values histy.Values])*1.2;
 else
-   maxp = p.Results.MaxP;
+    maxp = p.Results.MaxP;
 end
 
-% Add mean, median and nominal symbols
-subplot(2, 2, 1);
-if p.Results.PlotMean
-    plot([mean(histx.Data) mean(histx.Data)], [0 1000], '-r');
-end
-if p.Results.PlotMedian
-    plot([median(histx.Data) median(histx.Data)], [0 1000], '-k');
-end
-if ~isempty(p.Results.XNominalContrast)
-    plot([p.Results.XNominalContrast p.Results.XNominalContrast], [0 1000], ':k');
+if p.Results.PlotMarginals
+    % Add mean, median and nominal symbols
+    subplot(2, 2, 1);
+    if p.Results.PlotMean
+        plot([mean(histx.Data) mean(histx.Data)], [0 1000], '-r');
+    end
+    if p.Results.PlotMedian
+        plot([median(histx.Data) median(histx.Data)], [0 1000], '-k');
+    end
+    if ~isempty(p.Results.XNominalContrast)
+        plot([p.Results.XNominalContrast p.Results.XNominalContrast], [0 1000], ':k');
+    end
+    
+    subplot(2, 2, 4);
+    if p.Results.PlotMean
+        plot([0 1000], [mean(histy.Data) mean(histy.Data)], '-r');
+    end
+    if p.Results.PlotMedian
+        plot([0 1000], [median(histy.Data) median(histy.Data)], '-k');
+    end
+    if ~isempty(p.Results.YNominalContrast)
+        plot([0 1000], [p.Results.YNominalContrast p.Results.YNominalContrast], ':k');
+    end
 end
 
-subplot(2, 2, 4);
-if p.Results.PlotMean
-    plot([0 1000], [mean(histy.Data) mean(histy.Data)], '-r');
+if p.Results.PlotMarginals
+    subplot(2, 2, 3);
 end
-if p.Results.PlotMedian
-    plot([0 1000], [median(histy.Data) median(histy.Data)], '-k');
-end
-if ~isempty(p.Results.YNominalContrast)
-    plot([0 1000], [p.Results.YNominalContrast p.Results.YNominalContrast], ':k');
-end
-
-subplot(2, 2, 3);
 if p.Results.PlotMean
     plot(mean(histx.Data), mean(histy.Data), '+r');
 end
@@ -115,12 +124,17 @@ if p.Results.PlotMedian
     plot(median(histx.Data), median(histy.Data), '+k');
 end
 
-% Adjust the axis limits
-ah1.XLim = [0 maxp];
-ah1.YLim = [miny maxy];
-
-ah2.XLim = [minx maxx];
-ah2.YLim = [0 maxp];
-
-ah3.XLim = [minx maxx];
-ah3.YLim = [miny maxy];
+if p.Results.PlotMarginals
+    % Adjust the axis limits
+    ah1.XLim = [0 maxp];
+    ah1.YLim = [miny maxy];
+    
+    ah2.XLim = [minx maxx];
+    ah2.YLim = [0 maxp];
+    
+    ah3.XLim = [minx maxx];
+    ah3.YLim = [miny maxy];
+else
+    xlim([minx maxx]);
+    ylim([miny maxy]);
+end
