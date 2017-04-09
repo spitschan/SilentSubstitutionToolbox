@@ -52,7 +52,7 @@ classdef SSTReceptor < handle
                      
             %% Parse vargin for options passed here
             p = inputParser;
-            p.addParameter('verbosity','none',@ischar);
+            p.addParameter('verbosity','high',@ischar);
             p.addParameter('S',[380 2 201],@isnumeric);
             p.KeepUnmatched = true;
             p.parse(varargin{:});

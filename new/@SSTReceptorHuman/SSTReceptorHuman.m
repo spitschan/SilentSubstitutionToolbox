@@ -38,7 +38,7 @@ classdef SSTReceptorHuman < SSTReceptor;
             % Parse vargin for options passed here
             p = inputParser;
             p.addParameter('obsAgeInYrs', 32, @isnumeric);
-            p.addParameter('obsPupilDiameterMm', 4, @isnumeric);
+            p.addParameter('obsPupilDiameterMm', 3, @isnumeric);
             p.addParameter('fieldSizeDeg', 10, @isnumeric);
             p.KeepUnmatched = true;
             p.parse(varargin{:});
@@ -46,9 +46,17 @@ classdef SSTReceptorHuman < SSTReceptor;
             obj.obsPupilDiameterMm = p.Results.obsPupilDiameterMm;
             obj.fieldSizeDeg = p.Results.fieldSizeDeg;
             obj = makeSpectralSensitivities(obj);
+            
+            if strcmp(obj.verbosity, 'high')
+                fprintf('* Setting up receptor object with parameters:\n');
+                fprintf('  <strong>Age [yrs]</strong>:\t\t%i\n', obj.obsAgeInYrs);
+                fprintf('  <strong>Pupil diameter [mm]</strong>:\t%.2f\n', obj.obsPupilDiameterMm);
+                fprintf('  <strong>Field size [deg]</strong>:\t%.2f\n\n', obj.fieldSizeDeg);
+            end
         end
         makeSpectralSensitivitiesStochastic(obj, varargin);
         [obj, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin);
+        setMD5Hash(obj);
     end
     
     % Get methods for dependent properties
@@ -61,5 +69,5 @@ classdef SSTReceptorHuman < SSTReceptor;
     
     % Methods that are totally private (subclasses cannot call these)
     methods (Access = private)
-    end 
+    end
 end

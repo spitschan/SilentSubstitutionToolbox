@@ -2,7 +2,7 @@ function obj = makeSpectralSensitivitiesStochastic(obj, varargin)
 
 % Parse vargin for options passed here
 p = inputParser;
-p.addParameter('NSamples', 100, @isnumeric);
+p.addParameter('NSamples', 1000, @isnumeric);
 p.KeepUnmatched = true;
 p.parse(varargin{:});
 NSamples = p.Results.NSamples;
@@ -27,8 +27,19 @@ lMaxSConeSD = 1.3;
 % Create 8 random number generators
 [s1, s2, s3, s4, s5, s6, s7, s8] = RandStream.create('mrg32k3a','NumStreams',8);
 
+% Print out some info
+NPrintStep = 200;
+if strcmp(obj.verbosity, 'high')
+    fprintf('* Generating observers... \n');
+end
+
 % Sample
 for ii = 1:NSamples
+    if strcmp(obj.verbosity, 'high')
+        if mod(ii, NPrintStep) == 0
+            fprintf('  %i/%i <strong>[%.2f%s]</strong>\n', ii, NSamples, 100*ii/NSamples, '%');
+        end
+    end
     indDiffParams.dlens = randn(s1)*dlensSD;
     indDiffParams.dmac = randn(s2)*dmaculaSD;
     indDiffParams.dphotopigment = [randn(s3)*dLConeSD randn(s4)*dMConeSD randn(s5)*dSConeSD];

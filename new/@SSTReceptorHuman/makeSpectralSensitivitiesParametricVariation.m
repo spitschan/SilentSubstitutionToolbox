@@ -22,6 +22,11 @@ indDiffParams.dphotopigment = [0 0 0];
 indDiffParams.lambdaMaxShift = [0 0 0];
 indDiffParams.shiftType = 'linear';
 
+if strcmp(obj.verbosity, 'high')
+    % Print out some info
+    fprintf('* Generating parametric variation in <strong>%s</strong>... ', p.Results.WhichParameter);
+end
+
 % Sample
 for ii = 1:NTitrations
     switch p.Results.WhichParameter
@@ -140,4 +145,8 @@ for ii = 1:NTitrations
     obj.Tp{theIdx, ii}.T_energyNormalized = T_energyNormalized;
     obj.Tp{theIdx, ii}.indDiffParams = indDiffParams;
     obj.Tp{theIdx, ii}.adjIndDiffParams = adjIndDiffParams;
+end
+
+if strcmp(obj.verbosity, 'high')
+    fprintf('Done.\n');
 end

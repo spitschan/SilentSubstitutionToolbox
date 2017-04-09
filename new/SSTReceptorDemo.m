@@ -11,28 +11,36 @@ tmp = load('/Users/spitschan/Documents/MATLAB/toolboxes/SilentSubstitutionToolbo
 modSpd = tmp.spd;
 
 %% Set up receptor object
-receptorObj = SSTReceptorHuman('obsAgeYrs', 32);
+cacheDir = fullfile(fileparts(which('SSTReceptorHuman')), 'cache');
 
-%% Generate the space of cones 
-NTitrations = 16;
-
-% Do the parametric "sampling"
-theIndDiffParams = {'dlens' 'dmac' 'dphotopigmentL' 'dphotopigmentM' 'dphotopigmentS' ...
-    'lambdaMaxShiftL' 'lambdaMaxShiftM' 'lambdaMaxShiftS' 'obsPupilDiameterMm'};
-for ss = 1:length(theIndDiffParams)
-    % Vary the parameter
-    [~, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
-        'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
+theDesiredHash = '50be1fa91c9911cb5be28c2e2f3adad3';
+theFile = fullfile(cacheDir, ['SSTReceptorHuman_' theDesiredHash '.mat']);
+% See if the desired hash exists in the cache dir
+if exist(theFile, 'file')
+    load(theFile);
+else
+    receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
+    
+    % Generate the space of cones
+    NTitrations = 16;
+    
+    % Do the parametric "sampling"
+    theIndDiffParams = {'dlens' 'dmac' 'dphotopigmentL' 'dphotopigmentM' 'dphotopigmentS' ...
+        'lambdaMaxShiftL' 'lambdaMaxShiftM' 'lambdaMaxShiftS' 'obsPupilDiameterMm'};
+    for ss = 1:length(theIndDiffParams)
+        % Vary the parameter
+        [~, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
+            'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
+    end
+    
+    % Stochastic sampling
+    NSamples = 1000;
+    receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
+    
+    % Save the receptor object
+    receptorObj.setMD5Hash();
+    save(fullfile(cacheDir, ['SSTReceptorHuman_' receptorObj.MD5Hash]), 'receptorObj');
 end
-
-% Stochastic sampling
-NSamples = 1000;
-receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
-
-% Save the receptor object
-receptorObj.MD5Hash = DataHash(receptorObj);
-outSaveDir = fullfile(which('SSTReceptorHuman'), 'cache');
-save(fullfile(outSaveDir, ['SSTReceptor_' receptorObj.MD5Hash], 'receptorObj'));
 
 %% Plot the parametric varation
 figParv = figure;
