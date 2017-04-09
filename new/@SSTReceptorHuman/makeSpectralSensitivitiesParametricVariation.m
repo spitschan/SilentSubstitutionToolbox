@@ -34,6 +34,7 @@ for ii = 1:NTitrations
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
+            theIdx = 1;
         case 'dmac'
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
@@ -43,24 +44,67 @@ for ii = 1:NTitrations
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
-        case 'dphotopigment'
+            theIdx = 2;
+        case 'dphotopigmentL'
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
-            indDiffParams.dphotopigment = [parv(ii) parv(ii) parv(ii)];
+            indDiffParams.dphotopigment = [parv(ii) 0 0];
             parvlabel = '%\DeltaD_{pigment}';
             parvlabellong =  {'Photopigment' ; 'optical density'};
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
-        case 'lambdaMaxShift'
+            theIdx = 3;
+        case 'dphotopigmentM'
+            parv = linspace(-50, 50, NTitrations);
+            indDiffParams = DefaultIndDiffParams;
+            indDiffParams.dphotopigment = [0 parv(ii) 0];
+            parvlabel = '%\DeltaD_{pigment}';
+            parvlabellong =  {'Photopigment' ; 'optical density'};
+            [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
+                false,[],[],indDiffParams);
+            theIdx = 4;
+        case 'dphotopigmentS'
+            parv = linspace(-50, 50, NTitrations);
+            indDiffParams = DefaultIndDiffParams;
+            indDiffParams.dphotopigment = [0 0 parv(ii)];
+            parvlabel = '%\DeltaD_{pigment}';
+            parvlabellong =  {'Photopigment' ; 'optical density'};
+            [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
+                false,[],[],indDiffParams);
+            theIdx = 5;
+        case 'lambdaMaxShiftL'
             parv = linspace(-2, 2, NTitrations);
             indDiffParams = DefaultIndDiffParams;
-            indDiffParams.lambdaMaxShift = [parv(ii) parv(ii) parv(ii)];
+            indDiffParams.lambdaMaxShift = [parv(ii) 0 0];
             parvlabel = '\Delta\lambda_{max}';
             parvlabellong = {'Peak sensitivity' '\lambda_{max}'};
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
+            theIdx = 6;
+        case 'lambdaMaxShiftM'
+            parv = linspace(-2, 2, NTitrations);
+            indDiffParams = DefaultIndDiffParams;
+            indDiffParams.lambdaMaxShift = [0 parv(ii) 0];
+            parvlabel = '\Delta\lambda_{max}';
+            parvlabellong = {'Peak sensitivity' '\lambda_{max}'};
+            [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
+                false,[],[],indDiffParams);
+            theIdx = 7;
+        case 'lambdaMaxShiftS'
+            parv = linspace(-2, 2, NTitrations);
+            indDiffParams = DefaultIndDiffParams;
+            indDiffParams.lambdaMaxShift = [0 0 parv(ii)];
+            parvlabel = '\Delta\lambda_{max}';
+            parvlabellong = {'Peak sensitivity' '\lambda_{max}'};
+            [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
+                false,[],[],indDiffParams);
+            theIdx = 8;
         case 'obsPupilDiameterMm'
             parv = linspace(3, 9, NTitrations);
             indDiffParams = DefaultIndDiffParams;
@@ -69,6 +113,7 @@ for ii = 1:NTitrations
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,parv(ii),[],[],[], ...
                 false,[],[],indDiffParams);
+            theIdx = 9;
     end
     
     % Get the cone fundamentals
@@ -79,33 +124,20 @@ for ii = 1:NTitrations
             parvreal(:, ii) = adjIndDiffParams.lens;
         case 'dmac'
             parvreal(:, ii) = adjIndDiffParams.mac;
-        case 'dphotopigment'
+        case {'dphotopigmentL' 'dphotopigmentM' 'dphotopigmentS'}
             parvreal(:, ii) = adjIndDiffParams.dphotopigment;
-        case 'lambdaMaxShift'
+        case {'lambdaMaxShiftL' 'lambdaMaxShiftM' 'lambdaMaxShiftS'}
             parvreal(:, ii) = indDiffParams.lambdaMaxShift;
         case 'obsPupilDiameterMm'
             parvreal(:, ii) = parv(ii);
     end
     
     % obj = makeSpectralSensitivities(obj)
-    obj.Ts{ii}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
-    obj.Ts{ii}.T_quantalAbsorptions = T_quantalAbsorptions;
-    obj.Ts{ii}.T_quantalIsomerizations = T_quantalIsomerizations;
-    obj.Ts{ii}.T_energy = T_energy;
-    obj.Ts{ii}.T_energyNormalized = T_energyNormalized;
-    obj.Ts{ii}.adjIndDiffParams = adjIndDiffParams;
+    obj.Tp{theIdx, ii}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
+    obj.Tp{theIdx, ii}.T_quantalAbsorptions = T_quantalAbsorptions;
+    obj.Tp{theIdx, ii}.T_quantalIsomerizations = T_quantalIsomerizations;
+    obj.Tp{theIdx, ii}.T_energy = T_energy;
+    obj.Tp{theIdx, ii}.T_energyNormalized = T_energyNormalized;
+    obj.Tp{theIdx, ii}.indDiffParams = indDiffParams;
+    obj.Tp{theIdx, ii}.adjIndDiffParams = adjIndDiffParams;
 end
-
-% % The standard deviations are given in Table 5 in Asano et al. 2015
-% dlensSD = 18.7;
-% dmaculaSD = 10;%36.5;
-% dLConeSD = 9.0;
-% dMConeSD = 9.0;
-% dSConeSD = 7.4;
-% lMaxLConeSD = 2.0;
-% lMaxMConeSD = 1.5;
-% lMaxSConeSD = 1.3;
-%
-% % Create 8 random number generators
-% [s1, s2, s3, s4, s5, s6, s7, s8] = RandStream.create('mrg32k3a','NumStreams',8);
-%

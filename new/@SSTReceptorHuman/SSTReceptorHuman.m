@@ -10,8 +10,10 @@ classdef SSTReceptorHuman < SSTReceptor;
         obsAgeInYrs;
         obsPupilDiameterMm;
         fieldSizeDeg;
-        T;
-        Ts;
+        T;  % Point spectral sensitivity
+        Tp; % Parametric variation
+        Ts; % Stochastic sampling
+        MD5Hash;
     end
     
     % Private properties. Only methods of the parent class can set these

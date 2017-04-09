@@ -1,4 +1,4 @@
-function plot_error_ellipse(data)
+function [X Y] = get_error_ellipse(data, alpha)
 
 % Calculate the eigenvectors and eigenvalues
 covariance = cov(data);
@@ -13,10 +13,10 @@ largest_eigenval = max(max(eigenval));
 
 % Get the smallest eigenvector and eigenvalue
 if(largest_eigenvec_ind_c == 1)
-    smallest_eigenval = max(eigenval(:,2))
+    smallest_eigenval = max(eigenval(:,2));
     smallest_eigenvec = eigenvec(:,2);
 else
-    smallest_eigenval = max(eigenval(:,1))
+    smallest_eigenval = max(eigenval(:,1));
     smallest_eigenvec = eigenvec(1,:);
 end
 
@@ -32,16 +32,16 @@ end
 % Get the coordinates of the data mean
 avg = mean(data);
 
-% Get the 95% confidence interval error ellipse
-chisquare_val = 2.4477;
-theta_grid = linspace(0,2*pi);
+% Get the XX% confidence interval error ellipse
+chisquare_val = sqrt(chi2inv(alpha, 2));
+theta_grid = linspace(0,2*pi,10000);
 phi = angle;
 X0=avg(1);
 Y0=avg(2);
 a=chisquare_val*sqrt(largest_eigenval);
 b=chisquare_val*sqrt(smallest_eigenval);
 
-% the ellipse in x and y coordinates 
+% the ellipse in x and y coordinates
 ellipse_x_r  = a*cos( theta_grid );
 ellipse_y_r  = b*sin( theta_grid );
 
@@ -52,5 +52,5 @@ R = [ cos(phi) sin(phi); -sin(phi) cos(phi) ];
 r_ellipse = [ellipse_x_r;ellipse_y_r]' * R;
 
 % Draw the error ellipse
-plot(r_ellipse(:,1) + X0,r_ellipse(:,2) + Y0,'-k')
-hold on;
+X = (r_ellipse(:,1) + X0);
+Y = (r_ellipse(:,2) + Y0);

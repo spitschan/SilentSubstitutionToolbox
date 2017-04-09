@@ -1,9 +1,6 @@
 tbUse('SilentSubstitutionToolbox');
 clearvars; close all; clc;
 
-%% Set up receptor object
-receptorObj = SSTReceptorHuman('obsAgeYrs', 30);
-
 %% Get some colors
 theRGB = DefaultReceptorColors;
 
@@ -13,18 +10,34 @@ bgSpd = tmp.spd;
 tmp = load('/Users/spitschan/Documents/MATLAB/toolboxes/SilentSubstitutionToolbox/ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_mod.mat');
 modSpd = tmp.spd;
 
-%% Parametric variation
-NTitrations = 16;
-yAxLims = [-0.06 0.06];
+%% Set up receptor object
+receptorObj = SSTReceptorHuman('obsAgeYrs', 32);
 
-%% Set up all other parameters
-figParv = figure;
-theIndDiffParams = {'dlens' 'dmac' 'dphotopigment' 'lambdaMaxShift', 'obsPupilDiameterMm'};
+%% Generate the space of cones 
+NTitrations = 16;
+
+% Do the parametric "sampling"
+theIndDiffParams = {'dlens' 'dmac' 'dphotopigmentL' 'dphotopigmentM' 'dphotopigmentS' ...
+    'lambdaMaxShiftL' 'lambdaMaxShiftM' 'lambdaMaxShiftS' 'obsPupilDiameterMm'};
 for ss = 1:length(theIndDiffParams)
     % Vary the parameter
     [~, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
         'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
-    
+end
+
+% Stochastic sampling
+NSamples = 1000;
+receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
+
+% Save the receptor object
+receptorObj.MD5Hash = DataHash(receptorObj);
+outSaveDir = fullfile(which('SSTReceptorHuman'), 'cache');
+save(fullfile(outSaveDir, ['SSTReceptor_' receptorObj.MD5Hash], 'receptorObj'));
+
+%% Plot the parametric varation
+figParv = figure;
+yAxLims = [-0.06 0.06];
+for ss = 1:length(theIndDiffParams)
     if parv(1) < 0
         xAxLims = [parv(1)*1.1 parv(end)*1.1];
     else
@@ -49,7 +62,7 @@ for ss = 1:length(theIndDiffParams)
         plot(parv, contrasts(ii, :)', '-o', 'Color', theRGB(ii, :), 'MarkerEdgeColor', 'k', ...
             'MarkerFaceColor', theRGB(ii, :)); hold on;
     end
-
+    
     % Add title and tweak plots
     title(parvlabellong);
     box off;
@@ -65,9 +78,6 @@ set(figParv, 'Color', 'w');
 set(figParv, 'InvertHardcopy', 'off');
 saveas(figParv, 'ParvFig.png', 'png');
 
-%% Stochastic sampling
-NSamples = 1000;
-receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
 
 %%
 % Calculate contrast
