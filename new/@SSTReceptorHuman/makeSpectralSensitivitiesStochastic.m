@@ -34,7 +34,7 @@ for ii = 1:NSamples
     indDiffParams.dphotopigment = [randn(s3)*dLConeSD randn(s4)*dMConeSD randn(s5)*dSConeSD];
     indDiffParams.lambdaMaxShift = [randn(s6)*lMaxLConeSD randn(s7)*lMaxMConeSD randn(s8)*lMaxSConeSD];
     indDiffParams.shiftType = 'linear';
-    [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations] = ComputeCIEConeFundamentals(obj.S,...
+    [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
         obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
         false,[],[],indDiffParams);
     T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
@@ -46,4 +46,6 @@ for ii = 1:NSamples
     obj.Ts{ii}.T_quantalIsomerizations = T_quantalIsomerizations;
     obj.Ts{ii}.T_energy = T_energy;
     obj.Ts{ii}.T_energyNormalized = T_energyNormalized;
+    obj.Ts{ii}.indDiffParams = indDiffParams;
+    obj.Ts{ii}.adjIndDiffParams = adjIndDiffParams;
 end
