@@ -146,6 +146,13 @@ C = [C1 ; C2]*B_primary;
 % Tolerance vector, just expand passed maxPowerDiff.
 Q = ones(2*(vectorLength-1), 1)*maxPowerDiff;
 
+%% Fix numerical issues with vlb > vub that can sometimes come up.
+for ii = 1:length(vub)
+    if (vlb(ii) > vub(ii) - 1e-6)
+        vlb(ii) = vub(ii) - 1e-6;
+    end
+end
+
 %% Optimize.
 % Progressive smoothing seems to work better than providing final value all
 % at once.
