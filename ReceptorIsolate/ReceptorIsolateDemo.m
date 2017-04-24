@@ -1,7 +1,7 @@
 % ReceptorIsolateDemo
 %
 % Find modulations that isolates various photopigments, for various device
-% models. The engine that drives this demo is ReceptorIsolate.
+% models. The engine that drives this demo is called ReceptorIsolate.
 %
 % This demonstrates various cases, including when you've just got a
 % standard three primary monitor and when you have a device that can
@@ -16,6 +16,7 @@
 % 2/3/13   ms       Updated to match changed ReceptorIsolate syntax.
 % 4/19/13  dhb, ms  Got this working again.
 % 12/11/14 dhb      Clean up for release.
+% 1/6/17   ms       Updated name convention for photopigments.
 
 %% Clear and close
 clear; close all;
@@ -201,7 +202,8 @@ switch (whichModel)
         
         % Define photoreceptor classes that we'll consider.
         % ReceptorIsolate has a few more built-ins than these.
-        photoreceptorClasses = {'LCone', 'MCone', 'SCone', 'Melanopsin', 'Rods', 'LConeHemo', 'MConeHemo', 'SConeHemo'};
+        photoreceptorClasses = {'LConeTabulatedAbsorbance', 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance', 'Melanopsin', 'Rods', ...
+            'LConeTabulatedAbsorbancePenumbral', 'MConeTabulatedAbsorbancePenumbral', 'SConeTabulatedAbsorbancePenumbral'};
         
         % Correct for pigment bleaching if desired.  This is done
         % separately for open-field and penumbral cones.  The bleaching
