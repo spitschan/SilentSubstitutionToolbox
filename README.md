@@ -35,4 +35,4 @@ For an overview of the functions contained within this toolbox, please look at `
 * [v1.0](https://github.com/spitschan/SilentSubstitutionToolbox/releases/tag/v1.0) (December 14, 2014)
 
 #### 7. Questions, Feedback?
-Please open an issue on the GitHub page for this toolbox. For other questions, [email Manuel Spitschan](spitschan@stanford.edu).
+Please open an issue on the GitHub page for this toolbox. For other questions, [email Manuel Spitschan](mailto:spitschan@stanford.edu).
