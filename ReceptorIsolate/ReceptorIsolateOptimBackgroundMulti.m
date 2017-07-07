@@ -1,66 +1,49 @@
 function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundMulti(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground)
-% [isolatingPrimaries] = ReceptorIsolate(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,[desiredContrasts],[ambientSpd])
+% [isolatingPrimaries] = ReceptorIsolateOptimBackgroundMulti(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground)
 %
-% Find the best isolating modulation around a given background.  This is a very general routine,
-% with inputs as follows.
+% This routine optimize finds the background primaries and k modulation
+% primaries maximizing the contrast on the specified k modulation
+% directions. This is done in simultaneous optimization.
+% 
+% It is also possible to run this routine by passing a background and
+% pegging it to the passed settings, such that the optimization does NOT
+% find the best background, but only the best modulation primaries.
 %
-% T_receptors -             Spectral sensitivities of all receptors being considered, in standard PTB format.
-% whichReceptorsToIsolate - Index vector specifying which receptors we want to modulate.
-% whichReceptorsToIgnore -  Index vector specifying receptors where we don't care what they do. Can be the empty matrix.
-%                           Why, you ask, might you want to do this?  Maybe if T_receptors contains the rods but you're
-%                           working at high light levels.
-% whichReceptorsToMinimize  Index vector specifying which receptors we want to minimize (i.e. not 0, but get close to it).
-%                           This is a vestigal argument.  Receptors listed here are actually ignored, rather than minimized.
-% B_primary -               These calculations are device dependent.  B_primary is a set of basis vectors for the lights
-%                           that the device can produce, scaled so that the gamut is for the range [0-1] on each primary.
-% backgroundPrimary -       Background around which modulation will occur, in primary space.
-% initialPrimary -          There are cases in which we want to enforce specific values on certain primaries in the modulation spectra.
-%                           This is done here. In most cases, this primary vector is the background but not necessarily.
-% whichPrimariesToPin -     We can force some primaries not to be modulated.
-%                           Why, you ask, might you want to do this?  We can't exactly remember now, but it isn't doing
-%                           any harm to have the option.  Pass empty vector when you don't want to impose such a constraint.
-% primaryHeadRoom -         If you don't want to modulate all the way to the edge of the device gamut, pass a number in the
-%                           range [0-1] here.  This constrains the primary settings to be within [0+primaryHeadRoom,1-primaryHeadRoom].
-%                           This can be useful for anticipating the fact that the device may get dimmer over time, so that the
-%                           stimulus you compute at time 0 remains in gamut after a subsequent calibration.
-% maxPowerDiff -            This enforces a smoothness constraint on the spectrum of the computed modulation.  You wouldn't
-%                           use this for a device like a monitor, but for our OneLight device this prevents solutions that
-%                           wiggle rapdily as a function of wavelength.  Our intuition is that such wiggly spectra are not
-%                           as robust in their isolationg properties as smooth spectra.  Pass Inf to ignore.
-% desiredContrasts -        Vector of target contrasts for receptors that will be isolated.  This is useful, for example,
-%                           if you want to do something like produce a modulation with equal L and M cone contrasts with
-%                           opposite signs while at the same time silencing the S cones.  This vector should have the same
-%                           length as whichReceptorsToIsolate.  It can be the empty vector, in which case the routine maximizes
-%                           the sum of the contrasts of the receptors in whichReceptorsToIsolate.
-% ambientSpd -              Spectral power distribution of the ambient light.  Optional.  Defaults to zero.
+% Input arguments follow largely the function ReceptorIsolate, which finds
+% the modulation primaries maximizing the contrast on one given modulation
+% direction.
 %
-% Contrast held at zero for any receptor classes not in the lists.
 %
-% Notes:
-%   A) We don't pass the spectral sampling information, because this
-%   routine does not need it.  The spectral sampling is assumed to match
-%   across all spectral functions (receptor sensitivities, spectral
-%   primaries, and ambientSpd), and the smoothness constraint is enforced in
-%   wavelength sampling steps not absolute wavelength.
+% Input arguments:
+% 
+% T_receptors - Vector of spectral sensitivities for N receptors
+% whichReceptorsToIsolate - Logical array of size N, indicating which
+%                           modulations should be isolated
+% whichReceptorsToIgnore - Logical array of size N, indicating which
+%                          modulations should be ignored in the
+%                          optimization (i.e. neither isolated nor zeroed)
+% whichReceptorsToMinimize - Logical array of size N, indicating which
+%                            modulations should be minimized (i.e. driven
+%                            towards 0).
+%                            NOTE: THIS CURRENTLY DOES NOTHING.
+% B_primary - Array of spectral primaries
+% backgroundPrimary - Background primary, will only be used if background
+%                     is pegged using the pegBackground argument.
+% initialPrimary - Starting point for optimization. 
+% whichPrimariesToPin 
+% primaryHeadRoom
+% maxPowerDiff
+% desiredContrasts
+% ambientSpd
+% directionsYoked
+% directionsYokedAbs
+% pegBackground - Boolean flag to set if the background should not be
+%                 optimized. If set, the k modulation primaries will
+%                 nonetheless be found, maximizing contrast on the k
+%                 directions.
 %
-% Known Bugs:
-%   A) It looks like the code that enforces gamut limitations in a manner that
-%   handles backgrounds that do not correspond to device primary settings
-%   of 0.5 only works just right if no primaries are being pinned.  There
-%   is an error check at the end of the function which throws an error if
-%   any of the primary values returned are outside the range [0-1], so our
-%   motivation for thinking about this will only cross threshold if this
-%   error ever gets thrown.
 %
-% 4/1/12   dhb      Wrote it.
-% 11/15/12 dhb, ms  Remove upperVaryFactor arg.  Bound between 0 and 1-primaryHeadRoom.
-% 12/4/12  ms       Fixed a bug in the optimization object, added case
-%                   handling for smoothing spd or primaries.
-% 4/19/13  dhb, ms  Added lots of comments.  Change behavior when desiredContrasts not passed, so as to maximize sum of contrasts
-%                   of modulations, rather than sum of activations.
-%          dhb      Change error function a little to avoid numerical issues.
-% 8/27/13  ll       Fix minor typo in variable name
-% 12/12/13 dhb      Clean up comments etc.
+% 7/18/17   ms      Commented.
 
 % Check whether the desired contrasts were passed, and if so check
 % consistency of its dimensions.
@@ -112,15 +95,10 @@ vlb = backgroundPrimary; vlb(:) = primaryHeadRoom;
 vlb(whichPrimariesToPin) = initialPrimary(whichPrimariesToPin);
 vub(whichPrimariesToPin) = initialPrimary(whichPrimariesToPin);
 
-
-%% Construct constraint matrix.  This enforces the
-% smoothness constraint on the spectrum, ensuring that
-% the maximum difference between power at adjacent wavelengths
-% is less than passed value maxPowerDiff.
-%
-% We use two tacked matrices, C1 and C2, so that we can express
-% the desired absolute value constraint in terms of a set of
-% linear inequalities.
+%% Constraints
+% (1) Set up the constraints. This follows the same logic as ReceptorIsolate.
+% We start with the case where we only want to find ONE modulation
+% direction.
 vectorLength = size(B_primary, 1);
 C1 = zeros(vectorLength-1, vectorLength);
 for i = 1:vectorLength-1
@@ -141,43 +119,36 @@ C = [C1 ; C2]*B_primary;
 % Tolerance vector, just expand passed maxPowerDiff.
 Q = ones(2*(vectorLength-1), 1)*1000*maxPowerDiff;
 
-%% Optimize.
-% Progressive smoothing seems to work better than providing final value all
-% at once.
+% (2) Set up the contraints for the background primary and all modulation
+% primaries. These are of size k.
 Qx = repmat(Q, 1, nModulations+1);
 vlbx = repmat(vlb, 1, nModulations+1);
 vubx = repmat(vub, 1, nModulations+1);
 
+% If the background shouldn't be changed (i.e. pegged), just set the lower
+% and upper constraint for that column to be the background primary.
 if pegBackground
     vlbx(:, 1) = backgroundPrimary;
     vubx(:, 1) = backgroundPrimary;
 end
 
+% Construct the smoothness constraint
 theString = 'C';
 for i = 1:nModulations
     theString = [theString ',C'];
 end
 eval(['Cx = blkdiag(' theString ');']);
 
+%% Do the optimization.
 options = optimset('fmincon');
 options = optimset(options,'Diagnostics','off','Display','off','LargeScale','off','Algorithm','sqp', 'MaxFunEvals', 100000, 'TolFun', 1e-10, 'TolCon', 1e-10, 'TolX', 1e-10);
-x = fmincon(@(x) IsolateFunction(x,B_primary,[ambientSpd],T_receptors,whichReceptorsToIsolate,whichReceptorsToZero,whichReceptorsToMinimize,nModulations,directionsYoked,directionsYokedAbs),x,Cx,Qx,[],[],vlbx,vubx,@(x)nonlconstraint(x, nModulations),options);
+x = fmincon(@(x) IsolateFunction(x,B_primary,ambientSpd,T_receptors,whichReceptorsToIsolate,whichReceptorsToZero,whichReceptorsToMinimize,nModulations,directionsYoked,directionsYokedAbs),x,Cx,Qx,[],[],vlbx,vubx,@(x)nonlconstraint(x, nModulations),options);
 
+% Extract the output arguments to be passed back.
 backgroundPrimary = x(:, 1);
 for i = 1:nModulations+1
     isolatingPrimary{i} = x(:, i);
 end
-
-%backgroundSpd = B_primary*x(:, 1) + ambientSpd;
-%modSpd1 = B_primary*x(:, 2) + ambientSpd;
-%modSpd2 = B_primary*x(:, 3) + ambientSpd;
-%if any(isolatingPrimary > 1)
-%    error('Primary values > 1');
-%end
-
-%if any(isolatingPrimary < 0)
-%    error('Primary values < 0');
-%end
 
 end
 
@@ -190,8 +161,9 @@ function f = IsolateFunction(x,B_primary,ambientSpd,T_receptors,whichReceptorsTo
 % Compute background including ambient
 backgroundSpd = B_primary*x(:, 1) + ambientSpd;
 
+% 
 for i = 2:nModulations+1
-    % Comptue contrasts for receptors we want to isolate.
+    % Compute contrasts for receptors we want to isolate.
     modulationSpd = B_primary*(x(:, i)-x(:, 1));
     isolateContrasts{i-1} = T_receptors(whichReceptorsToIsolate{i-1},:)*modulationSpd ./ (T_receptors(whichReceptorsToIsolate{i-1},:)*backgroundSpd);
     zeroContrasts{i-1} = T_receptors(whichReceptorsToZero{i-1},:)*modulationSpd ./ (T_receptors(whichReceptorsToZero{i-1},:)*backgroundSpd);
