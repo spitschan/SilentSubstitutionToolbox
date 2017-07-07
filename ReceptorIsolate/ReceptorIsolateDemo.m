@@ -254,7 +254,7 @@ switch (whichModel)
         
         %% Let user choose a photoreceptor class to target
         fprintf('Available photoreceptor classes to target:\n');
-        fprintf('\t[1]  Melanopsin, silience open-field cones; ignore rods and penumbral cones\n');
+        fprintf('\t[1]  Melanopsin, silence open-field cones; ignore rods and penumbral cones\n');
         fprintf('\t[2]  Melanopsin, silence open-field and penumbral cones; ignore rods)\n');
         fprintf('\t[3]  S cones, silence open-field L and M cones, melanopsin, and prenumbral L and M cones; ignore rods and penumbral S cones\n');
         fprintf('\t[4]  S cones, silence open field L and M cones, ingore all others\n');
