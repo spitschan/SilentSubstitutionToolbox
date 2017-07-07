@@ -30,13 +30,13 @@ function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundM
 % backgroundPrimary - Background primary, will only be used if background
 %                     is pegged using the pegBackground argument.
 % initialPrimary - Starting point for optimization. 
-% whichPrimariesToPin 
-% primaryHeadRoom
-% maxPowerDiff
-% desiredContrasts
-% ambientSpd
-% directionsYoked
-% directionsYokedAbs
+% whichPrimariesToPin - See ReceptorIsolate
+% primaryHeadRoom - See ReceptorIsolate
+% maxPowerDiff - See ReceptorIsolate
+% desiredContrasts - See ReceptorIsolate
+% ambientSpd - See ReceptorIsolate
+% directionsYoked - See ReceptorIsolate
+% directionsYokedAbs - See ReceptorIsolate
 % pegBackground - Boolean flag to set if the background should not be
 %                 optimized. If set, the k modulation primaries will
 %                 nonetheless be found, maximizing contrast on the k
@@ -56,28 +56,32 @@ if ~isempty(desiredContrasts)
     end
 end
 
-%% Default for ambientSpd
+% Figure out how many modulations are to be found. This is k.
+nModulations = size(whichReceptorsToIsolate, 2);
+
+% If no ambient light spd is passed, assumingit is zero.
 if (nargin < 11 || isempty(ambientSpd))
     ambientSpd = zeros(size(B_primary,1),1);
 end
 
-nModulations = size(whichReceptorsToIsolate, 2);
-
-%% Initial guess for modulation
+% Use the initial primary guess for all k+1 primary values to be found
+% (background + k modulation primaries)
 x = repmat(initialPrimary, 1, nModulations+1);
 
-%% Figure out which receptors get zero modulation and set up constraint for this.
-
+% Figure out which receptors get zero modulation and set up constraint for this.
 for i = 1:nModulations
     whichReceptorsToZero{i} = setdiff(1:size(T_receptors,1),[whichReceptorsToIsolate{i} whichReceptorsToIgnore{i} whichReceptorsToMinimize{i}]);
 end
 
+%% Constraints
+% (1) Set up the constraints. This follows the same logic as ReceptorIsolate.
+% We start with the case where we only want to find ONE modulation
+% direction.
 
-
-%% Set up constraints on primary variation, some may stay pinned at their
-% background values.  For example, for spectral
-% functions we may not want big wiggles at the ends of the visible
-% spectrum, where the sensitivities are low.
+% Set up constraints on primary variation, some may stay pinned at their
+% background values.  For example, for spectral functions we may not want
+% big wiggles at the ends of the visible spectrum, where the sensitivities
+% are low.
 whichPrimariesToVary = setdiff(1:size(B_primary,2),whichPrimariesToPin);
 boundIndex = [whichPrimariesToPin whichPrimariesToVary];
 [~,sortIndex] = sort(boundIndex);
@@ -95,10 +99,7 @@ vlb = backgroundPrimary; vlb(:) = primaryHeadRoom;
 vlb(whichPrimariesToPin) = initialPrimary(whichPrimariesToPin);
 vub(whichPrimariesToPin) = initialPrimary(whichPrimariesToPin);
 
-%% Constraints
-% (1) Set up the constraints. This follows the same logic as ReceptorIsolate.
-% We start with the case where we only want to find ONE modulation
-% direction.
+% Set up the smoothness constraint.
 vectorLength = size(B_primary, 1);
 C1 = zeros(vectorLength-1, vectorLength);
 for i = 1:vectorLength-1
@@ -152,7 +153,7 @@ end
 
 end
 
-% f = IsolateFunction(x,B_primary,backgroundPrimary,T_receptors,whichReceptorsToIsolate,C,lambda)
+% f = IsolateFunction(x,B_primary,ambientSpd,T_receptors,whichReceptorsToIsolate,whichReceptorsToZero,whichReceptorsToMinimize,nModulations,directionsYoked, directionsYokedAbs)
 %
 % Optimization subfunction.  This mixes maximizing response of isolated
 % receptors with smoothness.
@@ -161,14 +162,13 @@ function f = IsolateFunction(x,B_primary,ambientSpd,T_receptors,whichReceptorsTo
 % Compute background including ambient
 backgroundSpd = B_primary*x(:, 1) + ambientSpd;
 
-% 
+% Iterate over the modulations and calculate contrasts
 for i = 2:nModulations+1
     % Compute contrasts for receptors we want to isolate.
     modulationSpd = B_primary*(x(:, i)-x(:, 1));
     isolateContrasts{i-1} = T_receptors(whichReceptorsToIsolate{i-1},:)*modulationSpd ./ (T_receptors(whichReceptorsToIsolate{i-1},:)*backgroundSpd);
     zeroContrasts{i-1} = T_receptors(whichReceptorsToZero{i-1},:)*modulationSpd ./ (T_receptors(whichReceptorsToZero{i-1},:)*backgroundSpd);
 end
-
 
 % Want the sum of the isolated receptor contrasts to be big. fmincon
 % minimizes, hence the negative sign.  Acheive this by minimizing
@@ -189,6 +189,7 @@ end
 f = theSum;
 end
 
+% Set up the smoothness parameter as a nonlinear constraint
 function [c ceq] = nonlconstraint(x, nModulations)
 backgroundPrimary = x(:, 1);
 c = [];
