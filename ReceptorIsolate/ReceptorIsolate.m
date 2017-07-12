@@ -161,13 +161,16 @@ options = optimset(options,'Diagnostics','off','Display','off','LargeScale','on'
 x = fmincon(@(x) IsolateFunction(x,B_primary,backgroundPrimary,ambientSpd,T_receptors,whichReceptorsToIsolate,desiredContrasts,whichReceptorsToMinimize),x,C,Q,Aeq,beq,vlb,vub,[],options);
 isolatingPrimary = x;
 
-if any(isolatingPrimary > 1)
+primaryTolerance = 1e-6;
+if any(isolatingPrimary > 1+primaryTolerance)
     error('Primary values > 1');
 end
+isolatingPrimary(isolatingPrimary < 1) = 1;
 
-if any(isolatingPrimary < 0)
+if any(isolatingPrimary < 0-primaryTolerance)
     error('Primary values < 0');
 end
+isolatingPrimary(isolatingPrimary < 0) = 0;
 
 end
 
