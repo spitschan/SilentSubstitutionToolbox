@@ -165,7 +165,7 @@ primaryTolerance = 1e-6;
 if any(isolatingPrimary > 1+primaryTolerance)
     error('Primary values > 1');
 end
-isolatingPrimary(isolatingPrimary < 1) = 1;
+isolatingPrimary(isolatingPrimary > 1) = 1;
 
 if any(isolatingPrimary < 0-primaryTolerance)
     error('Primary values < 0');
