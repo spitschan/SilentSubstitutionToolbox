@@ -1,10 +1,23 @@
-function [contrasts postreceptoralContrasts postreceptoralStrings] = ComputeAndReportContrastsFromSpds(string,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
-% contrasts = ComputeAndReportContrastsFromSpds(string,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
+function [contrasts, postreceptoralContrasts, postreceptoralStrings] = ComputeAndReportContrastsFromSpds(string,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
+% ComputeAndReportContrastsFromSpds
 %
-% Report out contrasts function. Assumes that the modulationSpd is the spd
-% measured around the background.
+% Usage:
+%     contrasts = ComputeAndReportContrastsFromSpds(string,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
 %
-% See also ComputeAndReportContrastsFromOLPrimaries.
+% Description:
+%    Report out contrasts function. Assumes that the modulationSpd is the spd
+%    measured around the background.
+%
+% Input:
+%
+% Output:
+%
+% Optional key/value pairs:
+%     None.
+%
+% See also: ComputeAndReportContrastsFromOLPrimaries.
+
+% 7/21/17  dhb   Put in comment placeholders and did my best.
 
 % Do some check on the input
 if (nargin < 7 | isempty(print))
@@ -42,6 +55,7 @@ end
 % Let this breathe
 fprintf('\n');
 
+% Postreceptoral contrasts.
 if DO_POSTRECEPTORAL
     % Print out postreceptoral contrasts
     NCombinations = size(postreceptoralCombinations, 1);
@@ -61,6 +75,7 @@ if DO_POSTRECEPTORAL
                 theString = [theString photoreceptorClasses{theReceptors(jj)}];
             end
         end
+        
         % Print out the contrasts
         fprintf('* <strong>%s</strong>: contrast = %0.1f%%\n',theString,100*postreceptoralContrasts(ii));
         postreceptoralStrings{ii} = theString;
