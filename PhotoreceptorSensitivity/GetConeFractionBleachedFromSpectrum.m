@@ -14,7 +14,7 @@ function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFract
 %   observerAgeInYears  - Observer age
 %   pupilDiameterMm     - Assumed pupil diameter
 %   desiredPhotopicLuminanceCdM2 - Adjust background luminance by scaling
-%                         Optional, and ignored if not passed.
+%                         Optional, and ignored if empty or not passed.
 %   verbose             - Prints out the fraction bleached.  Default false.
 %
 % Output:
