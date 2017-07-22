@@ -30,7 +30,7 @@ lMaxSConeSD = 1.3;
 % Print out some info
 NPrintStep = 200;
 if strcmp(obj.verbosity, 'high')
-    fprintf('* Generating observers... \n');
+    fprintf('* Generating resampled observers... \n');
 end
 
 % Sample

@@ -54,8 +54,8 @@ for ii = 1:NTitrations
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.dphotopigment = [parv(ii) 0 0];
-            parvlabel = '%\DeltaD_{pigment}';
-            parvlabellong =  {'Photopigment' ; 'optical density'};
+            parvlabel = '%\DeltaD_{pigment} [L]';
+            parvlabellong =  {'Photopigment' ; 'optical density [L]'};
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
@@ -64,8 +64,8 @@ for ii = 1:NTitrations
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.dphotopigment = [0 parv(ii) 0];
-            parvlabel = '%\DeltaD_{pigment}';
-            parvlabellong =  {'Photopigment' ; 'optical density'};
+            parvlabel = '%\DeltaD_{pigment} [M]';
+            parvlabellong =  {'Photopigment' ; 'optical density [M]'};
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
@@ -74,8 +74,8 @@ for ii = 1:NTitrations
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.dphotopigment = [0 0 parv(ii)];
-            parvlabel = '%\DeltaD_{pigment}';
-            parvlabellong =  {'Photopigment' ; 'optical density'};
+            parvlabel = '%\DeltaD_{pigment} [S]';
+            parvlabellong =  {'Photopigment' ; 'optical density [S]'};
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
@@ -84,8 +84,8 @@ for ii = 1:NTitrations
             parv = linspace(-2, 2, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.lambdaMaxShift = [parv(ii) 0 0];
-            parvlabel = '\Delta\lambda_{max}';
-            parvlabellong = {'Peak sensitivity' '\lambda_{max}'};
+            parvlabel = '\Delta\lambda_{max} [L]';
+            parvlabellong = {'Peak sensitivity' '\lambda_{max} [L]'};
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
@@ -94,8 +94,8 @@ for ii = 1:NTitrations
             parv = linspace(-2, 2, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.lambdaMaxShift = [0 parv(ii) 0];
-            parvlabel = '\Delta\lambda_{max}';
-            parvlabellong = {'Peak sensitivity' '\lambda_{max}'};
+            parvlabel = '\Delta\lambda_{max} [M]';
+            parvlabellong = {'Peak sensitivity' '\lambda_{max} [M]'};
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);
@@ -104,8 +104,8 @@ for ii = 1:NTitrations
             parv = linspace(-2, 2, NTitrations);
             indDiffParams = DefaultIndDiffParams;
             indDiffParams.lambdaMaxShift = [0 0 parv(ii)];
-            parvlabel = '\Delta\lambda_{max}';
-            parvlabellong = {'Peak sensitivity' '\lambda_{max}'};
+            parvlabel = '\Delta\lambda_{max} [S]';
+            parvlabellong = {'Peak sensitivity' '\lambda_{max} [S]'};
             [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
                 obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
                 false,[],[],indDiffParams);

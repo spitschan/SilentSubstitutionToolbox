@@ -34,12 +34,12 @@ theIndDiffParams = {'dlens' 'dmac' 'dphotopigmentL' 'dphotopigmentM' 'dphotopigm
 
 for ss = 1:length(theIndDiffParams)
     % Vary the parameter
-    [~, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
+    [~, parv{ss}, parvlabel{ss}, parvlabellong{ss}, parvreal{ss}] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
         'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
 end
 
 % Stochastic resampling
-NSamples = 1000;
+NSamples = 200;
 receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
 
 % Save the receptor object hash
@@ -49,16 +49,16 @@ receptorObj.setMD5Hash();
 figParv = figure;
 yAxLims = [-0.06 0.06];
 for ss = 1:length(theIndDiffParams)
-    if parv(1) < 0
-        xAxLims = [parv(1)*1.1 parv(end)*1.1];
+    if parv{ss}(1) < 0
+        xAxLims = [parv{ss}(1)*1.1 parv{ss}(end)*1.1];
     else
-        xAxLims = [parv(1)*0.9 parv(end)*1.1];
+        xAxLims = [parv{ss}(1)*0.9 parv{ss}(end)*1.1];
     end
     
     % Calculate contrast
-    for ii = 1:size(receptorObj.Ts, 2)
-        T_receptors = receptorObj.Tp{ii}.T_energyNormalized;
-        for jj = 1:size(receptorObj.Tp{ii}.T_energyNormalized, 1)
+    for ii = 1:size(receptorObj.Tp, 2)
+        T_receptors = receptorObj.Tp{ss, ii}.T_energyNormalized;
+        for jj = 1:size(T_receptors, 1)
             contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
         end
         lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
@@ -70,14 +70,14 @@ for ss = 1:length(theIndDiffParams)
     plot(xAxLims, [0 0], ':k');
     % Plot parametric variations
     for ii = 1:size(contrasts, 1)
-        plot(parv, contrasts(ii, :)', '-o', 'Color', theRGB(ii, :), 'MarkerEdgeColor', 'k', ...
+        plot(parv{ss}, contrasts(ii, :)', '-o', 'Color', theRGB(ii, :), 'MarkerEdgeColor', 'k', ...
             'MarkerFaceColor', theRGB(ii, :)); hold on;
     end
     
     % Add title and tweak plots
-    title(parvlabellong);
+    title(parvlabellong{ss});
     box off;
-    xlabel(parvlabel);
+    xlabel(parvlabel{ss});
     xlim(xAxLims);
     ylim(yAxLims);
     pbaspect([1 1 1]);
@@ -87,7 +87,7 @@ set(figParv, 'PaperPosition', [0 0 13 3.5]);
 set(figParv, 'PaperSize', [13 3.5]);
 set(figParv, 'Color', 'w');
 set(figParv, 'InvertHardcopy', 'off');
-saveas(figParv, 'ParvFig.png', 'png');
+saveas(figParv, fullfile(sstRoot, 'OO', 'plots', 'SSTReceptorDemo_ParvFig.png'), 'png');
 
 
 %%
@@ -105,12 +105,12 @@ axLims = [-0.03 0.03];
 
 %% L vs. M
 figLM = figure;
-XNominalContrast = 300;
+XNominalContrast = 0;
 YNominalContrast = 0;
 XAxLims = XNominalContrast+[-0.02 0.02];
 YAxLims = YNominalContrast+[-0.02 0.02];
 
-ScatterplotWithHistogram(300+contrasts(1, :), contrasts(2, :), ...
+ScatterplotWithHistogram(contrasts(1, :), contrasts(2, :), ...
     'XLim', XAxLims, 'YLim', YAxLims, 'BinWidth', 0.004, ...
     'XLabel', 'L contrast', 'YLabel', 'M contrast', ...
     'XRefLines', [XAxLims ; YNominalContrast YNominalContrast], ...
@@ -123,7 +123,7 @@ set(figLM, 'PaperPosition', [0 0 6 6]);
 set(figLM, 'PaperSize', [6 6]);
 set(figLM, 'Color', 'w');
 set(figLM, 'InvertHardcopy', 'off');
-saveas(figLM, 'LMContrast.png', 'png');
+saveas(figLM, fullfile(sstRoot, 'OO', 'plots', 'SSTReceptorDemo_LMContrast.png'), 'png');
 
 %% L+M vs. S
 figS = figure;
@@ -146,4 +146,4 @@ set(figS, 'PaperPosition', [0 0 6 6]);
 set(figS, 'PaperSize', [6 6]);
 set(figS, 'Color', 'w');
 set(figS, 'InvertHardcopy', 'off');
-saveas(figS, 'SContrast.png', 'png');
+saveas(figS, fullfile(sstRoot, 'OO', 'plots', 'SSTReceptorDemo_SContrast.png'), 'png');
