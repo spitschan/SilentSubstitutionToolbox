@@ -103,6 +103,10 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %   spectral sensitivities.
 %       2 deg: 'LCone2DegTabulatedSS', 'MCone2DegTabulatedSS', 'SCone2DegTabulatedSS'
 %       10 deg: 'LCone10DegTabulatedSS', 'MCone10DegTabulatedSS', 'SCone10DegTabulatedSS
+%
+%  G) The nominal lambda-max values returned for the spectral sensitivities based on the
+%  tabulated absorbances for the open-field cones are 555.3, 525.1 and
+%  419.5 nm. These are given on p. 33 in CIE 2006:170. 
 
 % 7/20/17   ms    Updated options and comments.
 % 1/21/14   ms    Wrote it based on old code.
@@ -219,11 +223,11 @@ nominalLambdaMax = [];
 if length(photoreceptorClasses) > 1
     for i = 1:length(photoreceptorClasses)
         switch photoreceptorClasses{i}
-            case {'LConeSSNomogramLegacy'}
+            case {'LConeTabulatedAbsorbance' 'LConeTabulatedAbsorbancePenumbral' 'LConeSSNomogramLegacy'}
                 fractionConeBleachedFromIsom(1) = fractionPigmentBleached(i);
-            case {'MConeSSNomogramLegacy'}
+            case {'MConeTabulatedAbsorbance' 'MConeTabulatedAbsorbancePenumbral' 'MConeSSNomogramLegacy'}
                 fractionConeBleachedFromIsom(2) = fractionPigmentBleached(i);
-            case {'SConeSSNomogramLegacy'}
+            case {'SConeTabulatedAbsorbance' 'SConeTabulatedAbsorbancePenumbral' 'SConeSSNomogramLegacy'}
                 fractionConeBleachedFromIsom(3) = fractionPigmentBleached(i);
             case {'Melanopsin'}
                 if (fractionPigmentBleached(i) ~= 0)
@@ -238,9 +242,7 @@ if length(photoreceptorClasses) > 1
                 if (fractionPigmentBleached(i) ~= 0)
                     error('\t * Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
                 end
-            case {'LConeTabulatedAbsorbance', 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance', ...
-                    'LConeTabulatedAbsorbancePenumbral', 'MConeTabulatedAbsorbancePenumbral', 'SConeTabulatedAbsorbancePenumbral' ...
-                    'LConeTabulatedAbsorbance2Deg', 'MConeTabulatedAbsorbance2Deg', 'SConeTabulatedAbsorbance2Deg' ...
+            case {'LConeTabulatedAbsorbance2Deg', 'MConeTabulatedAbsorbance2Deg', 'SConeTabulatedAbsorbance2Deg' ...
                     'LConeTabulatedAbsorbance10Deg', 'MConeTabulatedAbsorbance10Deg', 'SConeTabulatedAbsorbance10Deg'}
                 if (fractionPigmentBleached(i) ~= 0)
                     error('\t * Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
@@ -255,15 +257,15 @@ if length(photoreceptorClasses) > 1
     % are not passed to be 0. This is because PTB machinery expects triplets.
 elseif length(photoreceptorClasses) == 1
     switch photoreceptorClasses{1}
-        case 'LConeSSNomogramLegacy'
+        case {'LConeTabulatedAbsorbance' 'LConeTabulatedAbsorbancePenumbral' 'LConeSSNomogramLegacy'}
             fractionConeBleachedFromIsom(1) = fractionPigmentBleached;
             fractionConeBleachedFromIsom(2) = 0;
             fractionConeBleachedFromIsom(3) = 0;
-        case 'MConeSSNomogramLegacy'
+        case {'MConeTabulatedAbsorbance' 'MConeTabulatedAbsorbancePenumbral' 'MConeSSNomogramLegacy'}
             fractionConeBleachedFromIsom(1) = 0;
             fractionConeBleachedFromIsom(2) = fractionPigmentBleached;
             fractionConeBleachedFromIsom(3) = 0;
-        case 'SConeSSNomogramLegacy'
+        case {'SConeTabulatedAbsorbance' 'SConeTabulatedAbsorbancePenumbral' 'SConeSSNomogramLegacy'}
             fractionConeBleachedFromIsom(1) = 0;
             fractionConeBleachedFromIsom(2) = 0;
             fractionConeBleachedFromIsom(3) = fractionPigmentBleached;
@@ -336,7 +338,7 @@ for i = 1:length(photoreceptorClasses)
             indDiffParams.dmac = 0;
             indDiffParams.dphotopigment = [0 0 0];
             
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],fractionConeBleachedFromIsom,indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -355,7 +357,7 @@ for i = 1:length(photoreceptorClasses)
             indDiffParams.dmac = 0;
             indDiffParams.dphotopigment = [0 0 0];
             
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],fractionConeBleachedFromIsom,indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -374,7 +376,7 @@ for i = 1:length(photoreceptorClasses)
             indDiffParams.dmac = 0;
             indDiffParams.dphotopigment = [0 0 0];
             
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],fractionConeBleachedFromIsom,indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Add to the receptor vector
@@ -393,7 +395,7 @@ for i = 1:length(photoreceptorClasses)
             indDiffParams.dmac = 0;
             indDiffParams.dphotopigment = [0 0 0];
             
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],fractionConeBleachedFromIsom,indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Multiply with blood transmittance
@@ -416,7 +418,7 @@ for i = 1:length(photoreceptorClasses)
             indDiffParams.dmac = 0;
             indDiffParams.dphotopigment = [0 0 0];
             
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],fractionConeBleachedFromIsom,indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Multiply with blood transmittance
@@ -439,7 +441,7 @@ for i = 1:length(photoreceptorClasses)
             indDiffParams.dmac = 0;
             indDiffParams.dphotopigment = [0 0 0];
             
-            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],[],[]);
+            [T_quantalNormalized1,~,T_quantalIsomerizations1] = ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMm,[],[],[],[],[],fractionConeBleachedFromIsom,indDiffParams);
             T_energy1 = EnergyToQuanta(S,T_quantalNormalized1')';
             
             % Multiply with blood transmittance
