@@ -23,43 +23,27 @@ tmp = load(fullfile(sstRoot, 'ContrastSplatter/ContrastSplatterDemoData/spd_cont
 modSpd = tmp.spd;
 
 %% Set up receptor object
-% If the receptor object has been pre-cached (this is sometimes useful for
-% large resampling N), see if it exists.
-cacheDir = fullfile(fileparts(which('SSTReceptorHuman')), 'cache');
+receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
 
-% We're pulling out one specific pre-cached receptor obkect
-theDesiredHash = 'cbcaeae344c23dbc4a39d671e60c6ec6';
+% Set the number of titrations per parameter
+NTitrations = 16;
 
-% Determine the path
-theFile = fullfile(cacheDir, ['SSTReceptorHuman_' theDesiredHash '.mat']);
-% See if the desired hash exists in the cache dir
-if exist(theFile, 'file')
-    % Load the object if it already exists
-    load(theFile);
-else
-    % If it does not exist, make the receptor object
-    receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
-    
-    % Set the number of titrations per parameter
-    NTitrations = 16;
-    
-    % Do the parametric "sampling"
-    theIndDiffParams = {'dlens' 'dmac' 'dphotopigmentL' 'dphotopigmentM' 'dphotopigmentS' ...
-        'lambdaMaxShiftL' 'lambdaMaxShiftM' 'lambdaMaxShiftS' 'obsPupilDiameterMm'};
-    for ss = 1:length(theIndDiffParams)
-        % Vary the parameter
-        [~, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
-            'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
-    end
-    
-    % Stochastic resampling
-    NSamples = 1000;
-    receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
-    
-    % Save the receptor object
-    receptorObj.setMD5Hash();
-    save(fullfile(cacheDir, ['SSTReceptorHuman_' receptorObj.MD5Hash]), 'receptorObj');
+% Do the parametric "sampling"
+theIndDiffParams = {'dlens' 'dmac' 'dphotopigmentL' 'dphotopigmentM' 'dphotopigmentS' ...
+    'lambdaMaxShiftL' 'lambdaMaxShiftM' 'lambdaMaxShiftS' 'obsPupilDiameterMm'};
+
+for ss = 1:length(theIndDiffParams)
+    % Vary the parameter
+    [~, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
+        'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
 end
+
+% Stochastic resampling
+NSamples = 1000;
+receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
+
+% Save the receptor object hash
+receptorObj.setMD5Hash();
 
 %% Plot the parametric varation
 figParv = figure;
