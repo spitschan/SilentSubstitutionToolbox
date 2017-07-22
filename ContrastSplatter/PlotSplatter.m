@@ -115,7 +115,7 @@ for k = 1:length(contrastMap)
     
     %F = reshape(F,length(x2),length(x1))*stepSize;
     %colormap(gray); imagesc(x1,x2,F); hold on;
-    [~, x, y] = error_ellipse([lambdaMaxSD.^2 0 ; 0 ageSD.^2], mu, 'conf', 0.9545);
+    %[~, x, y] = error_ellipse([lambdaMaxSD.^2 0 ; 0 ageSD.^2], mu, 'conf', 0.9545);
     
     %plot(y, x, '-k'); hold on;
     

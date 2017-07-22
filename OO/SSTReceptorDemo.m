@@ -1,27 +1,46 @@
-tbUse('SilentSubstitutionToolbox');
+% SSTReceptorDemo.m
+%
+% This script demonstrates the use of the SSTReceptor object.
+%
+% 7/22/17   ms      Commented.
+
+%% Blank slate
 clearvars; close all; clc;
+
+%% Set up paths
+r = tbUse('SilentSubstitutionToolbox');
+
+% Infer the SST root
+sstRoot = tbLocateToolbox('SilentSubstitutionToolbox');
 
 %% Get some colors
 theRGB = DefaultReceptorColors;
 
-%% Load data
-tmp = load('/Users/spitschan/Documents/MATLAB/toolboxes/SilentSubstitutionToolbox/ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_bg.mat');
+%% Load backgound and modulation spectra from some demo data in SST
+tmp = load(fullfile(sstRoot, 'ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_bg.mat'));
 bgSpd = tmp.spd;
-tmp = load('/Users/spitschan/Documents/MATLAB/toolboxes/SilentSubstitutionToolbox/ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_mod.mat');
+tmp = load(fullfile(sstRoot, 'ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_mod.mat'));
 modSpd = tmp.spd;
 
 %% Set up receptor object
+% If the receptor object has been pre-cached (this is sometimes useful for
+% large resampling N), see if it exists.
 cacheDir = fullfile(fileparts(which('SSTReceptorHuman')), 'cache');
 
+% We're pulling out one specific pre-cached receptor obkect
 theDesiredHash = '50be1fa91c9911cb5be28c2e2f3adad3';
+
+% Determine the path
 theFile = fullfile(cacheDir, ['SSTReceptorHuman_' theDesiredHash '.mat']);
 % See if the desired hash exists in the cache dir
 if exist(theFile, 'file')
+    % Load the object if it already exists
     load(theFile);
 else
+    % If it does not exist, make the receptor object
     receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
     
-    % Generate the space of cones
+    % Set the number of titrations per parameter
     NTitrations = 16;
     
     % Do the parametric "sampling"
@@ -33,7 +52,7 @@ else
             'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
     end
     
-    % Stochastic sampling
+    % Stochastic resampling
     NSamples = 1000;
     receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
     
