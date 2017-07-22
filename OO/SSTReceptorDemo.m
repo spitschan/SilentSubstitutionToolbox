@@ -28,7 +28,7 @@ modSpd = tmp.spd;
 cacheDir = fullfile(fileparts(which('SSTReceptorHuman')), 'cache');
 
 % We're pulling out one specific pre-cached receptor obkect
-theDesiredHash = '50be1fa91c9911cb5be28c2e2f3adad3';
+theDesiredHash = 'cbcaeae344c23dbc4a39d671e60c6ec6';
 
 % Determine the path
 theFile = fullfile(cacheDir, ['SSTReceptorHuman_' theDesiredHash '.mat']);
@@ -73,8 +73,8 @@ for ss = 1:length(theIndDiffParams)
     
     % Calculate contrast
     for ii = 1:size(receptorObj.Ts, 2)
-        T_receptors = receptorObj.Ts{ii}.T_energyNormalized;
-        for jj = 1:size(receptorObj.Ts{ii}.T_energyNormalized, 1)
+        T_receptors = receptorObj.Tp{ii}.T_energyNormalized;
+        for jj = 1:size(receptorObj.Tp{ii}.T_energyNormalized, 1)
             contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
         end
         lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
@@ -116,7 +116,6 @@ for ii = 1:NSamples
     lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
     postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
 end
-
 
 axLims = [-0.03 0.03];
 
