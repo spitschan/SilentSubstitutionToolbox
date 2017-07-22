@@ -299,6 +299,8 @@ elseif length(photoreceptorClasses) == 1
             fractionConeBleachedFromIsom(1) = 0;
             fractionConeBleachedFromIsom(2) = 0;
             fractionConeBleachedFromIsom(3) = fractionPigmentBleached;
+        case {'Melanopsin', 'Rods'}
+            fractionConeBleachedFromIsom = NaN;
         otherwise
             error('Unknown photoreceptor class passed');
     end

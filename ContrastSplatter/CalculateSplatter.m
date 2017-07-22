@@ -102,7 +102,7 @@ for k = 1:NPhotoreceptorClasses
     [X, Y] = meshgrid(ageRange, lambdaMaxShiftRange);
     X = X(:);
     Y = Y(:);
-    NObservers = length(X)
+    NObservers = length(X);
     
     % Preassign memory
     T_energy = zeros(NObservers, S(3));

@@ -20,7 +20,7 @@ fprintf('  - Computing example contrast splatter maps.  This is slow. Be patient
 %% First, set up some parameters.
 S = [380 2 201];            % Wavelength spacing
 wls = SToWls(S);
-photoreceptorClasses = {'LCone' ; 'MCone' ; 'SCone' ; 'Melanopsin'}; % Photopigments we're interested in
+photoreceptorClasses = {'LConeTabulatedAbsorbance' ; 'MConeTabulatedAbsorbance' ; 'SConeTabulatedAbsorbance' ; 'Melanopsin'}; % Photopigments we're interested in
 fieldSizeDegrees = 27.5;    % Size of visual field
 observerAgeInYears = 32;    % Observer age, assumed to be 32 for this modulation
 pupilDiameterMm = 3;        % Pupil diameter, assumed to be 3 mm
@@ -68,17 +68,17 @@ xlabel('Wavelength [nm]'); ylabel('Power');
     fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, []);
 for p = 1:length(photoreceptorClasses)
     switch photoreceptorClasses{p}
-        case 'LCone'
+        case 'LConeTabulatedAbsorbance'
             fractionBleached(p) = fractionBleachedFromIsom(1);
-        case 'MCone'
+        case 'MConeTabulatedAbsorbance'
             fractionBleached(p) = fractionBleachedFromIsom(2);
-        case 'SCone'
+        case 'SConeTabulatedAbsorbance'
             fractionBleached(p) = fractionBleachedFromIsom(3);
-        case 'LConeHemo'
+        case 'LConeTabulatedAbsorbancePenumbral'
             fractionBleached(p) = fractionBleachedFromIsomHemo(1);
-        case 'MConeHemo'
+        case 'MConeTabulatedAbsorbancePenumbral'
             fractionBleached(p) = fractionBleachedFromIsomHemo(2);
-        case 'SConeHemo'
+        case 'SConeTabulatedAbsorbancePenumbral'
             fractionBleached(p) = fractionBleachedFromIsomHemo(3);
         otherwise
             fractionBleached(p) = 0;
