@@ -53,7 +53,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %                                     of made up because there was no explicit underlying absorption spectrum.
 %
 % NOTES:
-%   A) The Hemo variants take into account an estimate of the absorption spectrum of hemoglobin as seen through retinal
+%   A) The Penumbral variants take into account an estimate of the absorption spectrum of hemoglobin as seen through retinal
 %   blood vessels.
 %
 %   B) Not all variants have a meaningful T_quantalIsomerizations variable returned.  When we don't have that sensitivity
@@ -123,6 +123,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 % 10/25/15  dhb   Change back so that nominalLambdaMax returned does NOT take the shift into account.
 % 12/4/15   ms    Added 2-deg Stockman-Sharp fundamentals.
 % 2/9/16    ms    Added penumbral cones from tabulated absorbances
+% 7/22/17   dhb   Multiply penumbral quantal sensitivities in isomerization units by blood transmittance, too.
 
 %% Set defaults
 
@@ -213,8 +214,8 @@ nominalLambdaMax = [];
 %
 % I don't think this is quite right for cases where multiple "R" variants
 % of a class get passed (e.g. both LCone and Lcone2Deg are passed in one call,
-% becuase later values in the passed vector clobber earlier ones in the vectors that get set here.
-% This needs some thought.
+% becuase later values in the passed vector clobber earlier ones in the vectors
+% that get set here. This needs some thought.
 if length(photoreceptorClasses) > 1
     for i = 1:length(photoreceptorClasses)
         switch photoreceptorClasses{i}
@@ -272,10 +273,6 @@ end
 % Transpose if we can. We do this because the PTB machinery expects this.
 if exist('fractionConeBleachedFromIsom', 'var')
     fractionConeBleachedFromIsom = fractionConeBleachedFromIsom';
-end
-
-if exist('fractionConeBleachedFromIsomHemo', 'var')
-    fractionConeBleachedFromIsomHemo = fractionConeBleachedFromIsomHemo';
 end
 
 %% Iterate over the photoreceptor classes that have been passed.
@@ -404,8 +401,8 @@ for i = 1:length(photoreceptorClasses)
             trans_Hemoglobin = GetHemoglobinTransmittance(S,vesselOxyFraction,vesselOverallThicknessUm,source);
             
             % Add to the receptor vector
-            T_energyNormalized = [T_energyNormalized ; T_energy1(1,:).* trans_Hemoglobin'];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:)];
+            T_energyNormalized = [T_energyNormalized ; T_energy1(1,:) .* trans_Hemoglobin'];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(1,:) .* trans_Hemoglobin'];
             nominalLambdaMax = [nominalLambdaMax NaN];
             
         case 'MConeTabulatedAbsorbancePenumbral'
@@ -428,7 +425,7 @@ for i = 1:length(photoreceptorClasses)
             
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(2,:).* trans_Hemoglobin'];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:)];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(2,:) .* trans_Hemoglobin'];
             nominalLambdaMax = [nominalLambdaMax NaN];
             
         case 'SConeTabulatedAbsorbancePenumbral'
@@ -451,7 +448,7 @@ for i = 1:length(photoreceptorClasses)
             
             % Add to the receptor vector
             T_energyNormalized = [T_energyNormalized ; T_energy1(3,:).* trans_Hemoglobin'];
-            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:) .* trans_Hemoglobin'];
             nominalLambdaMax = [nominalLambdaMax NaN];
             
         case 'LConeTabulatedAbsorbance2Deg'
