@@ -63,7 +63,9 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %   They are still here because sometimes we need to figure out what we did in the past.
 %
 %   D) Passed fractionBleached numbers don't affect rod, melanopsin, or tabulated cone calculations.
-%   We throw an error if either of these ever receives a non-zero value.
+%   We throw an error if any of these ever receives a non-zero value.  Also, you cannot use different fraction bleached values
+%   for two different variants of the same cone class (e.g. 'LConeTabulatedAbsorbance' and 'LConeTabulatedAbsorbancePenumbral'). To
+%   work around, make two seprate calls, each with the appropriate fraction bleached.
 %
 %   E) If you pass lambdaMaxShift as a scalar, the same value of lambdaMaxShift is applied to all classes computed within a single call to this function.
 %   This seems unlikely to be a good behavior, but I am keeping it for backwards compatibility. You can now also pass lambdaMaxShift as a vector
@@ -128,6 +130,8 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 % 12/4/15   ms    Added 2-deg Stockman-Sharp fundamentals.
 % 2/9/16    ms    Added penumbral cones from tabulated absorbances
 % 7/22/17   dhb   Multiply penumbral quantal sensitivities in isomerization units by blood transmittance, too.
+% 7/22/17   dhb   Add some error checking for a case where we just previously had a comment about an edge case
+%                 where fraction bleached specification could go south, and a comment about the workaround.
 
 %% Set defaults
 
@@ -216,19 +220,45 @@ nominalLambdaMax = [];
 % assumption that in the input vector, the order is LMS. This is a bit
 % kludge-y, but works.
 %
-% I don't think this is quite right for cases where multiple "R" variants
-% of a class get passed (e.g. both LCone and Lcone2Deg are passed in one call,
-% becuase later values in the passed vector clobber earlier ones in the vectors
-% that get set here. This needs some thought.
+% This throws an error for cases where multiple variants of a cone class
+% get passed (e.g. both 'LConeTabulatedAbsorbance' and
+% 'LConeTabulatedAbsorbancePenumbral' are passed in one call with different
+% bleaching fractions, because we only preserve one cone bleaching fraction
+% three vector.  The workaround is to make two calls to this function to
+% separate things out.
+LConeFractionSet = false;
+MConeFractionSet = false;
+SConeFractionSet = false;
 if length(photoreceptorClasses) > 1
     for i = 1:length(photoreceptorClasses)
         switch photoreceptorClasses{i}
             case {'LConeTabulatedAbsorbance' 'LConeTabulatedAbsorbancePenumbral' 'LConeSSNomogramLegacy'}
+                if (LConeFractionSet)
+                    if (fractionPigmentBleached(i) ~= fractionConeBleachedFromIsom(1))
+                        error('Cannot handle two different L cone fractions bleached.  See comment in code.');
+                    end
+                else
+                    LConeFractionSet = true;
+                end
                 fractionConeBleachedFromIsom(1) = fractionPigmentBleached(i);
             case {'MConeTabulatedAbsorbance' 'MConeTabulatedAbsorbancePenumbral' 'MConeSSNomogramLegacy'}
+                if (MConeFractionSet)
+                    if (fractionPigmentBleached(i) ~= fractionConeBleachedFromIsom(2))
+                        error('Cannot handle two different M cone fractions bleached.  See comment in code.');
+                    end
+                else
+                    MConeFractionSet = true;
+                end
                 fractionConeBleachedFromIsom(2) = fractionPigmentBleached(i);
             case {'SConeTabulatedAbsorbance' 'SConeTabulatedAbsorbancePenumbral' 'SConeSSNomogramLegacy'}
-                fractionConeBleachedFromIsom(3) = fractionPigmentBleached(i);
+                 if (SConeFractionSet)
+                    if (fractionPigmentBleached(i) ~= fractionConeBleachedFromIsom(3))
+                        error('Cannot handle two different S cone fractions bleached.  See comment in code.');
+                    end
+                else
+                    SConeFractionSet = true;
+                 end
+                 fractionConeBleachedFromIsom(3) = fractionPigmentBleached(i);
             case {'Melanopsin'}
                 if (fractionPigmentBleached(i) ~= 0)
                     error('\t * Non-zero fractionPigmentBleached passed for photoreceptor class that does not support this');
