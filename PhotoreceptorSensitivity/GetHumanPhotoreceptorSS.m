@@ -106,7 +106,7 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %
 %  G) The nominal lambda-max values returned for the spectral sensitivities based on the
 %  tabulated absorbances for the open-field cones are 555.3, 525.1 and
-%  419.5 nm. These are given on p. 33 in CIE 2006:170. 
+%  419.5 nm. These are given on p. 33 in CIE 2006:170.
 
 % 7/20/17   ms    Updated options and comments.
 % 1/21/14   ms    Wrote it based on old code.
@@ -269,6 +269,8 @@ elseif length(photoreceptorClasses) == 1
             fractionConeBleachedFromIsom(1) = 0;
             fractionConeBleachedFromIsom(2) = 0;
             fractionConeBleachedFromIsom(3) = fractionPigmentBleached;
+        otherwise
+            error('Unknown photoreceptor class passed');
     end
 end
 
@@ -506,7 +508,7 @@ for i = 1:length(photoreceptorClasses)
             T_energyNormalized = [T_energyNormalized ; T_energy1(3,:)];
             T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizations1(3,:)];
             nominalLambdaMax = [nominalLambdaMax NaN];
-                       
+            
         case 'LCone10DegTabulatedSS'
             % Load in the tabulated 10-deg S-S fundamentals
             targetRaw = load('T_cones_ss10');
