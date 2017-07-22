@@ -1,19 +1,35 @@
-function [contrasts, postreceptoralContrasts, postreceptoralStrings] = ComputeAndReportContrastsFromSpds(string,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
+function [contrasts, postreceptoralContrasts, postreceptoralStrings] = ComputeAndReportContrastsFromSpds(prefixString,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
 % ComputeAndReportContrastsFromSpds
 %
 % Usage:
-%     contrasts = ComputeAndReportContrastsFromSpds(string,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
+%     contrasts = ComputeAndReportContrastsFromSpds(prefixString,photoreceptorClasses,T_receptors,backgroundSpd,modulationSpd,postreceptoralCombinations,print)
 %
 % Description:
 %    Report out contrasts function. Assumes that the modulationSpd is the spd
 %    measured around the background.
 %
 % Input:
+%    prefixString - A string that gets printed in the MATLAB window before
+%                   contrast values are reported.
+%    photoreceptorClasses - Names of the photoreceptor classes
+%    T_receptors - Array with the spectral sensitivities, of size KxN,
+%                  where K is the number of receptors and N the number of 
+%                  wavelength samples
+%    backgroundSpd - Background spd of size N
+%    modulationSpd - Modulation spd of size N
+%    postreceptoralCombinations - Matrix of how the receptors should be
+%                                 combined into postreceptoral combinations
+%    print - Logical flag that determines whether the contrast should be
+%            printed out
 %
 % Output:
+%    contrasts - Contrast values seen by the receptors in T_receptors
+%    postreceptoralContrasts - Contrast values seen by the postreceptoral
+%                              combinations of the receptors in T_receptors
+%    postreceptoralStrings - Labels for the postreceptoral combinations
 %
 % Optional key/value pairs:
-%     None.
+%   None.
 %
 % See also: ComputeAndReportContrastsFromOLPrimaries.
 
@@ -40,7 +56,7 @@ if DO_POSTRECEPTORAL
 end
 
 % Print out some information
-fprintf('\n<strong>%s</strong>\n', string);
+fprintf('\n<strong>%s</strong>\n', prefixString);
 
 % Calculate the contrasts
 backgroundReceptors = T_receptors*backgroundSpd;
@@ -61,7 +77,7 @@ if DO_POSTRECEPTORAL
     NCombinations = size(postreceptoralCombinations, 1);
     postreceptoralContrasts = postreceptoralCombinations' \ contrasts;
     for ii = 1:NCombinations
-        % Assemble the string
+        % Assemble the string that describes the psotreceptoral combination
         theReceptors = find(postreceptoralCombinations(ii, :));
         theString = [];
         for jj = 1:length(theReceptors)
