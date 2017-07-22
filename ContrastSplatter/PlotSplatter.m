@@ -98,86 +98,94 @@ for k = 1:length(contrastMap)
     plot(repmat(targetAge, 1, length(lambdaMaxShiftRange)), nominalLambdaMax(k)+lambdaMaxShiftRange, '-k');
     plot(ageRange, repmat(nominalLambdaMax(k), 1, length(ageRange)), '-k');
     
-    %% Get the confidence ellipses: 95%
-    lambdaMaxSD = GetLambdaMaxEstimateSD(photoreceptorClasses{k}, 'M&W');
-    ageSD = GetChronicalAgeSDFromLensSD('Xu');
     
-    % Construct the 2D Gaussian
-    mu = [nominalLambdaMax(k) ageMean];
-    Sigma = [lambdaMaxSD ageSD].^2;
-    x1 = nominalLambdaMax(k)+lambdaMaxShiftRange;
-    x2 = ageRange;
-    [X1,X2] = meshgrid(x1,x2);
-    F = mvnpdf([X1(:) X2(:)],mu,Sigma);
+    %% NOTE: The below chunk, marked by === is deprecated and left here only for reference
+    % It will likely break when uncommented.
+    % ===
+    %     %% Get the confidence ellipses: 95%
+    %     lambdaMaxSD = GetLambdaMaxEstimateSD(photoreceptorClasses{k}, 'M&W');
+    %     ageSD = GetChronicalAgeSDFromLensSD('Xu');
+    %
+    %     % Construct the 2D Gaussian
+    %     mu = [nominalLambdaMax(k) ageMean];
+    %     Sigma = [lambdaMaxSD ageSD].^2;
+    %     x1 = nominalLambdaMax(k)+lambdaMaxShiftRange;
+    %     x2 = ageRange;
+    %     [X1,X2] = meshgrid(x1,x2);
+    %     F = mvnpdf([X1(:) X2(:)],mu,Sigma);
+    %
+    %     % Get the stepsize to normalize the pdf to get pmf
+    %     stepSize = median(diff(x1))*median(diff(x2));
+    %
+    %     %F = reshape(F,length(x2),length(x1))*stepSize;
+    %     %colormap(gray); imagesc(x1,x2,F); hold on;
+    %     %[~, x, y] = error_ellipse([lambdaMaxSD.^2 0 ; 0 ageSD.^2], mu, 'conf', 0.9545);
+    %
+    %     %plot(y, x, '-k'); hold on;
+    %
+    %     % For any given x, y position in contrastMap, test if it's in the
+    %     % error_ellipse. This gives us the 95% confidence interval.
+    %     for i = 1:length(x1)
+    %         for j = 1:length(x2)
+    %             x0 = X1(j, i);
+    %             y0 = X2(j, i);
+    %             xr = x - x0; yr = y - y0; % Translate the vectors' base to (x0,y0)
+    %             xw = xr([2:end,1]); yw = yr([2:end,1]); % Shift ahead by one index
+    %             s = sum(atan2(xr.*yw-yr.*xw,xr.*xw+yr.*yw)); % Sum the projected angles
+    %             in = abs(s) > pi; % 'in' is true if (x0,y0) is inside, otherwise false
+    %             indexMap(i, j) = in;
+    %         end
+    %     end
+    %
+    %     % Find and plot extreme points
+    %     [r, c] = find(contrastMap{k}==max(contrastMap{k}(indexMap)));
+    %     %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'k');
+    %
+    %     [r, c] = find(contrastMap{k}==min(contrastMap{k}(indexMap)));
+    %     %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'w');
+    %
+    %     %% Get the confidence ellipses: 99%
+    %     lambdaMaxSD = GetLambdaMaxEstimateSD(photoreceptorClasses{k}, 'M&W');
+    %     ageSD = GetChronicalAgeSDFromLensSD('Xu');
+    %
+    %     % Construct the 2D Gaussian
+    %     mu = [nominalLambdaMax(k) ageMean];
+    %     Sigma = [lambdaMaxSD ageSD].^2;
+    %     x1 = nominalLambdaMax(k)+lambdaMaxShiftRange;
+    %     x2 = ageRange;
+    %     [X1,X2] = meshgrid(x1,x2);
+    %     F = mvnpdf([X1(:) X2(:)],mu,Sigma);
+    %
+    %     % Get the stepsize to normalize the pdf to get pmf
+    %     stepSize = median(diff(x1))*median(diff(x2));
+    %
     
-    % Get the stepsize to normalize the pdf to get pmf
-    stepSize = median(diff(x1))*median(diff(x2));
     
-    %F = reshape(F,length(x2),length(x1))*stepSize;
-    %colormap(gray); imagesc(x1,x2,F); hold on;
-    %[~, x, y] = error_ellipse([lambdaMaxSD.^2 0 ; 0 ageSD.^2], mu, 'conf', 0.9545);
-    
-    %plot(y, x, '-k'); hold on;
-    
-    % For any given x, y position in contrastMap, test if it's in the
-    % error_ellipse. This gives us the 95% confidence interval.
-    for i = 1:length(x1)
-        for j = 1:length(x2)
-            x0 = X1(j, i);
-            y0 = X2(j, i);
-            xr = x - x0; yr = y - y0; % Translate the vectors' base to (x0,y0)
-            xw = xr([2:end,1]); yw = yr([2:end,1]); % Shift ahead by one index
-            s = sum(atan2(xr.*yw-yr.*xw,xr.*xw+yr.*yw)); % Sum the projected angles
-            in = abs(s) > pi; % 'in' is true if (x0,y0) is inside, otherwise false
-            indexMap(i, j) = in;
-        end
-    end
-    
-    % Find and plot extreme points
-    [r, c] = find(contrastMap{k}==max(contrastMap{k}(indexMap)));
-    %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'k');
-    
-    [r, c] = find(contrastMap{k}==min(contrastMap{k}(indexMap)));
-    %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'w');
-    
-    %% Get the confidence ellipses: 99%
-    lambdaMaxSD = GetLambdaMaxEstimateSD(photoreceptorClasses{k}, 'M&W');
-    ageSD = GetChronicalAgeSDFromLensSD('Xu');
-    
-    % Construct the 2D Gaussian
-    mu = [nominalLambdaMax(k) ageMean];
-    Sigma = [lambdaMaxSD ageSD].^2;
-    x1 = nominalLambdaMax(k)+lambdaMaxShiftRange;
-    x2 = ageRange;
-    [X1,X2] = meshgrid(x1,x2);
-    F = mvnpdf([X1(:) X2(:)],mu,Sigma);
-    
-    % Get the stepsize to normalize the pdf to get pmf
-    stepSize = median(diff(x1))*median(diff(x2));
     %[~, x, y] = error_ellipse([lambdaMaxSD.^2 0 ; 0 ageSD.^2], mu, 'conf', 0.9973);
     
-    %plot(y, x, '-k'); hold on;
+    % plot(y, x, '-k'); hold on;
     
     % For any given x, y position in contrastMap, test if it's in the
     % error_ellipse. This gives us the 95% confidence interval.
-    for i = 1:length(x1)
-        for j = 1:length(x2)
-            x0 = X1(j, i);
-            y0 = X2(j, i);
-            xr = x - x0; yr = y - y0; % Translate the vectors' base to (x0,y0)
-            xw = xr([2:end,1]); yw = yr([2:end,1]); % Shift ahead by one index
-            s = sum(atan2(xr.*yw-yr.*xw,xr.*xw+yr.*yw)); % Sum the projected angles
-            in = abs(s) > pi; % 'in' is true if (x0,y0) is inside, otherwise false
-            indexMap(i, j) = in;
-        end
-    end
+    %     for i = 1:length(x1)
+    %         for j = 1:length(x2)
+    %             x0 = X1(j, i);
+    %             y0 = X2(j, i);
+    %             xr = x - x0; yr = y - y0; % Translate the vectors' base to (x0,y0)
+    %             xw = xr([2:end,1]); yw = yr([2:end,1]); % Shift ahead by one index
+    %             s = sum(atan2(xr.*yw-yr.*xw,xr.*xw+yr.*yw)); % Sum the projected angles
+    %             in = abs(s) > pi; % 'in' is true if (x0,y0) is inside, otherwise false
+    %             indexMap(i, j) = in;
+    %         end
+    %     end
     
     % Find and plot extreme points
-    [r, c] = find(contrastMap{k}==max(contrastMap{k}(indexMap)));
+    %[r, c] = find(contrastMap{k}==max(contrastMap{k}(indexMap)));
     %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'k');
     
-    [r, c] = find(contrastMap{k}==min(contrastMap{k}(indexMap)));
+    %[r, c] = find(contrastMap{k}==min(contrastMap{k}(indexMap)));
     %plot(ageRange(c), nominalLambdaMax(k)+lambdaMaxShiftRange(r), 'ok', 'MarkerFaceColor', 'w');
+    % ===
     
     % Add a color bar
     s1Pos = get(s1,'position');

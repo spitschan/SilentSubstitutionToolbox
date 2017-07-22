@@ -107,5 +107,5 @@ theFig = PlotSplatter(theFig, contrastMap, photoreceptorClasses, nominalLambdaMa
 SaveSplatter(outputDir, 'Demo', contrastMap, photoreceptorClasses, nominalLambdaMax, observerAgeInYears, ageRange, lambdaMaxShiftRange, targetContrasts);
 
 %% Save information such as min/max contrast within the confidence ellipses.
-SaveSplatterConfidenceBounds(outputDir, 'Demo_95CI', contrastMap, photoreceptorClasses, nominalLambdaMax, ageRange, lambdaMaxShiftRange, targetContrasts, 0.9545);
-SaveSplatterConfidenceBounds(outputDir, 'Demo_99CI', contrastMap, photoreceptorClasses, nominalLambdaMax, ageRange, lambdaMaxShiftRange, targetContrasts, 0.9973);
+%SaveSplatterConfidenceBounds(outputDir, 'Demo_95CI', contrastMap, photoreceptorClasses, nominalLambdaMax, ageRange, lambdaMaxShiftRange, targetContrasts, 0.9545);
+%SaveSplatterConfidenceBounds(outputDir, 'Demo_99CI', contrastMap, photoreceptorClasses, nominalLambdaMax, ageRange, lambdaMaxShiftRange, targetContrasts, 0.9973);
