@@ -3,10 +3,23 @@
 % Demos the contrast splatter calculation functions.  This runs fairly
 % slowly, so it may take > 10 minutes to run.
 %
+% As of 07/23/17, this demo should be considered of mainly historical
+% interest. We are switching to using the Asano et al. model for splatter
+% calculations, and this will lead to a new demo.  We are leaving this
+% here for now, though.  In particular, Manuel writes:
+%    "This should now work again. The state-of-the-art remains the Asano
+%    model and the stochastic resampling and what we've implemented for the
+%    bioRxiv paper. I've fixed up this code so that it runs. The only thing
+%    that no longer work is calculating the 95% and 99% confidence ellipses
+%    because of some re-definitions of the functions that calculate the
+%    error ellipses. I've commented out that code. At some point, I expect
+%    this function to go away, with the @sstreceptorobject being the
+%    supported way to calculate splatter."
+%
 % See also:
 %   CalculateSplatter PlotSplatter SaveSplatter
 %   GetHumanPhotoreceptorSS
-%
+
 % 1/21/14   ms      Wrote it.
 % 11/21/14  ms      Claned up and commented.
 % 12/12/14  dhb     Tuning.
