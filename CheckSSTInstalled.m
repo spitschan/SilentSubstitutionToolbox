@@ -13,11 +13,11 @@ else
     
     % Check if the BrainardLabToolbox is on the path
     if ~any(strfind(path, 'BrainardLabToolbox'))
-        error('* The BrainardLabToolbox is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/DavidBrainard/BrainardLabToolbox and add to your search path.')
+        error('* The BrainardLabToolbox is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/DavidBrainard/BrainardLabToolbox and add to your MATLAB path.')
     end
     
     % Check if PTB-3 is on the path
     if ~any(strfind(path, 'Psychtoolbox-3'))
-        error('Psychtoolbox-3 is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/Psychtoolbox-3/Psychtoolbox-3 and add to your search path path.')
+        error('Psychtoolbox-3 is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/Psychtoolbox-3/Psychtoolbox-3 and add to your MATLAB path.')
     end
 end
