@@ -7,11 +7,10 @@
 %% Blank slate
 clearvars; close all; clc;
 
-%% Set up paths
-r = tbUse('SilentSubstitutionToolbox');
-
 % Infer the SST root
-sstRoot = tbLocateToolbox('SilentSubstitutionToolbox');
+sstRoot0 = mfilename('fullpath');
+sstRoot1 = cd(fullfile(fileparts(sstRoot), '..'));
+sstRoot = pwd;
 
 %% Get some colors
 theRGB = DefaultReceptorColors;
