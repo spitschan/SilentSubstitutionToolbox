@@ -7,6 +7,9 @@
 %% Blank slate
 clearvars; close all; clc;
 
+% Check if the SST is installed properly
+CheckSSTInstalled();
+
 % Infer the SST root
 sstRoot0 = mfilename('fullpath');
 sstRoot1 = cd(fullfile(fileparts(sstRoot), '..'));
