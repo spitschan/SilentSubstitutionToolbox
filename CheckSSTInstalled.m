@@ -10,6 +10,10 @@ if any(strfind(path, 'ToolboxToolbox'))
     % Set up paths
     r = tbUse('SilentSubstitutionToolbox');
 else
+    % Check if the SilentSubstitutionToolbox is on the path
+    if ~any(strfind(path, 'BrainardLabToolbox'))
+        error('* The SilentSubstitutionToolbox is required to run this demo.\nPlease install from https://github.com/spitschan/SilentSubstitutionToolbox and add to your MATLAB path.')
+    end
     
     % Check if the BrainardLabToolbox is on the path
     if ~any(strfind(path, 'BrainardLabToolbox'))
