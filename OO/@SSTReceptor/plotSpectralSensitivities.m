@@ -1,10 +1,12 @@
 function h = plotSpectralSensitivities(obj, varargin)
-% plotSpectralSensitivities(obj,timebase,response,varargin)
+% plotSpectralSensitivities(obj, varargin)
 % 
-% Plot the time-varying response 
+% Plot the spectral sensitivities in rudimentary form.
 %
 % Key/value pairs
 %   'NewWindow' - true/false (default true).  Create new window?
+%
+% 7/25/17   ms  Commented.
 
 %% Parse vargin for options passed here
 %
@@ -23,10 +25,10 @@ else
 end
 % Plot
 wls = SToWls(obj.S);
-NReceptorsToPlot = size(obj.T_receptors, 1);
+NReceptorsToPlot = size(obj.T.T_energyNormalized, 1);
 for ii = 1:NReceptorsToPlot
     % Determine the peak wavelength
-    [~, idx] = max(obj.T_receptors(ii, :));
+    [~, idx] = max(obj.T.T_energyNormalized(ii, :));
     
-    plot(wls, obj.T_receptors(ii, :), '-', 'LineWidth', 2, 'Color', 'k'); hold on;
+    plot(wls, obj.T.T_energyNormalized(ii, :), '-', 'LineWidth', 2, 'Color', 'k'); hold on;
 end

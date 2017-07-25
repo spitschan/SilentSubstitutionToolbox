@@ -51,6 +51,7 @@ modSpd = tmp.spd;
 % This creates a static version of the spectral sensitivities which
 % correspond to the parameters passed into the SSTReceptorHuman function.
 receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
+receptorObj.plotSpectralSensitivities;
 
 %% Parametric variation of individual difference parameters
 % Define the individual difference parameters that we want to look at here.
