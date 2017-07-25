@@ -5,7 +5,13 @@ function theRGB = DefaultReceptorColors(whichReceptors)
 %
 % 7/25/17   ms   Written.
 
-if isstr(whichReceptors)
+% Assume some default receptors
+if isempty(whichReceptors)
+   whichReceptors  = {'LCone' 'MCone' 'SCone' 'Melanopsin' 'Rod'}; 
+end
+
+% Reformat the whichReceptors variable if only has been passed
+if ischar(whichReceptors)
     whichReceptors = {whichReceptors};
 end
 
