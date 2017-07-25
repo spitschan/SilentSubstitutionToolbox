@@ -4,7 +4,10 @@ function obj = makeSpectralSensitivitiesStochastic(obj, varargin)
 % This method resamples the spectral sensivities using the known
 % variability of the individual difference parameters.
 %
-% 7/25/17    ms       Written.
+% Currently, does not support resampling the melanopsin and rod
+% fundamentals
+%
+% 7/25/17    ms       Commented.
 
 % Parse vargin for options passed here
 p = inputParser;
@@ -15,14 +18,14 @@ p.parse(varargin{:});
 NSamples = p.Results.NSamples;
 whichRandStream = p.Results.RandStream;
 
-% We use a few individual difference parameters
+% The following individual difference parameters are supported:
 %   indDiffParams.dlens - Deviation in % from CIE computed peak lens density
 %   indDiffParams.dmac - Deviation in % from CIE peak macular pigment density
 %   indDiffParams.dphotopigment - Vector of deviations in % from CIE photopigment peak density
 %   indDiffParams.lambdaMaxShift - Vector of values (in nm) to shift lambda max of each photopigment absorbance by
 %   indDiffParams.shiftType - 'linear' (default) or 'log'
-
-% The standard deviations are given in Table 5 in Asano et al. (2016),
+%
+% The standard deviations are given in Table 5 of Asano et al. (2016),
 % doi.org/10.1371/journal.pone.0145671. The macular pigment parameter is
 % reduced from 36.5 to 25, because resampling often lead to out-of-bounds
 % for the macular pigment parameter.
