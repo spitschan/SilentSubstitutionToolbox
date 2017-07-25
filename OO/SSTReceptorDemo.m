@@ -1,10 +1,33 @@
-% SSTReceptorDemo.m
+%% SSTReceptorDemo.m
 %
-% This script demonstrates the use of the SSTReceptor object.
+% This script demonstrates the use of the SSTReceptorHuman object and its
+% ability to investigate the splatter either (A) parametrically or using (B) a
+% resampling approach.
+%
+% (A) The SSTReceptorHuman object can create variants of the spectral
+%     sensitivities which differ in the 8-parameter Asano et al. model for
+%     cone individual differences. The parameters are lens density, macular
+%     pigment  density, the optical density for the LMS pigments, and the
+%     shift in lambda-max of the LMS pigments. Once the SSTReceptor object
+%     has been  defined, this is done through a call to
+%     makeSpectralSensitivitiesParametricVariation, which is a method of
+%     the object.
+%
+% (B) The SSTReceptorHuman object can also create variants of the spectral
+%     sensitivities by resampling them using the known (from the
+%     literature) standard deviations of the individual differences
+%     parameters. In any given resampled set of LMS cone fundamentals, the
+%     parameters have been changed. Of course, the resampling is set up
+%     such that the lens and macular pigment density parameters affect the
+%     LMS cone fundamentals, while the optical density and the lambda-max
+%     shift parameters affect the LMS cones independently.
+%
+% Under the hood, the SSTReceptorHuman object uses machinery from
+% Psychtoolbox-3 to generate the spectral sensitivities of the cones.
 %
 % 7/22/17   ms      Commented.
 
-%% Blank slate
+%% Clear work space
 clearvars; close all; clc;
 
 % Check if the SST is installed properly
@@ -25,29 +48,52 @@ tmp = load(fullfile(sstRoot, 'ContrastSplatter/ContrastSplatterDemoData/spd_cont
 modSpd = tmp.spd;
 
 %% Set up receptor object
+% This creates a static version of the spectral sensitivities which
+% correspond to the parameters passed into the SSTReceptorHuman function.
 receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
 
-% Set the number of titrations per parameter
-NTitrations = 16;
-
-% Do the parametric "sampling"
+%% Parametric variation of individual difference parameters
+% Define the individual difference parameters that we want to look at here.
+% The possible ones are:
+%   dlens - Lens density
+%   dmac - Macular pigment density
+%   dphotopigment{L|M|S} - Optical density of the LMS photopgiments,
+%                          respectively
+%   lambdaMaxShift{L|M|S} - Shift of lambda-max for the LMS photopigments
+%   obsPupilDiameterMm - Pupil diameter of the observer
 theIndDiffParams = {'dlens' 'dmac' 'dphotopigmentL' 'dphotopigmentM' 'dphotopigmentS' ...
     'lambdaMaxShiftL' 'lambdaMaxShiftM' 'lambdaMaxShiftS' 'obsPupilDiameterMm'};
 
+% Set the number sampling spacing for each of the individual difference
+% parameters that we're interested in.
+NTitrations = 16;
+
+% Iterate over the parameters. This creates versions of the spectral
+% sensitivities which differ in the value of the individual difference
+% parameters. This gets saved out in the "Tp" field of the receptor object.
 for ss = 1:length(theIndDiffParams)
-    % Vary the parameter
     [~, parv{ss}, parvlabel{ss}, parvlabellong{ss}, parvreal{ss}] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
         'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
 end
 
-% Stochastic resampling
+%% Stochastic variation of individual difference parameters by resampling
+% Instead of varying only one parameter, as we did above, we can also
+% resample the spectral sensitivities, drawing from the distribution of the
+% individual difference parameters.
+
+% Define the number of samples.
 NSamples = 200;
+
+% Resample! This gets saved out in the "Ts" field of the receptor object.
 receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
 
 % Save the receptor object hash
 receptorObj.setMD5Hash();
 
-%% Plot the parametric varation
+%% Calculate contrast and plot - Parametric
+% Plot the contrast on the LMS cones as a function of the individual
+% parameters which we changed above  under "Parametric variation of
+% individual difference parameters".
 figParv = figure;
 yAxLims = [-0.06 0.06];
 for ss = 1:length(theIndDiffParams)
@@ -57,7 +103,8 @@ for ss = 1:length(theIndDiffParams)
         xAxLims = [parv{ss}(1)*0.9 parv{ss}(end)*1.1];
     end
     
-    % Calculate contrast
+    % Calculate contrast on the LMS cones and the postreceptoral
+    % combinations
     for ii = 1:size(receptorObj.Tp, 2)
         T_receptors = receptorObj.Tp{ss, ii}.T_energyNormalized;
         for jj = 1:size(T_receptors, 1)
@@ -67,10 +114,10 @@ for ss = 1:length(theIndDiffParams)
         postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
     end
     
+    % Plot contrast as a function of the individual difference parameters
     subplot(1, length(theIndDiffParams), ss);
     hold on;
     plot(xAxLims, [0 0], ':k');
-    % Plot parametric variations
     for ii = 1:size(contrasts, 1)
         plot(parv{ss}, contrasts(ii, :)', '-o', 'Color', theRGB(ii, :), 'MarkerEdgeColor', 'k', ...
             'MarkerFaceColor', theRGB(ii, :)); hold on;
@@ -85,15 +132,17 @@ for ss = 1:length(theIndDiffParams)
     pbaspect([1 1 1]);
     set(gca, 'TickDir', 'out');
 end
+
+% Save out the figure
 set(figParv, 'PaperPosition', [0 0 13 3.5]);
 set(figParv, 'PaperSize', [13 3.5]);
 set(figParv, 'Color', 'w');
 set(figParv, 'InvertHardcopy', 'off');
 saveas(figParv, fullfile(sstRoot, 'OO', 'plots', 'SSTReceptorDemo_ParvFig.png'), 'png');
 
-
-%%
-% Calculate contrast
+%% Calculate contrast and plot - Resampling approach
+% Calculate contrast for each of the spectral sensitivities in the Ts
+% field.
 for ii = 1:NSamples
     T_receptors = receptorObj.Ts{ii}.T_energyNormalized;
     for jj = 1:size(receptorObj.Ts{ii}.T_energyNormalized, 1)
@@ -103,9 +152,8 @@ for ii = 1:NSamples
     postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
 end
 
+% First, plot L and M contrast
 axLims = [-0.03 0.03];
-
-%% L vs. M
 figLM = figure;
 XNominalContrast = 0;
 YNominalContrast = 0;
@@ -121,13 +169,14 @@ ScatterplotWithHistogram(contrasts(1, :), contrasts(2, :), ...
     'YNominalContrast', YNominalContrast, ...
     'Color', [theRGB(1, :) ; theRGB(2, :)]);
 
+% Save out the figures
 set(figLM, 'PaperPosition', [0 0 6 6]);
 set(figLM, 'PaperSize', [6 6]);
 set(figLM, 'Color', 'w');
 set(figLM, 'InvertHardcopy', 'off');
 saveas(figLM, fullfile(sstRoot, 'OO', 'plots', 'SSTReceptorDemo_LMContrast.png'), 'png');
 
-%% L+M vs. S
+% Then, plot L+M vs. S contrast
 figS = figure;
 XAxLims = [-0.02 0.02];
 YAxLims = [-0.01 0.08];
@@ -144,6 +193,7 @@ ScatterplotWithHistogram(contrasts(1, :), contrasts(3, :), ...
     'YNominalContrast', YNominalContrast, ...
     'Color', [theRGB(1, :) ; theRGB(3, :)]);
 
+% Save out the figures
 set(figS, 'PaperPosition', [0 0 6 6]);
 set(figS, 'PaperSize', [6 6]);
 set(figS, 'Color', 'w');
