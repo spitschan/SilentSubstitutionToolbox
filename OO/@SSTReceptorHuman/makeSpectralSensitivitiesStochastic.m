@@ -12,7 +12,7 @@ function obj = makeSpectralSensitivitiesStochastic(obj, varargin)
 % Parse vargin for options passed here
 p = inputParser;
 p.addParameter('NSamples', 1000, @isnumeric);
-p.addParameter('RandStream', 'mrg32k3a'' @isstring'); % RNG for the resampling
+p.addParameter('RandStream', 'mrg32k3a', @isstring); % RNG for the resampling
 p.KeepUnmatched = true;
 p.parse(varargin{:});
 NSamples = p.Results.NSamples;

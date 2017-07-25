@@ -35,7 +35,7 @@ CheckSSTInstalled();
 
 % Infer the SST root
 sstRoot0 = mfilename('fullpath');
-sstRoot1 = cd(fullfile(fileparts(sstRoot), '..'));
+sstRoot1 = cd(fullfile(fileparts(sstRoot0), '..'));
 sstRoot = pwd;
 
 %% Get some colors
