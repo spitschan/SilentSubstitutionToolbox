@@ -58,4 +58,4 @@ obj.T.T_quantalAbsorptions = T_quantalAbsorptions;
 obj.T.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
 obj.T.T_energy = T_energy;
 obj.T.T_energyNormalized = T_energyNormalized;
-obj.labels = {'LCone' 'MCone' 'SCone' 'LConePenumbral' 'MConePenumbral'};
+obj.labels = {'LCone' 'MCone' 'SCone' 'Melanopsin' 'Rod'};
