@@ -1,4 +1,4 @@
-function h = plotSpectralSensitivities(obj, varargin)
+function f1 = plotSpectralSensitivities(obj, varargin)
 % plotSpectralSensitivities(obj, varargin)
 %
 % Plot the spectral sensitivities in rudimentary form.
@@ -18,6 +18,12 @@ function h = plotSpectralSensitivities(obj, varargin)
 %                   Default: T_energyNormalized
 %
 %  'logUnits' - Logical determining whether plot should be in log units.
+%               Default: false
+%
+%  'saveFig' - Logical determining whether plot should be saved
+%              Default: false
+%
+%  'saveFigPlot' - Path to save figure out
 %
 % 7/25/17   ms  Commented.
 
@@ -30,10 +36,19 @@ p = inputParser; p.KeepUnmatched = true;
 p.addParameter('NewWindow', true, @islogical);
 p.addParameter('whichFormat', 'T_energyNormalized', @ischar);
 p.addParameter('logUnits', false, @islogical);
+p.addParameter('saveFig', true, @islogical);
+p.addParameter('saveFigPath', '', @isschar);
 p.parse(varargin{:});
 
-% Determine what we want to plot based on the varargin
+% Extract some parameters
 whichFormat = p.Results.whichFormat;
+saveFigYesNo = p.Results.saveFig;
+saveFigPath = p.Results.saveFigPath;
+if isempty(saveFigPath)
+    saveFigPath = ['SpectralSensitivities_' whichFormat '.png'];
+end
+
+% Determine what we want to plot based on the varargin
 switch whichFormat
     case 'T_quantalIsomerizations'
         T_receptors = obj.T.T_quantalIsomerizations;
@@ -60,15 +75,15 @@ switch whichFormat
 end
 
 if p.Results.logUnits
-   T_receptors = log10(T_receptors);
-   yLabel = ['log_{10} ' lower(yLabel)];
+    T_receptors = log10(T_receptors);
+    yLabel = ['log_{10} ' lower(yLabel)];
 end
 
 %% Make the figure
 if (p.Results.NewWindow)
-    h = figure; clf; hold on;
+    f1 = figure; clf; hold on;
 else
-    h = gcf;
+    f1 = gcf;
 end
 
 % Plot
@@ -88,9 +103,19 @@ for ii = 1:NReceptorsToPlot
     % Plot the fundamentals
     h(ii) = plot(wls, T_receptors(ii, :), '-', 'LineWidth', 2, 'Color', theRGB(ii, :)); hold on;
 end
+
 % Tune the plot properties
 title(sublabel);
 legend(h, obj.labels); legend boxoff;
 xlim(xLims); ylim(yLims);
 ylabel(yLabel);
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out');
+
+if saveFigYesNo
+    % Save out the figures
+    set(f1, 'PaperPosition', [0 0 6 6]);
+    set(f1, 'PaperSize', [6 6]);
+    set(f1, 'Color', 'w');
+    set(f1, 'InvertHardcopy', 'off');
+    saveas(f1, saveFigPath, 'png');
+end
