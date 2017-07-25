@@ -13,6 +13,7 @@ classdef SSTReceptorHuman < SSTReceptor
         T;  % Cone fundamentals created using makeSpectralSensitivities
         Tp; % Cone fundamentals created using makeSpectralSensitivitiesParametricVariation
         Ts; % Cone fundamentals created using makeSpectralSensitivitiesStochastic
+        labels;
         MD5Hash; % MD5 hash of the receptor object
     end
     
