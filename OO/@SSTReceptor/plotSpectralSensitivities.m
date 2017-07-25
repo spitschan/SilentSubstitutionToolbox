@@ -30,5 +30,5 @@ for ii = 1:NReceptorsToPlot
     % Determine the peak wavelength
     [~, idx] = max(obj.T.T_energyNormalized(ii, :));
     
-    plot(wls, obj.T.T_energyNormalized(ii, :), '-', 'LineWidth', 2, 'Color', 'k'); hold on;
+    plot(wls, obj.T.T_energyNormalized(ii, :), '-', 'LineWidth', 2, 'Color', wlToRGB(wls(idx))/255); hold on;
 end
