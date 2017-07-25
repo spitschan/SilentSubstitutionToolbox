@@ -1,4 +1,4 @@
-classdef SSTReceptorHuman < SSTReceptor;
+classdef SSTReceptorHuman < SSTReceptor
     % SSTReceptorHuman
     %
     %   receptor = SSTReceptorHuman(varargin)
@@ -7,13 +7,13 @@ classdef SSTReceptorHuman < SSTReceptor;
     
     % Public, read-only properties.
     properties (SetAccess = private, GetAccess = public)
-        obsAgeInYrs;
-        obsPupilDiameterMm;
-        fieldSizeDeg;
-        T;  % Point spectral sensitivity
-        Tp; % Parametric variation
-        Ts; % Stochastic sampling
-        MD5Hash;
+        obsAgeInYrs; % Age of the observer in years
+        obsPupilDiameterMm; % Pupil diameter
+        fieldSizeDeg; % Field size in degrees
+        T;  % Cone fundamentals created using makeSpectralSensitivities
+        Tp; % Cone fundamentals created using makeSpectralSensitivitiesParametricVariation
+        Ts; % Cone fundamentals created using makeSpectralSensitivitiesStochastic
+        MD5Hash; % MD5 hash of the receptor object
     end
     
     % Private properties. Only methods of the parent class can set these

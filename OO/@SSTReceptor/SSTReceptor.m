@@ -1,13 +1,13 @@
 classdef SSTReceptor < handle
-% The @SSTReceptor parent class for modeling spectral sensitivities.  This implements
-% methods that are model independent and defines the API for subclasses
-% that implement particular models.
+% The @SSTReceptor parent class for modeling spectral sensitivities.  This
+% implements methods that are model independent and defines the API for
+% subclasses that implement particular models.
 %
 % Methods implemented in this class:
-%   plotSpectralSensitivities - Plot response and fit
+%   plotSpectralSensitivities - Plot spectral sensitivites
 %
 % Methods that must be implemented in subclasses
-%   makeSpectralSensitivities
+%   makeSpectralSensitivities - Creates the spectral sensitivities
 %
 % The class constructor can take optional key/value pairs as follows.
 %      'verbosity' - string (default 'none').  Verbsoity level for method
@@ -27,8 +27,10 @@ classdef SSTReceptor < handle
     % parent class (that is, this class) but not by methods of subclasses.
     properties (SetAccess = private, GetAccess = public)
         % Verbosity level, set at constructor time.
-        verbosity
-        S
+        verbosity;
+        
+        % Wavelength sampling
+        S ;
     end
     
     % Protected properties; Methods of the parent class and all of its
@@ -48,9 +50,8 @@ classdef SSTReceptor < handle
     % We do stick the constructor method here.
     methods (Access=public)
         % Constructor
-        function obj = SSTReceptor(varargin)
-                     
-            %% Parse vargin for options passed here
+        function obj = SSTReceptor(varargin)     
+            % Parse vargin for options passed here
             p = inputParser;
             p.addParameter('verbosity','high',@ischar);
             p.addParameter('S',[380 2 201],@isnumeric);
@@ -65,6 +66,7 @@ classdef SSTReceptor < handle
     % If a subclass does not implement each and every of these methods
     % it cannot instantiate objects.
     methods (Abstract, Access=public)
+        % Create the spectral sensitivities
         obj = makeSpectralSensitivities(obj);
     end
     
