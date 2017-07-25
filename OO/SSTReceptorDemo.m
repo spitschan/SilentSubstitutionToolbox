@@ -39,7 +39,7 @@ sstRoot1 = cd(fullfile(fileparts(sstRoot0), '..'));
 sstRoot = pwd;
 
 %% Get plot colors
-theRGB = DefaultReceptorColors([]);
+theRGB = DefaultReceptorColors;
 
 %% Load backgound and modulation spectra from some demo data in SST
 tmp = load(fullfile(sstRoot, 'ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_bg.mat'));
