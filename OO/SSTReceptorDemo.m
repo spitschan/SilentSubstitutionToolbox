@@ -182,6 +182,7 @@ figS = figure;
 XAxLims = [-0.02 0.02];
 YAxLims = [-0.01 0.08];
 
+% Set the nominal contrast
 XNominalContrast = 0;
 YNominalContrast = 0;
 
