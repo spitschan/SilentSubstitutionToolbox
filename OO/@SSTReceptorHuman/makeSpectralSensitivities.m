@@ -18,8 +18,7 @@ function obj = makeSpectralSensitivities(obj)
 
 % LMS cones
 [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations] = ComputeCIEConeFundamentals(obj.S,...
-    obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-    false,[],[],[]);
+    obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
 
 % Melanopsin
 photoreceptorMel = DefaultPhotoreceptors('LivingHumanMelanopsin');
