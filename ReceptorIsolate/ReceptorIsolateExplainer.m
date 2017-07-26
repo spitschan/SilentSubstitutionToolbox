@@ -53,7 +53,7 @@ theRGB = DefaultReceptorColors;
 
 % Iteration 0
 subplot(1, 2, 1);
-plot(wls, backgroundSpd, '-k', 'LineWidth', 2); hold on;
+plot(wls, backgroundSpd, '-k', 'LineWidth', 1.3); hold on;
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.1]);
 xlabel('Wavelength [nm]'); ylabel('Radiance'); hold off; hold off;
 
@@ -76,7 +76,7 @@ saveas(gcf, 'Explainer0.pdf', 'pdf');
 
 % Iteration 0
 subplot(1, 2, 1);
-plot(wls, backgroundSpd, ':k', 'LineWidth', 2); hold on; plot(wls, modulationSpd1, '-r', 'LineWidth', 2);
+plot(wls, backgroundSpd, ':k', 'LineWidth', 1.3); hold on; plot(wls, modulationSpd1, '-r', 'LineWidth', 1.3);
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.1]);
 xlabel('Wavelength [nm]'); ylabel('Radiance'); hold off;
 
@@ -99,7 +99,7 @@ saveas(gcf, 'Explainer1.pdf', 'pdf');
 
 % Iteration 1
 subplot(1, 2, 1);
-plot(wls, backgroundSpd, ':k', 'LineWidth', 2); hold on; plot(wls, modulationSpd2, '-r', 'LineWidth', 2);
+plot(wls, backgroundSpd, ':k', 'LineWidth', 1.3); hold on; plot(wls, modulationSpd2, '-r', 'LineWidth', 1.3);
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.1]);
 xlabel('Wavelength [nm]'); ylabel('Radiance'); hold off;
 
@@ -122,7 +122,7 @@ saveas(gcf, 'Explainer2.pdf', 'pdf');
 
 % Iteration 2
 subplot(1, 2, 1);
-plot(wls, backgroundSpd, ':k', 'LineWidth', 2); hold on; plot(wls, modulationSpd3, '-r', 'LineWidth', 2);
+plot(wls, backgroundSpd, ':k', 'LineWidth', 1.3); hold on; plot(wls, modulationSpd3, '-r', 'LineWidth', 1.3);
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.1]);
 xlabel('Wavelength [nm]'); ylabel('Radiance'); hold off;
 
@@ -145,7 +145,7 @@ saveas(gcf, 'Explainer3.pdf', 'pdf');
 
 % Iteration 3
 subplot(1, 2, 1);
-plot(wls, backgroundSpd, ':k', 'LineWidth', 2); hold on; plot(wls, modulationSpd, '-r', 'LineWidth', 2);
+plot(wls, backgroundSpd, ':k', 'LineWidth', 1.3); hold on; plot(wls, modulationSpd, '-r', 'LineWidth', 1.3);
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.1]);
 xlabel('Wavelength [nm]'); ylabel('Radiance'); hold off;
 
