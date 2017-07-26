@@ -24,29 +24,29 @@ modulationPrimary = ReceptorIsolate(T_receptors,whichReceptorsToTarget, whichRec
 % Extract the background spd
 backgroundSpd = B_primary*backgroundPrimary;
 modulationSpd = B_primary*modulationPrimary;
-T_receptors*(modulationSpd-rackgroundSpd) ./ (T_receptors*backgroundSpd)
+T_receptors*(modulationSpd-backgroundSpd) ./ (T_receptors*backgroundSpd)
 
 %% Iteration 0 
 backgroundSpd0 = backgroundSpd;
 modulationSpd0 = modulationSpd;
-contrast0 = T_receptors*(backgroundSpd-rackgroundSpd) ./ (T_receptors*backgroundSpd)
-contrast4 = T_receptors*(modulationSpd-rackgroundSpd) ./ (T_receptors*backgroundSpd)
+contrast0 = T_receptors*(backgroundSpd-backgroundSpd) ./ (T_receptors*backgroundSpd)
+contrast4 = T_receptors*(modulationSpd-backgroundSpd) ./ (T_receptors*backgroundSpd)
 
 %% Iteration 1
 modulationSpd1 = modulationSpd;
 modulationSpd1(1:42) = backgroundSpd(1:42);
 modulationSpd1(79:end) = backgroundSpd(79:end);
-contrast1 = T_receptors*(modulationSpd1-rackgroundSpd) ./ (T_receptors*backgroundSpd)
+contrast1 = T_receptors*(modulationSpd1-backgroundSpd) ./ (T_receptors*backgroundSpd)
 
 %% Iteration 2
 modulationSpd2 = modulationSpd;
 modulationSpd2(79:end) = backgroundSpd(79:end);
-contrast2 = T_receptors*(modulationSpd2-rackgroundSpd) ./ (T_receptors*backgroundSpd)
+contrast2 = T_receptors*(modulationSpd2-backgroundSpd) ./ (T_receptors*backgroundSpd)
 
 %% Iteration 3
 modulationSpd3 = modulationSpd;
 modulationSpd3(105:end) = backgroundSpd(105:end);
-contrast3 = T_receptors*(modulationSpd3-rackgroundSpd) ./ (T_receptors*backgroundSpd)
+contrast3 = T_receptors*(modulationSpd3-backgroundSpd) ./ (T_receptors*backgroundSpd)
 
 %% Plot
 theRGB = DefaultReceptorColors;
@@ -68,8 +68,8 @@ pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([0 5]); ylim([-70 7
 pause(0.8); hold off;
 
 % Save out the figure
-set(gcf, 'PaperPosition', [0 0 8 5]);
-set(gcf, 'PaperSize', [8 5]);
+set(gcf, 'PaperPosition', [0 0 6 4]);
+set(gcf, 'PaperSize', [6 4]);
 set(gcf, 'Color', 'w');
 set(gcf, 'InvertHardcopy', 'off');
 saveas(gcf, 'Explainer0.pdf', 'pdf');
@@ -91,8 +91,8 @@ pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([0 5]); ylim([-70 7
 pause(0.8); hold off;
 
 % Save out the figure
-set(gcf, 'PaperPosition', [0 0 8 5]);
-set(gcf, 'PaperSize', [8 5]);
+set(gcf, 'PaperPosition', [0 0 6 4]);
+set(gcf, 'PaperSize', [6 4]);
 set(gcf, 'Color', 'w');
 set(gcf, 'InvertHardcopy', 'off');
 saveas(gcf, 'Explainer1.pdf', 'pdf');
@@ -114,8 +114,8 @@ pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([0 5]); ylim([-70 7
 pause(0.8); hold off;
 
 % Save out the figure
-set(gcf, 'PaperPosition', [0 0 8 5]);
-set(gcf, 'PaperSize', [8 5]);
+set(gcf, 'PaperPosition', [0 0 6 4]);
+set(gcf, 'PaperSize', [6 4]);
 set(gcf, 'Color', 'w');
 set(gcf, 'InvertHardcopy', 'off');
 saveas(gcf, 'Explainer2.pdf', 'pdf');
@@ -137,8 +137,8 @@ pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([0 5]); ylim([-70 7
 pause(0.8); hold off;
 
 % Save out the figure
-set(gcf, 'PaperPosition', [0 0 8 5]);
-set(gcf, 'PaperSize', [8 5]);
+set(gcf, 'PaperPosition', [0 0 6 4]);
+set(gcf, 'PaperSize', [6 4]);
 set(gcf, 'Color', 'w');
 set(gcf, 'InvertHardcopy', 'off');
 saveas(gcf, 'Explainer3.pdf', 'pdf');
@@ -160,8 +160,8 @@ pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([0 5]); ylim([-70 7
 pause(0.8); hold off
 
 % Save out the figure
-set(gcf, 'PaperPosition', [0 0 8 5]);
-set(gcf, 'PaperSize', [8 5]);
+set(gcf, 'PaperPosition', [0 0 6 4]);
+set(gcf, 'PaperSize', [6 4]);
 set(gcf, 'Color', 'w');
 set(gcf, 'InvertHardcopy', 'off');
 saveas(gcf, 'Explainer4.pdf', 'pdf');
