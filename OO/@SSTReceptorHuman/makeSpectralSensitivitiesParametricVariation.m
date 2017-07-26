@@ -1,11 +1,9 @@
-function [obj parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
-% [obj parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
+function [obj, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
+% [obj, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
 %
 % This method calculates spectral sensitivities along variation in the
 % individual difference parameters.
 %
-% Currently, does not support the melanopsin and rod
-% fundamentals.
 %
 % 7/25/17    ms       Commented.
 
