@@ -117,8 +117,8 @@ for ss = 1:length(theIndDiffParams)
         for jj = 1:size(T_receptors, 1)
             contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
         end
-        lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
-        postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
+        lmContrast(:, ii) = [1 1 0  0 0]' \ contrasts(:, ii);
+        postRecepContrasts(:, ii) = [1 1 1 0 0 ; 1 -1 0  0 0 ; 0 0 1 0 0 ]' \ contrasts(:, ii);
     end
     
     % Plot contrast as a function of the individual difference parameters
@@ -145,7 +145,7 @@ set(figParv, 'PaperPosition', [0 0 13 3.5]);
 set(figParv, 'PaperSize', [13 3.5]);
 set(figParv, 'Color', 'w');
 set(figParv, 'InvertHardcopy', 'off');
-saveas(figParv, fullfile(sstRoot, 'OO', 'plots', 'SSTReceptorDemo_ParvFig.png'), 'png');
+saveas(figParv, fullfile(sstRoot, 'SST', 'plots', 'SSTReceptorDemo_ParvFig.png'), 'png');
 
 %% Calculate contrast and plot - Resampling approach
 % Calculate contrast for each of the spectral sensitivities in the Ts
