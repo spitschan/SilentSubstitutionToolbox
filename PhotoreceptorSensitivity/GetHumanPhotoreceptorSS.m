@@ -71,32 +71,33 @@ function [T_energyNormalized,T_quantalIsomerizations,nominalLambdaMax] = GetHuma
 %   This seems unlikely to be a good behavior, but I am keeping it for backwards compatibility. You can now also pass lambdaMaxShift as a vector
 %   to specify a different shift for each photoreceptor class, which seems more sensible.
 %
-%   F) Description of the possible photoreceptor classes:
+%   F) Description of the possible photoreceptor classes
+%
 %   LMS cone fundamentals, calculated from the tabulated Stockman-Sharpe
-%   absorbances:
+%   absorbances. These are fully adjustable:
 %       'LConeTabulatedAbsorbance', 'MConeTabulatedAbsorbance', 'SConeTabulatedAbsorbance'
 %
 %   LMS cone fundamentals, calculated from the tabulated Stockman-Sharpe
-%   absorbances, but ignoring the 'field size' input parameter, and pegging
-%   it to 2 and 10 deg:, respectively:
+%   absorbances, but ignoring the 'field size' input parameter, and pegging it to 2 and 10 deg:, respectively.
+%   These respect the age parameter but are not otherwise adjustable:
 %       2 deg: 'LConeTabulatedAbsorbance2Deg', 'MConeTabulatedAbsorbance2Deg', 'SConeTabulatedAbsorbance2Deg'
 %       10 deg: 'LConeTabulatedAbsorbance10Deg', 'MConeTabulatedAbsorbance10Deg', 'SConeTabulatedAbsorbance10Deg'
 %
 %   LMS penumbral cone fundmantals, calculated from the tabulated Stockman-Sharpe
-%   absorbances and incorporating filtering due to retinal vessels:
+%   absorbances and incorporating filtering due to retinal vessels. These are fully adjustable:
 %       'LConeTabulatedAbsorbancePenumbral', 'MConeTabulatedAbsorbancePenumbral', 'SConeTabulatedAbsorbancePenumbral'
 %
 %   Melanopsin, calculated using the Govardovskii nomogram at 480 nm as defined in
-%   PTB's DefaultPhotoreceptors
+%   PTB's DefaultPhotoreceptors. This is fully adjustable:
 %       'Melanopsin'
 %
 %   Rods, calculated using the Govardovskii nomogram at 491 nm as defined in
-%   PTB's DefaultPhotoreceptors
+%   PTB's DefaultPhotoreceptors. This is fully adjustable:
 %       'Rods'
 %
 %   LMS cone fundamentals, calculated using the Stockman-Sharpe nomogram
 %   (not recommended). This is included only for legacy purposes and might
-%   be removed at some point.
+%   be removed at some point. Don't use these:
 %       'LConeSSNomogramLegacy', 'MConeSSNomogramLegacy','MConeSSNomogramLegacy'
 %
 %   LMS cone fundamentals defined in T_cones_ss2 and T_cones_ss10. Does not
