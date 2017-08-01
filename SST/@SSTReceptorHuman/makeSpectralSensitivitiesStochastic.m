@@ -61,22 +61,39 @@ for ii = 1:NSamples
     end
     
     % Sample the lens density
-    indDiffParams.dlens = randn(s1)*dlensSD;
+    indDiffParamsLMS.dlens = randn(s1)*dlensSD;
+    indDiffParamsMel.dlens = randn(s1)*dlensSD;
+    indDiffParamsRod.dlens = randn(s1)*dlensSD;
     
     % Sample the macular pigment density
-    indDiffParams.dmac = randn(s2)*dmaculaSD;
+    indDiffParamsLMS.dmac = randn(s2)*dmaculaSD;
+    indDiffParamsMel.dmac = randn(s2)*dmaculaSD;
+    indDiffParamsRod.dmac = randn(s2)*dmaculaSD;
     
     % Sample the optical pigment density
-    indDiffParams.dphotopigment = [randn(s3)*dLConeSD randn(s4)*dMConeSD randn(s5)*dSConeSD];
+    indDiffParamsLMS.dphotopigment = [randn(s3)*dLConeSD randn(s4)*dMConeSD randn(s5)*dSConeSD];
+    indDiffParamsMel.dphotopigment = [0];
+    indDiffParamsRod.dphotopigment = [0];
     
     % Sample the shift in lambda max
-    indDiffParams.lambdaMaxShift = [randn(s6)*lMaxLConeSD randn(s7)*lMaxMConeSD randn(s8)*lMaxSConeSD];
-    indDiffParams.shiftType = 'linear';
+    indDiffParamsLMS.lambdaMaxShift = [randn(s6)*lMaxLConeSD randn(s7)*lMaxMConeSD randn(s8)*lMaxSConeSD];
+        indDiffParamsMel.lambdaMaxShift = [0];
+    indDiffParamsRod.lambdaMaxShift = [0];
+    indDiffParamsLMS.shiftType = 'linear';
     
     % Call ComputeCIEConeFundamentals to get the spectral sensitivities
-    [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+    [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
         obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-        false,[],[],indDiffParams);
+        false,[],[],indDiffParamsLMS);
+    [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+        obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
+    [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+        obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
+    T_quantalIsomerizations = [T_quantalIsomerizationsLMS ; T_quantalIsomerizationsMel ; T_quantalIsomerizationsRod];
+    T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalizedLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
+    T_quantalAbsorptions = [T_quantalAbsorptionsLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
+    
+    % Convert to energy
     T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
     T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
     
@@ -86,6 +103,6 @@ for ii = 1:NSamples
     obj.Ts{ii}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
     obj.Ts{ii}.T_energy = T_energy;
     obj.Ts{ii}.T_energyNormalized = T_energyNormalized;
-    obj.Ts{ii}.indDiffParams = indDiffParams;
+    obj.Ts{ii}.indDiffParams = indDiffParamsRod;
     obj.Ts{ii}.adjIndDiffParams = adjIndDiffParams;
 end
