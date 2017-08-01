@@ -45,8 +45,14 @@ for ii = 1:NTitrations
             parvlabel = '%\DeltaD_{lens}';
             parvlabellong = 'Lens density';
             [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
-                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-                false,[],[],indDiffParams);
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            
+            % Set to 0 for rod and mel
+            indDiffParams.lambdaMaxShift = [0]; indDiffParams.dphotopigment = [0];
+            [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,indDiffParams);
+            [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,indDiffParams);
             theIdx = 1;
         case 'dmac' % Macular pigment density
             parv = linspace(-50, 50, NTitrations);
@@ -55,8 +61,14 @@ for ii = 1:NTitrations
             parvlabel = '%\DeltaD_{mac}';
             parvlabellong = 'Macular density';
             [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
-                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-                false,[],[],indDiffParams);
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            
+            % Set to 0 for rod and mel
+            indDiffParams.lambdaMaxShift = [0]; indDiffParams.dphotopigment = [0];
+            [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,indDiffParams);
+            [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,indDiffParams);
             theIdx = 2;
         case 'dphotopigmentL' % Optical pigment density (L)
             parv = linspace(-50, 50, NTitrations);
@@ -65,8 +77,14 @@ for ii = 1:NTitrations
             parvlabel = '%\DeltaD_{pigment} [L]';
             parvlabellong =  {'Photopigment' ; 'optical density [L]'};
             [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
-                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-                false,[],[],indDiffParams);
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            
+            % Set to 0 for rod and mel
+            indDiffParams.lambdaMaxShift = [0]; indDiffParams.dphotopigment = [0];
+            [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
+            [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
             theIdx = 3;
         case 'dphotopigmentM' % Optical pigment density (M)
             parv = linspace(-50, 50, NTitrations);
@@ -75,8 +93,14 @@ for ii = 1:NTitrations
             parvlabel = '%\DeltaD_{pigment} [M]';
             parvlabellong =  {'Photopigment' ; 'optical density [M]'};
             [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
-                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-                false,[],[],indDiffParams);
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            
+            % Set to 0 for rod and mel
+            indDiffParams.lambdaMaxShift = [0]; indDiffParams.dphotopigment = [0];
+            [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
+            [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
             theIdx = 4;
         case 'dphotopigmentS' % Optical pigment density (S)
             parv = linspace(-50, 50, NTitrations);
@@ -85,8 +109,14 @@ for ii = 1:NTitrations
             parvlabel = '%\DeltaD_{pigment} [S]';
             parvlabellong =  {'Photopigment' ; 'optical density [S]'};
             [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
-                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-                false,[],[],indDiffParams);
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            
+            % Set to 0 for rod and mel
+            indDiffParams.lambdaMaxShift = [0]; indDiffParams.dphotopigment = [0];
+            [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
+            [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
             theIdx = 5;
         case 'lambdaMaxShiftL' % Shift in lambda-max (L)
             parv = linspace(-2, 2, NTitrations);
@@ -95,8 +125,14 @@ for ii = 1:NTitrations
             parvlabel = '\Delta\lambda_{max} [L]';
             parvlabellong = {'Peak sensitivity' '\lambda_{max} [L]'};
             [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
-                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-                false,[],[],indDiffParams);
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            
+            % Set to 0 for rod and mel
+            indDiffParams.lambdaMaxShift = [0]; indDiffParams.dphotopigment = [0];
+            [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
+            [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
             theIdx = 6;
         case 'lambdaMaxShiftM' % Shift in lambda-max (M)
             parv = linspace(-2, 2, NTitrations);
@@ -105,8 +141,14 @@ for ii = 1:NTitrations
             parvlabel = '\Delta\lambda_{max} [M]';
             parvlabellong = {'Peak sensitivity' '\lambda_{max} [M]'};
             [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
-                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-                false,[],[],indDiffParams);
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            
+            % Set to 0 for rod and mel
+            indDiffParams.lambdaMaxShift = [0]; indDiffParams.dphotopigment = [0];
+            [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
+            [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
             theIdx = 7;
         case 'lambdaMaxShiftS' % Shift in lambda-max (S)
             parv = linspace(-2, 2, NTitrations);
@@ -115,8 +157,14 @@ for ii = 1:NTitrations
             parvlabel = '\Delta\lambda_{max} [S]';
             parvlabellong = {'Peak sensitivity' '\lambda_{max} [S]'};
             [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
-                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-                false,[],[],indDiffParams);
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[],[],[],[],indDiffParams);
+            
+            % Set to 0 for rod and mel
+            indDiffParams.lambdaMaxShift = [0]; indDiffParams.dphotopigment = [0];
+            [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
+            [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
             theIdx = 8;
         case 'obsPupilDiameterMm' % Observer pupil diameter
             parv = linspace(2, 9, NTitrations);
@@ -124,13 +172,22 @@ for ii = 1:NTitrations
             parvlabel = 'Pupil diameter [mm]';
             parvlabellong = 'Pupil diameter';
             [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
-                obj.fieldSizeDeg,obj.obsAgeInYrs,parv(ii),[],[],[], ...
-                false,[],[],indDiffParams);
+                obj.fieldSizeDeg,obj.obsAgeInYrs,parv(ii),[],[],[],[],[],[],indDiffParams);
+            
+            % Set to 0 for rod and mel
+            indDiffParams.lambdaMaxShift = [0]; indDiffParams.dphotopigment = [0];
+            [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,parv(ii));
+            [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+                obj.fieldSizeDeg,obj.obsAgeInYrs,parv(ii));
             theIdx = 9;
     end
+    T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalizedLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
+    T_quantalAbsorptions = [T_quantalAbsorptionsLMS ; T_quantalAbsorptionsMel ; T_quantalAbsorptionsRod];
+    T_quantalIsomerizations = [T_quantalIsomerizationsLMS ; T_quantalIsomerizationsMel ; T_quantalIsomerizationsRod];
     
     % Get the cone fundamentals
-    T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalizedLMS')';
+    T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
     T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
     
     % Save out the parameter values
@@ -148,9 +205,9 @@ for ii = 1:NTitrations
     end
     
     % Fill in the sub-fields in the "Tp" field
-    obj.Tp{theIdx, ii}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalizedLMS;
-    obj.Tp{theIdx, ii}.T_quantalAbsorptions = T_quantalAbsorptionsLMS;
-    obj.Tp{theIdx, ii}.T_quantalIsomerizations = T_quantalIsomerizationsLMS;
+    obj.Tp{theIdx, ii}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
+    obj.Tp{theIdx, ii}.T_quantalAbsorptions = T_quantalAbsorptions;
+    obj.Tp{theIdx, ii}.T_quantalIsomerizations = T_quantalIsomerizations;
     obj.Tp{theIdx, ii}.T_energy = T_energy;
     obj.Tp{theIdx, ii}.T_energyNormalized = T_energyNormalized;
     obj.Tp{theIdx, ii}.indDiffParams = indDiffParams;

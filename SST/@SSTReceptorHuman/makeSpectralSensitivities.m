@@ -17,51 +17,16 @@ function obj = makeSpectralSensitivities(obj)
 % 7/25/17   ms  Commented.
 
 %% LMS cones
-[T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,~,params,staticParams] = ComputeCIEConeFundamentals(obj.S,...
+[T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS] = ComputeCIEConeFundamentals(obj.S,...
     obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
 
 %% Melanopsin
-% Get the values from DefaultPhotoreceptors
-photoreceptorMel = DefaultPhotoreceptors('LivingHumanMelanopsin');
-photoreceptorMel.nomogram.S = obj.S;
-photoreceptorMel.fieldSizeDegrees = obj.fieldSizeDeg;
-photoreceptorMel.ageInYears = obj.obsAgeInYrs;
-photoreceptorMel.pupilDiameter.value = obj.obsPupilDiameterMm;
-photoreceptorMel = FillInPhotoreceptors(photoreceptorMel);
-
-% Copy the parameters from the LMS call and overwrite them
-staticParamsMel = staticParams;
-staticParamsMel.macularTransmittance(:) = 1;
-staticParamsMel.quantalEfficiency = photoreceptorMel.quantalEfficiency.value;
-staticParamsMel.whichNomogram = photoreceptorMel.nomogram.source;
-staticParamsMel.LserWeight = [];
-paramsMel = params;
-paramsMel.axialDensity = photoreceptorMel.axialDensity.value;
-paramsMel.DORODS = true;
-paramsMel.lambdaMax = photoreceptorMel.nomogram.lambdaMax;
-paramsMel.absorbance = PhotopigmentNomogram(staticParamsMel.S,paramsMel.lambdaMax,staticParamsMel.whichNomogram);
-[T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel] = ComputeRawConeFundamentals(paramsMel, staticParamsMel);
+[T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel] = ComputeCIEMelFundamental(obj.S,...
+    obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
 
 %% Rod
-% Get the values from DefaultPhotoreceptors
-photoreceptorRod = DefaultPhotoreceptors('LivingHumanRod');
-photoreceptorRod.nomogram.S = obj.S;
-photoreceptorRod.fieldSizeDegrees = obj.fieldSizeDeg;
-photoreceptorRod.ageInYears = obj.obsAgeInYrs;
-photoreceptorRod.pupilDiameter.value = obj.obsPupilDiameterMm;
-photoreceptorRod = FillInPhotoreceptors(photoreceptorRod);
-
-% Copy the parameters from the LMS call and overwrite them
-staticParamsRod = staticParams;
-staticParamsRod.quantalEfficiency = photoreceptorRod.quantalEfficiency.value;
-staticParamsRod.whichNomogram = photoreceptorRod.nomogram.source;
-staticParamsRod.LserWeight = [];
-paramsRod = params;
-paramsRod.axialDensity = photoreceptorRod.axialDensity.value;
-paramsRod.DORODS = true;
-paramsRod.lambdaMax = photoreceptorRod.nomogram.lambdaMax;
-paramsRod.absorbance = PhotopigmentNomogram(staticParamsRod.S,paramsRod.lambdaMax,staticParamsRod.whichNomogram);
-[T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod] = ComputeRawConeFundamentals(paramsRod, staticParamsRod);
+[T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod] = ComputeCIERodFundamental(obj.S,...
+    obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
 
 %% Assemble the sensitivities
 % Normalized quantal sensitivities

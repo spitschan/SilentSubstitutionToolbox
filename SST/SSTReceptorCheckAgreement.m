@@ -1,7 +1,8 @@
 %% Nominal ones
-pupilDiameterMm = 6;
-fieldSizeDeg = 10;
-obsAgeInYrs = 50;
+pupilDiameterMm = 2;
+fieldSizeDeg = 50;
+obsAgeInYrs = 60;
+
 % [1] Spectral sensitivities throguh SSTReceptorHuman
 receptorObj = SSTReceptorHuman('verbosity', 'high', 'fieldSizeDeg', fieldSizeDeg, ...
     'obsPupilDiameterMm', pupilDiameterMm, 'obsAgeInYrs', obsAgeInYrs);
