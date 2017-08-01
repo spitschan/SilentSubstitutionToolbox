@@ -51,7 +51,13 @@ modSpd = tmp.spd;
 % This creates a static version of the spectral sensitivities which
 % correspond to the parameters passed into the SSTReceptorHuman function.
 receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
-receptorObj.plotSpectralSensitivities;
+
+%% Plot the fundamentals in various formats
+receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalIsomerizations', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
+receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalAbsorptions', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
+receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalAbsorptionsNormalized', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
+receptorObj.plotSpectralSensitivities('whichFormat', 'T_energy', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
+receptorObj.plotSpectralSensitivities('whichFormat', 'T_energyNormalized', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
 
 %% Parametric variation of individual difference parameters
 % Define the individual difference parameters that we want to look at here.

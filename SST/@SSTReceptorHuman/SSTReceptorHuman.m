@@ -10,9 +10,9 @@ classdef SSTReceptorHuman < SSTReceptor
         obsAgeInYrs; % Age of the observer in years
         obsPupilDiameterMm; % Pupil diameter
         fieldSizeDeg; % Field size in degrees
-        T;  % Cone fundamentals created using makeSpectralSensitivities
-        Tp; % Cone fundamentals created using makeSpectralSensitivitiesParametricVariation
-        Ts; % Cone fundamentals created using makeSpectralSensitivitiesStochastic
+        T;  % Fundamentals created using makeSpectralSensitivities
+        Tp; % Fundamentals created using makeSpectralSensitivitiesParametricVariation
+        Ts; % Fundamentals created using makeSpectralSensitivitiesStochastic
         labels;
         MD5Hash; % MD5 hash of the receptor object
     end

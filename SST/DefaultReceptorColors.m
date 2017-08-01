@@ -24,7 +24,7 @@ for ii = 1:length(whichReceptors)
             theRGB(ii, :) = [0.3020 0.6863 0.2902];
         case 'SCone'
             theRGB(ii, :) = [0.2157 0.4941 0.7216];
-        case 'Melanopsin'
+        case 'Mel'
             theRGB(ii, :) = [0.1255 0.6549 0.7686];
         case 'Rod'
             theRGB(ii, :) = [0.0157 0.4118 0.3333];

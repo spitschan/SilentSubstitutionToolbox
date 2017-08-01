@@ -37,7 +37,7 @@ p.addParameter('NewWindow', true, @islogical);
 p.addParameter('whichFormat', 'T_energyNormalized', @ischar);
 p.addParameter('logUnits', false, @islogical);
 p.addParameter('saveFig', true, @islogical);
-p.addParameter('saveFigPath', '', @isschar);
+p.addParameter('saveFigPath', '', @ischar);
 p.parse(varargin{:});
 
 % Extract some parameters
@@ -45,7 +45,9 @@ whichFormat = p.Results.whichFormat;
 saveFigYesNo = p.Results.saveFig;
 saveFigPath = p.Results.saveFigPath;
 if isempty(saveFigPath)
-    saveFigPath = ['SpectralSensitivities_' whichFormat '.png'];
+    saveFigPath = fullfile(['SpectralSensitivities_' whichFormat '.png']);
+else
+    saveFigPath = fullfile(saveFigPath, ['SpectralSensitivities_' whichFormat '.png']);
 end
 
 % Determine what we want to plot based on the varargin
