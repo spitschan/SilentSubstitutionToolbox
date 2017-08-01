@@ -8,10 +8,10 @@ backgroundPrimary = 0.5*ones(size(B_primary,2),1);
 whichPrimariesToPin = [];
 primaryHeadRoom = 0.02;
 maxPowerDiff = 10^-1.5;
-whichReceptorsToTarget = [3];
+whichReceptorsToTarget = [1 2];
 whichReceptorsToIgnore = [5];
 whichReceptorsToMinimize = [];
-desiredContrast = 0.50;
+desiredContrast = [0.50 0.50];
 
 % Make the receptors
 T_receptors = receptorObj.T.T_energyNormalized;
@@ -34,18 +34,17 @@ contrast4 = T_receptors*(modulationSpd-backgroundSpd) ./ (T_receptors*background
 
 %% Iteration 1
 modulationSpd1 = modulationSpd;
-modulationSpd1(1:42) = backgroundSpd(1:42);
-modulationSpd1(79:end) = backgroundSpd(79:end);
+modulationSpd1(53:end) = backgroundSpd(53:end);
 contrast1 = T_receptors*(modulationSpd1-backgroundSpd) ./ (T_receptors*backgroundSpd)
 
 %% Iteration 2
 modulationSpd2 = modulationSpd;
-modulationSpd2(79:end) = backgroundSpd(79:end);
+modulationSpd2(78:end) = backgroundSpd(78:end);
 contrast2 = T_receptors*(modulationSpd2-backgroundSpd) ./ (T_receptors*backgroundSpd)
 
 %% Iteration 3
 modulationSpd3 = modulationSpd;
-modulationSpd3(105:end) = backgroundSpd(105:end);
+modulationSpd3(142:end) = backgroundSpd(142:end);
 contrast3 = T_receptors*(modulationSpd3-backgroundSpd) ./ (T_receptors*backgroundSpd)
 
 %% Plot
@@ -54,7 +53,7 @@ theRGB = DefaultReceptorColors;
 % Iteration 0
 subplot(1, 2, 1);
 plot(wls, backgroundSpd, '-k', 'LineWidth', 1.3); hold on;
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.1]);
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.14]);
 xlabel('Wavelength [nm]'); ylabel('Radiance'); hold off; hold off;
 
 subplot(1, 2, 2);
@@ -77,7 +76,7 @@ saveas(gcf, 'Explainer0.pdf', 'pdf');
 % Iteration 0
 subplot(1, 2, 1);
 plot(wls, backgroundSpd, ':k', 'LineWidth', 1.3); hold on; plot(wls, modulationSpd1, '-r', 'LineWidth', 1.3);
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.1]);
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.14]);
 xlabel('Wavelength [nm]'); ylabel('Radiance'); hold off;
 
 subplot(1, 2, 2);
@@ -100,7 +99,7 @@ saveas(gcf, 'Explainer1.pdf', 'pdf');
 % Iteration 1
 subplot(1, 2, 1);
 plot(wls, backgroundSpd, ':k', 'LineWidth', 1.3); hold on; plot(wls, modulationSpd2, '-r', 'LineWidth', 1.3);
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.1]);
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.14]);
 xlabel('Wavelength [nm]'); ylabel('Radiance'); hold off;
 
 subplot(1, 2, 2);
@@ -123,7 +122,7 @@ saveas(gcf, 'Explainer2.pdf', 'pdf');
 % Iteration 2
 subplot(1, 2, 1);
 plot(wls, backgroundSpd, ':k', 'LineWidth', 1.3); hold on; plot(wls, modulationSpd3, '-r', 'LineWidth', 1.3);
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.1]);
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.14]);
 xlabel('Wavelength [nm]'); ylabel('Radiance'); hold off;
 
 subplot(1, 2, 2);
@@ -146,7 +145,7 @@ saveas(gcf, 'Explainer3.pdf', 'pdf');
 % Iteration 3
 subplot(1, 2, 1);
 plot(wls, backgroundSpd, ':k', 'LineWidth', 1.3); hold on; plot(wls, modulationSpd, '-r', 'LineWidth', 1.3);
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.1]);
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim([380 780]); ylim([0 0.14]);
 xlabel('Wavelength [nm]'); ylabel('Radiance'); hold off;
 
 subplot(1, 2, 2);
