@@ -59,7 +59,7 @@ switch whichFormat
     case 'T_quantalAbsorptions'
         T_receptors = obj.T.T_quantalAbsorptions;
         sublabel = 'Quantal absorptions';
-        yLabel = 'Quantal sensitivity';
+        yLabel = 'Quantal absorptions';
     case 'T_quantalAbsorptionsNormalized'
         T_receptors = obj.T.T_quantalAbsorptionsNormalized;
         sublabel = 'Quantal absorptions [normalized]';
