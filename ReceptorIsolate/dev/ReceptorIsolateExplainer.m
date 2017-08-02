@@ -8,10 +8,10 @@ backgroundPrimary = 0.5*ones(size(B_primary,2),1);
 whichPrimariesToPin = [];
 primaryHeadRoom = 0.02;
 maxPowerDiff = 10^-1.5;
-whichReceptorsToTarget = [3];
-whichReceptorsToIgnore = [5];
+whichReceptorsToTarget = [5];
+whichReceptorsToIgnore = [];
 whichReceptorsToMinimize = [];
-desiredContrast = 0.50;
+desiredContrast = [];
 
 % Make the receptors
 T_receptors = receptorObj.T.T_energyNormalized;
