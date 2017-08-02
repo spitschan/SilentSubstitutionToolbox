@@ -66,13 +66,13 @@ while c <= NSamples
     
     % Sample the lens density
     indDiffParamsLMS.dlens = randn(s1)*dlensSD;
-    indDiffParamsMel.dlens = randn(s1)*dlensSD;
-    indDiffParamsRod.dlens = randn(s1)*dlensSD;
+    indDiffParamsMel.dlens = indDiffParamsLMS.dlens;
+    indDiffParamsRod.dlens = indDiffParamsMel.dlens;
     
     % Sample the macular pigment density
     indDiffParamsLMS.dmac = randn(s2)*dmaculaSD;
-    indDiffParamsMel.dmac = randn(s2)*dmaculaSD;
-    indDiffParamsRod.dmac = randn(s2)*dmaculaSD;
+    indDiffParamsMel.dmac = indDiffParamsLMS.dmac;
+    indDiffParamsRod.dmac = indDiffParamsMel.dmac;
     
     % Sample the optical pigment density
     indDiffParamsLMS.dphotopigment = [randn(s3)*dLConeSD randn(s4)*dMConeSD randn(s5)*dSConeSD];
@@ -84,16 +84,18 @@ while c <= NSamples
     indDiffParamsMel.lambdaMaxShift = [0];
     indDiffParamsRod.lambdaMaxShift = [0];
     indDiffParamsLMS.shiftType = 'linear';
+    indDiffParamsMel.shiftType = 'linear';
+    indDiffParamsRod.shiftType = 'linear';
     
     % Call ComputeCIEConeFundamentals to get the spectral sensitivities
     try
-        [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+        [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParamsLMS] = ComputeCIEConeFundamentals(obj.S,...
             obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
             false,[],[],indDiffParamsLMS);
-        [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
-            obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
-        [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
-            obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
+        [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParamsMel] = ComputeCIEMelFundamental(obj.S,...
+            obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,indDiffParamsMel);
+        [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParamsRod] = ComputeCIERodFundamental(obj.S,...
+            obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,indDiffParamsRod);
         c = c+1;
     catch e
         fprintf('* Sampling not successful for sample %g. Rejecting this sample.\n', c);
@@ -115,7 +117,8 @@ while c <= NSamples
     obj.Ts{c}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
     obj.Ts{c}.T_energy = T_energy;
     obj.Ts{c}.T_energyNormalized = T_energyNormalized;
-    obj.Ts{c}.indDiffParams = indDiffParamsRod;
-    obj.Ts{c}.adjIndDiffParams = adjIndDiffParams;
+    obj.Ts{c}.indDiffParams = indDiffParamsLMS;
+    adjIndDiffParamsLMS.lambdaMaxShift = indDiffParamsLMS.lambdaMaxShift;
+    obj.Ts{c}.adjIndDiffParams = adjIndDiffParamsLMS;
 end
 fprintf('* # of rejected samples: %g\n', cr);
