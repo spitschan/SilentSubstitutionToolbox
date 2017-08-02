@@ -94,7 +94,7 @@ end
 % individual difference parameters.
 
 % Define the number of samples.
-NSamples = 1000;
+NSamples = 10000;
 
 % Resample! This gets saved out in the "Ts" field of the receptor object.
 receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
@@ -209,7 +209,7 @@ ScatterplotWithHistogram(postRecepContrasts(1, :), postRecepContrasts(3, :), ...
     'YRefLines', [XNominalContrast XNominalContrast ; YAxLims], ...
     'XNominalContrast', XNominalContrast, ...
     'YNominalContrast', YNominalContrast, ...
-    'Color', [theRGB(1, :) ; theRGB(2, :)]);
+    'Color', [theRGB(1, :) ; theRGB(3, :)]);
 
 % Plot mean
 plot(mean(postRecepContrasts(1, :)), mean(postRecepContrasts(3, :)), '+k');
