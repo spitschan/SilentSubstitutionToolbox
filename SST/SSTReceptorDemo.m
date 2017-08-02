@@ -58,10 +58,10 @@ modSpd = tmp.spd;
 receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
 
 %% Plot the fundamentals in various formats
-receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalIsomerizations', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
-receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalAbsorptions', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
-receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalAbsorptionsNormalized', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
-receptorObj.plotSpectralSensitivities('whichFormat', 'T_energy', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
+%receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalIsomerizations', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
+%receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalAbsorptions', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
+%receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalAbsorptionsNormalized', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
+%receptorObj.plotSpectralSensitivities('whichFormat', 'T_energy', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
 receptorObj.plotSpectralSensitivities('whichFormat', 'T_energyNormalized', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
 
 %% Parametric variation of individual difference parameters
@@ -94,7 +94,7 @@ end
 % individual difference parameters.
 
 % Define the number of samples.
-NSamples = 1000;
+NSamples = 10000;
 
 % Resample! This gets saved out in the "Ts" field of the receptor object.
 receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
