@@ -26,14 +26,16 @@ whichRandStream = p.Results.RandStream;
 %   indDiffParams.shiftType - 'linear' (default) or 'log'
 %
 % The standard deviations are given in Table 5 of Asano et al. (2016),
-% doi.org/10.1371/journal.pone.0145671. The macular pigment parameter is
-% reduced from 36.5 to 25, because resampling often lead to out-of-bounds
-% for the macular pigment parameter.
+% doi.org/10.1371/journal.pone.0145671.
 %
+% Note that the macular pigment parameter often lens to macular
+% transmittances of >1, which leads to out-of-bound sampling. In that case,
+% a warning is thrown and the sample is rejected.
+
 % Note also that this assumes the standard deviation is constant for all
 % baseline parameters.
 dlensSD = 18.7; % Given in %
-dmaculaSD = 25; % Given in %
+dmaculaSD = 36.5; % Given in %
 dLConeSD = 9.0; % Given in %
 dMConeSD = 9.0; % Given in %
 dSConeSD = 7.4; % Given in %
@@ -51,12 +53,14 @@ if strcmp(obj.verbosity, 'high')
 end
 
 % Resample!
-for ii = 1:NSamples
+c = 0;
+cr = 0;
+while c <= NSamples
     % Print out some info if the verbosity level is high
     if strcmp(obj.verbosity, 'high')
-        if mod(ii, NPrintStep) == 0
+        if mod(c, NPrintStep) == 0
             % Rudimentary status update
-            fprintf('  %i/%i <strong>[%.2f%s]</strong>\n', ii, NSamples, 100*ii/NSamples, '%');
+            fprintf('  %i/%i <strong>[%.2f%s]</strong>\n', c, NSamples, 100*c/NSamples, '%');
         end
     end
     
@@ -77,18 +81,26 @@ for ii = 1:NSamples
     
     % Sample the shift in lambda max
     indDiffParamsLMS.lambdaMaxShift = [randn(s6)*lMaxLConeSD randn(s7)*lMaxMConeSD randn(s8)*lMaxSConeSD];
-        indDiffParamsMel.lambdaMaxShift = [0];
+    indDiffParamsMel.lambdaMaxShift = [0];
     indDiffParamsRod.lambdaMaxShift = [0];
     indDiffParamsLMS.shiftType = 'linear';
     
     % Call ComputeCIEConeFundamentals to get the spectral sensitivities
-    [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
-        obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
-        false,[],[],indDiffParamsLMS);
-    [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
-        obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
-    [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
-        obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
+    try
+        [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParams] = ComputeCIEConeFundamentals(obj.S,...
+            obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
+            false,[],[],indDiffParamsLMS);
+        [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParams] = ComputeCIEMelFundamental(obj.S,...
+            obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
+        [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParams] = ComputeCIERodFundamental(obj.S,...
+            obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
+        c = c+1;
+    catch e
+        fprintf('* Sampling not successful for sample %g. Rejecting this sample.\n', c);
+        warning(e.message);
+        cr = cr + 1; % Add to the counter
+    end
+    
     T_quantalIsomerizations = [T_quantalIsomerizationsLMS ; T_quantalIsomerizationsMel ; T_quantalIsomerizationsRod];
     T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalizedLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
     T_quantalAbsorptions = [T_quantalAbsorptionsLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
@@ -98,11 +110,12 @@ for ii = 1:NSamples
     T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
     
     % Assign the sub-fields in the "Ts" field
-    obj.Ts{ii}.T_quantalIsomerizations = T_quantalIsomerizations;
-    obj.Ts{ii}.T_quantalAbsorptions = T_quantalAbsorptions;
-    obj.Ts{ii}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
-    obj.Ts{ii}.T_energy = T_energy;
-    obj.Ts{ii}.T_energyNormalized = T_energyNormalized;
-    obj.Ts{ii}.indDiffParams = indDiffParamsRod;
-    obj.Ts{ii}.adjIndDiffParams = adjIndDiffParams;
+    obj.Ts{c}.T_quantalIsomerizations = T_quantalIsomerizations;
+    obj.Ts{c}.T_quantalAbsorptions = T_quantalAbsorptions;
+    obj.Ts{c}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
+    obj.Ts{c}.T_energy = T_energy;
+    obj.Ts{c}.T_energyNormalized = T_energyNormalized;
+    obj.Ts{c}.indDiffParams = indDiffParamsRod;
+    obj.Ts{c}.adjIndDiffParams = adjIndDiffParams;
 end
+fprintf('* # of rejected samples: %g\n', cr);

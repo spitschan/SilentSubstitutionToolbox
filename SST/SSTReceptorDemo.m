@@ -94,7 +94,7 @@ end
 % individual difference parameters.
 
 % Define the number of samples.
-NSamples = 10000;
+NSamples = 1000;
 
 % Resample! This gets saved out in the "Ts" field of the receptor object.
 receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
