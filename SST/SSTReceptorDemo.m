@@ -25,6 +25,11 @@
 % Under the hood, the SSTReceptorHuman object uses machinery from
 % Psychtoolbox-3 to generate the spectral sensitivities of the cones.
 %
+% The demo loads background and modulation spectra which are part of the
+% SilentSubstitutionToolbox. These were added when we set up SST originally
+% and are not of specific interest beyond showing how to load spectra and
+% make splatter calculations.
+%
 % 7/22/17   ms      Commented.
 
 %% Clear work space
