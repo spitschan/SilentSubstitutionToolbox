@@ -89,7 +89,7 @@ end
 % individual difference parameters.
 
 % Define the number of samples.
-NSamples = 200;
+NSamples = 1000;
 
 % Resample! This gets saved out in the "Ts" field of the receptor object.
 receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
@@ -155,55 +155,67 @@ for ii = 1:NSamples
     for jj = 1:size(receptorObj.Ts{ii}.T_energyNormalized, 1)
         contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
     end
-    lmContrast(:, ii) = [1 1 0]' \ contrasts(:, ii);
-    postRecepContrasts(:, ii) = [1 1 1 ; 1 -1 0 ; 0 0 1]' \ contrasts(:, ii);
+    postRecepContrasts(:, ii) = [1 1 1 0 0; 1 -1 0 0 0; 0 0 1 0 0]' \ contrasts(:, ii);
 end
 
-% First, plot L and M contrast
-axLims = [-0.03 0.03];
-figLM = figure;
+%% [1] L+M+S vs. L-M contrast
+figLMSvsLMinusM = figure;
 XNominalContrast = 0;
 YNominalContrast = 0;
-XAxLims = XNominalContrast+[-0.02 0.02];
-YAxLims = YNominalContrast+[-0.02 0.02];
+XAxLims = XNominalContrast+[-0.03 0.03];
+YAxLims = YNominalContrast+[-0.03 0.03];
 
-ScatterplotWithHistogram(contrasts(1, :), contrasts(2, :), ...
+% Throw it in a scatter plot
+ScatterplotWithHistogram(postRecepContrasts(1, :), postRecepContrasts(2, :), ...
     'XLim', XAxLims, 'YLim', YAxLims, 'BinWidth', 0.004, ...
-    'XLabel', 'L contrast', 'YLabel', 'M contrast', ...
+    'XLabel', 'L+M+S contrast', 'YLabel', 'L-M contrast', ...
     'XRefLines', [XAxLims ; YNominalContrast YNominalContrast], ...
     'YRefLines', [XNominalContrast XNominalContrast ; YAxLims], ...
     'XNominalContrast', XNominalContrast, ...
     'YNominalContrast', YNominalContrast, ...
     'Color', [theRGB(1, :) ; theRGB(2, :)]);
 
+% Plot mean
+plot(mean(postRecepContrasts(1, :)), mean(postRecepContrasts(2, :)), '+k');
+
+% Get the error ellipse
+[X, Y] = get_error_ellipse([postRecepContrasts(1, :) ; postRecepContrasts(2, :)]', 0.95);
+plot(X, Y, '-k');
+
 % Save out the figures
-set(figLM, 'PaperPosition', [0 0 6 6]);
-set(figLM, 'PaperSize', [6 6]);
-set(figLM, 'Color', 'w');
-set(figLM, 'InvertHardcopy', 'off');
-saveas(figLM, fullfile(sstRoot, 'OO', 'plots', 'SSTReceptorDemo_LMContrast.png'), 'png');
+set(figLMSvsLMinusM, 'PaperPosition', [0 0 6 6]);
+set(figLMSvsLMinusM, 'PaperSize', [6 6]);
+set(figLMSvsLMinusM, 'Color', 'w');
+set(figLMSvsLMinusM, 'InvertHardcopy', 'off');
+saveas(figLMSvsLMinusM, fullfile(sstRoot, 'SST', 'plots', 'SSTReceptorDemo_LMSvsLMinusM_Contrast.png'), 'png');
 
-% Then, plot L+M vs. S contrast
-figS = figure;
-XAxLims = [-0.02 0.02];
-YAxLims = [-0.01 0.08];
-
-% Set the nominal contrast
+%% [2] L+M+S vs. S contrast
+figLMSvsS = figure;
 XNominalContrast = 0;
 YNominalContrast = 0;
+XAxLims = XNominalContrast+[-0.03 0.03];
+YAxLims = YNominalContrast+[-0.1 0.1];
 
-ScatterplotWithHistogram(contrasts(1, :), contrasts(3, :), ...
+% Throw it in a scatter plot
+ScatterplotWithHistogram(postRecepContrasts(1, :), postRecepContrasts(3, :), ...
     'XLim', XAxLims, 'YLim', YAxLims, 'BinWidth', 0.004, ...
-    'XLabel', 'L+M contrast', 'YLabel', 'S contrast', ...
+    'XLabel', 'L+M+S contrast', 'YLabel', 'S contrast', ...
     'XRefLines', [XAxLims ; YNominalContrast YNominalContrast], ...
     'YRefLines', [XNominalContrast XNominalContrast ; YAxLims], ...
     'XNominalContrast', XNominalContrast, ...
     'YNominalContrast', YNominalContrast, ...
-    'Color', [theRGB(1, :) ; theRGB(3, :)]);
+    'Color', [theRGB(1, :) ; theRGB(2, :)]);
+
+% Plot mean
+plot(mean(postRecepContrasts(1, :)), mean(postRecepContrasts(3, :)), '+k');
+
+% Get the error ellipse
+[X, Y] = get_error_ellipse([postRecepContrasts(1, :) ; postRecepContrasts(3, :)]', 0.95);
+plot(X, Y, '-k');
 
 % Save out the figures
-set(figS, 'PaperPosition', [0 0 6 6]);
-set(figS, 'PaperSize', [6 6]);
-set(figS, 'Color', 'w');
-set(figS, 'InvertHardcopy', 'off');
-saveas(figS, fullfile(sstRoot, 'OO', 'plots', 'SSTReceptorDemo_SContrast.png'), 'png');
+set(figLMSvsS, 'PaperPosition', [0 0 6 6]);
+set(figLMSvsS, 'PaperSize', [6 6]);
+set(figLMSvsS, 'Color', 'w');
+set(figLMSvsS, 'InvertHardcopy', 'off');
+saveas(figLMSvsS, fullfile(sstRoot, 'SST', 'plots', 'SSTReceptorDemo_LMSvsS_Contrast.png'), 'png');
