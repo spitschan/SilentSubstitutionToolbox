@@ -9,7 +9,7 @@ wls = SToWls(S);
 receptorObj = SSTReceptorHuman('S', S, 'verbosity', 'high', 'obsAgeYrs', 32);
 
 %% 
-lightSource = 'OneLight'
+lightSource = 'OneLight';
 switch lightSource
     case 'LED'
         % Construct LEDs
