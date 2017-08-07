@@ -16,6 +16,34 @@ function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundM
 % The optimization itself is done around the in-line function
 % IsolateFunction, defined below.
 %
+% Here is some additinal informaiton from Manuel, about how this works:
+%
+%     (1) Linear constraint. In ReceptorIsolateOptimBackgroundMulti, instead of
+%     setting a linear constraint for the receptors which should have zero
+%     contrast relative to the background, the contrast-to-be-zeroed is added to
+%     the error term. In ReceptorIsolate, this is expressed as a linear equality
+%     (all contrasts-to-be-zeroed should be 0). The reason why we have to do
+%     this is because while we can calculate the activation of the
+%     contrasts-to-be-zeroed outside of the optimization in ReceptorIsolate,
+%     this cannot be done in ReceptorIsolateOptimBackgroundMulti because it
+%     precisely finds the optimal background simultaneously.
+% 
+%     (2) Non-linear constraint. In ReceptorIsolateOptimBackgroundMulti, there
+%     is a non-linear constraint which sets the upper and lower bounds for the
+%     modulation primaries and background primary. The reason why this is done
+%     as a non-linear constraint is that if the background shifts from e.g. a
+%     standard 0.5 half-on background, not all positive excursions (which
+%     maximize contrast) yield in-gamut negative excursions.
+% 
+%     (3) Error function. The heart of both ReceptorIsolateOptimBackgroundMulti
+%     is how the error function is defined. There are at present three
+%     definitions: a) for when the contrasts between receptors are yoked (e.g.
+%     LMS, with equal contrast on LMS), b) for when the contrasts are yoked but
+%     irregardless of sign (e.g. L-M with 10% on L and -10% on M or so), c) all
+%     other cases. Currently, there is the magical number 1000 which scales
+%     parts of the error function, and perhaps does so for the cases a-c
+%     differently. In any event, when optimizing for multiple modulation
+%     directions, the sums just add up.
 %
 % Input arguments:
 %
@@ -44,8 +72,7 @@ function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundM
 %                            optimized. If set, the k modulation primaries will
 %                            nonetheless be found, maximizing contrast on the k
 %                            directions.
-%
-%
+
 % 7/18/17   ms      Commented.
 % 8/7/17    ms      Further comments.
 
