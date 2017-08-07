@@ -255,7 +255,6 @@ plot(lensTransmittance, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
 ylabel('Contrast');
 
-
 subplot(3, 8, 9);
 plot(lensTransmittance, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
