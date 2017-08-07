@@ -45,105 +45,36 @@ primaryHeadRoom = 0.02;
 % to much sense for a three-primary monitor, as the smoothness of a
 % monitor spectrum is pretty much determined by the spectral shape
 % of its primarites.
-maxPowerDiff = 10000;
+maxPowerDiff = 0.005;
 
-%%
-% Isolate the receptors by calling the wrapper
-% initialPrimary = backgroundPrimary;
-% [modulationPrimary backgroundPrimary] = ReceptorIsolateOptimBackgroundMulti(receptorObj.T.T_energy, whichReceptorsToTarget, ...
-%     whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,...
-%     initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,...
-%     desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground);
-
-%backgroundPrimary = modulationPrimary{1};
-whichDirection = 'SDirected';
-whichReceptorsToTarget = [4];
-whichReceptorsToIgnore = [5];
-whichReceptorsToMinimize = [];
-desiredContrasts = [];
-pegBackground = false;
-
-modulationPrimary = ReceptorIsolate(receptorObj.T.T_energy,whichReceptorsToTarget, whichReceptorsToIgnore, whichReceptorsToMinimize, ...
-   B_primary, backgroundPrimary, backgroundPrimary, whichPrimariesToPin,...
-   primaryHeadRoom, 0.1, desiredContrasts, ambientSpd);
-%
-% Compute the contrasts that we got.
-fprintf('\n');
-for ii = 1:size(modulationPrimary, 2)
-    backgroundReceptors = receptorObj.T.T_energy*(B_primary*backgroundPrimary + ambientSpd);
-    modulationReceptors = receptorObj.T.T_energy*B_primary*(modulationPrimary - backgroundPrimary);
-    contrastReceptors = modulationReceptors ./ backgroundReceptors;
-    for j = 1:size(receptorObj.T.T_energy,1)
-        fprintf('\t%s: contrast = %0.4f\n',receptorObj.labels{j},contrastReceptors(j));
-    end
-end
-
-modPrimaryPos = modulationPrimary;
-modPrimaryNeg = backgroundPrimary - (modulationPrimary - backgroundPrimary);
-
-%%
-%
-gcFig1G = figure;
-plot(wls, B_primary*modPrimaryNeg, 'LineWidth', 2, 'Color', [97 103 100]/255); hold on;
-%plot(wls, B_primary*backgroundPrimary, '-', 'LineWidth', 2, 'Color', [108 94 219]/255);
-plot(wls, B_primary*modPrimaryPos, 'LineWidth', 2, 'Color', [38 47 219]/255);
-xlabel('Wavelength [nm]'); ylabel('Relative power');
-set(gca, 'XTick', [400 500 600 700]);
-set(gca, 'YTick', [0 1]);
-set(gca, 'TickDir', 'out');
-ylim([-0.01 1.01]);
-xlim([400 750]);
-box off;
-pbaspect([1 0.5 1]);
-
-% Save the figure
-set(gcFig1G, 'PaperPosition', [0 0 4 3]);
-set(gcFig1G, 'PaperSize', [4 3]);
-cd(fullfile(fileparts(mfilename('fullpath'))));
-saveas(gcFig1G, 'Fig1G.pdf', 'pdf');
-close(gcFig1G);
-
-
-
-%%
-maxPowerDiff = 10000;
 whichDirection = 'MelDirected';
-whichReceptorsToTarget = {[4 5]};
-whichReceptorsToIgnore = {[]};
-whichReceptorsToMinimize = {[]};
-desiredContrasts = {[]};
-directionsYoked = [0];
-directionsYokedAbs = [0];
+whichReceptorsToTarget = {[3] [4]};
+whichReceptorsToIgnore = {[] [5]};
+whichReceptorsToMinimize = {[] []};
+desiredContrasts = {[] []};
+directionsYoked = [0 0];
+directionsYokedAbs = [0 0];
 pegBackground = false;
 
 % Isolate the receptors by calling the wrapper
 initialPrimary = backgroundPrimary;
-[modulationPrimary backgroundPrimary] = ReceptorIsolateOptimBackgroundMulti(receptorObj.T.T_energy, whichReceptorsToTarget, ...
+[modulationPrimary backgroundPrimary] = ReceptorIsolateOptim(receptorObj.T.T_energy, whichReceptorsToTarget, ...
     whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,...
     initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,...
     desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground);
 
-backgroundPrimary = modulationPrimary{1};
-whichDirection = 'MelDirected';
-whichReceptorsToTarget = [4 5];
-whichReceptorsToIgnore = [];
-whichReceptorsToMinimize = [];
-desiredContrasts = [0.5 0.3];
-pegBackground = false;
-
-modulationPrimary = ReceptorIsolate(receptorObj.T.T_energy,whichReceptorsToTarget, whichReceptorsToIgnore, whichReceptorsToMinimize, ...
-   B_primary, backgroundPrimary, modulationPrimary{2}, whichPrimariesToPin,...
-   primaryHeadRoom, maxPowerDiff, desiredContrasts, ambientSpd);
 
 % Compute the contrasts that we got.
 for ii = 1:size(modulationPrimary, 2)
-    backgroundReceptors = receptorObj.T.T_energy*(B_primary*backgroundPrimary + ambientSpd);
-    modulationReceptors = receptorObj.T.T_energy*B_primary*(modulationPrimary - backgroundPrimary);
-    contrastReceptors = modulationReceptors ./ backgroundReceptors;
+    bgSpd = B_primary*backgroundPrimary + ambientSpd;
+    modSpd = B_primary*modulationPrimary{ii} + ambientSpd;
+    backgroundReceptors = receptorObj.T.T_energy*bgSpd;
+    modulationReceptors = receptorObj.T.T_energy*modSpd;
+    contrastReceptors = (modulationReceptors-backgroundReceptors) ./ backgroundReceptors;
+    fprintf('\n');
     for j = 1:size(receptorObj.T.T_energy,1)
         fprintf('\t%s: contrast = %0.4f\n',receptorObj.labels{j},contrastReceptors(j));
     end
+    plot(bgSpd, '-k'); hold on;
+    plot(modSpd, '-r');
 end
-
-modPrimaryPos = modulationPrimary;
-modPrimaryNeg = backgroundPrimary - (modulationPrimary - backgroundPrimary);

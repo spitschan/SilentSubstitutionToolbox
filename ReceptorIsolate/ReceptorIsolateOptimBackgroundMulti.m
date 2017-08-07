@@ -194,9 +194,9 @@ end
 f = theSum;
 end
 
-% Set up the smoothness parameter as a nonlinear constraint
-%
-% <!> It is not clear to me what is happening here.
+% Set up upper and lower bounds as a non-linear constraint. Since the
+% background is changing within the optimization, we won't be able to know
+% the excursion unless we have the background...
 function [c ceq] = nonlconstraint(x, nModulations)
 backgroundPrimary = x(:, 1);
 c = [];

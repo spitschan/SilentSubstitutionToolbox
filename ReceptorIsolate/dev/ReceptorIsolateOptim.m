@@ -1,5 +1,5 @@
-function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptim(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground)
-% [isolatingPrimaries] = ReceptorIsolateOptim(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground)
+function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptim(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground,unipolarYesNo)
+% [isolatingPrimaries] = ReceptorIsolateOptimBackgroundMulti(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground,unipolarYesNo)
 %
 % This routine optimize finds the background primaries and k modulation
 % primaries maximizing the contrast on the specified k modulation
@@ -146,7 +146,8 @@ end
 
 %% Do the optimization.
 options = optimset('fmincon');
-options = optimset(options,'Diagnostics','off','Display','off','LargeScale','off','Algorithm','sqp', 'MaxFunEvals', 100000, 'TolFun', 1e-10, 'TolCon', 1e-10, 'TolX', 1e-10);
+options = optimset(options,'Diagnostics','off','Display','off','LargeScale','off','Algorithm','sqp', ...
+    'MaxFunEvals', 100000, 'TolFun', 1e-16, 'TolCon', 1e-16, 'TolX', 1e-16);
 x = fmincon(@(x) IsolateFunction(x,B_primary,ambientSpd,T_receptors,...
     whichReceptorsToIsolate,whichReceptorsToZero,whichReceptorsToMinimize,...
     nModulations,directionsYoked,directionsYokedAbs),x,Cx,Qx,[],[],vlbx,vubx,@(x)nonlconstraint(x, nModulations),options);
@@ -171,7 +172,7 @@ backgroundSpd = B_primary*x(:, 1) + ambientSpd;
 % Iterate over the modulations and calculate contrasts
 for i = 2:nModulations+1
     % Compute contrasts for receptors we want to isolate
-    modulationSpd = B_primary*(x(:, i)-x(:, 1));
+    modulationSpd = B_primary*(x(:, i)-x(:, 1)) + ambientSpd;
     isolateContrasts{i-1} = T_receptors(whichReceptorsToIsolate{i-1},:)*modulationSpd ./ (T_receptors(whichReceptorsToIsolate{i-1},:)*backgroundSpd);
     zeroContrasts{i-1} = T_receptors(whichReceptorsToZero{i-1},:)*modulationSpd ./ (T_receptors(whichReceptorsToZero{i-1},:)*backgroundSpd);
 end
@@ -188,7 +189,7 @@ for i = 1:nModulations
         % contrast, regardless of sign (e.g. 10% L, -10% M contrast)
         theSum = theSum + 1000*sum( isolateContrasts{i} )  + sum((isolateContrasts{i}-1).^2) + 1000*sum(zeroContrasts{i}.^2);
     else
-        theSum = theSum + sum((isolateContrasts{i}-1).^2) + 1000*sum(zeroContrasts{i}.^2);
+        theSum = theSum + sum((isolateContrasts{i}-1).^2) + 10000*sum(zeroContrasts{i}.^2);
     end
 end
 f = theSum;
@@ -209,7 +210,8 @@ for i = 1:nModulations+1
     c3 = -([backgroundPrimary isolatingPrimary{i}]*[0 1]'); % negative arm
     c4 = [backgroundPrimary isolatingPrimary{i}]*[0 1]' - 1; % positive arm
     
-    c = [c c1 c2 c2 c3];
+    %c = [c c1 c2 c3 c4];
+    c = [c c2 c4];
 end
 ceq = [];
 end
