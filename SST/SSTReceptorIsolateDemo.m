@@ -10,41 +10,44 @@ receptorObj = SSTReceptorHuman('S', S, 'verbosity', 'high', 'obsAgeYrs', 32);
 
 
 %%
-lightSource = 'LED'
+lightSource = 'OneLight'
 switch lightSource
     case 'LED'
+        % Construct LEDs
+        NLEDs = 8;
+        peakWls = [450 472.5 502.5 530 590 615 632.5 660];
+        fwhm = 12*ones(1, NLEDs);
+        maxPower = ones(1, NLEDs);
+        for i = 1:length(fwhm)
+            % Figure out the standard deviation.
+            standardDeviation(i) = FWHMToStd(fwhm(i));
+        end
         
+        % Make the spectrum.
+        for i = 1:length(fwhm)
+            spd(:, i) = normpdf(wls, peakWls(i), fwhm(i));
+            spd(:, i) = spd(:, i)./max(spd(:, i))*maxPower(i);
+        end
+        
+        % Assign the basis matrix
+        B_primary = spd;
+        
+        % Assign the ambient
+        ambientSpd(:) = zeros(size(wls));
     case 'OneLight'
-        calPath = fullfile(fileparts(mfilename('fullpath')), 'ReceptorIsolateDemoData', []);
+        calPath = '/Users/spitschan/Documents/MATLAB/Toolboxes/SilentSubstitutionToolbox/ReceptorIsolate/ReceptorIsolateDemoData';
         cal = LoadCalFile('OneLightDemoCal.mat',[],calPath);
         S = cal.describe.S;
+        
+        % Assign the basis matrix
         B_primary = cal.computed.pr650M;
+        
+        % Assign the ambient
         ambientSpd = cal.computed.pr650MeanDark;
 end
-% Construct LEDs
-NLEDs = 8;
-peakWls = [450 472.5 502.5 530 590 615 632.5 660];
-fwhm = 12*ones(1, NLEDs);
-maxPower = ones(1, NLEDs);
-for i = 1:length(fwhm)
-    % Figure out the standard deviation.
-    standardDeviation(i) = FWHMToStd(fwhm(i));
-end
 
-
-% Make the spectrum.
-for i = 1:length(fwhm)
-    spd(:, i) = normpdf(wls, peakWls(i), fwhm(i));
-    spd(:, i) = spd(:, i)./max(spd(:, i))*maxPower(i);
-end
-
-
-B_primary = spd;
-
-% Set background to the monitor midpoint, and use the ambient
-% spectrum from the calibration file.
-backgroundPrimary = 0.5*ones(NLEDs, 1);
-ambientSpd = wls; ambientSpd(:) = 0;
+% Set background to the device midpoint.
+backgroundPrimary = 0.5*ones(size(B_primary, 2), 1);
 
 % Don't pin any primaries.  Do enforce a constraint that we don't
 % go right to the edge of the gamut.  The head room parameter is
