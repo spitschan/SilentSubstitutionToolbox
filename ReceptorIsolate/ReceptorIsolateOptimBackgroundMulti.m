@@ -4,7 +4,7 @@ function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundM
 % This routine optimize finds the background primaries and k modulation
 % primaries maximizing the contrast on the specified k modulation
 % directions. This is done in simultaneous optimization.
-% 
+%
 % It is also possible to run this routine by passing a background and
 % pegging it to the passed settings, such that the optimization does NOT
 % find the best background, but only the best modulation primaries.
@@ -13,34 +13,37 @@ function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundM
 % the modulation primaries maximizing the contrast on one given modulation
 % direction.
 %
+% The optimization itself is done around the in-line function
+% IsolateFunction, defined below.
+%
 %
 % Input arguments:
-% 
-% T_receptors - Vector of spectral sensitivities for N receptors
-% whichReceptorsToIsolate - Logical array of size N, indicating which
-%                           modulations should be isolated
-% whichReceptorsToIgnore - Logical array of size N, indicating which
-%                          modulations should be ignored in the
-%                          optimization (i.e. neither isolated nor zeroed)
+%
+% T_receptors -              Vector of spectral sensitivities for N receptors
+% whichReceptorsToIsolate -  Logical array of size N, indicating which
+%                            modulations should be isolated
+% whichReceptorsToIgnore -   Logical array of size N, indicating which
+%                            modulations should be ignored in the
+%                            optimization (i.e. neither isolated nor zeroed)
 % whichReceptorsToMinimize - Logical array of size N, indicating which
 %                            modulations should be minimized (i.e. driven
 %                            towards 0).
 %                            NOTE: THIS CURRENTLY DOES NOTHING.
-% B_primary - Array of spectral primaries
-% backgroundPrimary - Background primary, will only be used if background
-%                     is pegged using the pegBackground argument.
-% initialPrimary - Starting point for optimization. 
-% whichPrimariesToPin - See ReceptorIsolate
-% primaryHeadRoom - See ReceptorIsolate
-% maxPowerDiff - See ReceptorIsolate
-% desiredContrasts - See ReceptorIsolate
-% ambientSpd - See ReceptorIsolate
-% directionsYoked - See ReceptorIsolate
-% directionsYokedAbs - See ReceptorIsolate
-% pegBackground - Boolean flag to set if the background should not be
-%                 optimized. If set, the k modulation primaries will
-%                 nonetheless be found, maximizing contrast on the k
-%                 directions.
+% B_primary -                Array of spectral primaries
+% backgroundPrimary -        Background primary, will only be used if background
+%                            is pegged using the pegBackground argument.
+% initialPrimary -           Starting point for optimization.
+% whichPrimariesToPin -      See ReceptorIsolate
+% primaryHeadRoom -          See ReceptorIsolate
+% maxPowerDiff -             See ReceptorIsolate
+% desiredContrasts -         See ReceptorIsolate
+% ambientSpd -               See ReceptorIsolate
+% directionsYoked -          See ReceptorIsolate
+% directionsYokedAbs -       See ReceptorIsolate
+% pegBackground -            Boolean flag to set if the background should not be
+%                            optimized. If set, the k modulation primaries will
+%                            nonetheless be found, maximizing contrast on the k
+%                            directions.
 %
 %
 % 7/18/17   ms      Commented.
@@ -119,10 +122,17 @@ C = [C1 ; C2]*B_primary;
 
 % Tolerance vector, just expand passed maxPowerDiff.
 Q = ones(2*(vectorLength-1), 1)*1000*maxPowerDiff;
+Qx = repmat(Q, 1, nModulations+1);
+
+% Construct the smoothness constraint
+theString = 'C';
+for i = 1:nModulations
+    theString = [theString ',C'];
+end
+eval(['Cx = blkdiag(' theString ');']);
 
 % (2) Set up the contraints for the background primary and all modulation
 % primaries. These are of size k.
-Qx = repmat(Q, 1, nModulations+1);
 vlbx = repmat(vlb, 1, nModulations+1);
 vubx = repmat(vub, 1, nModulations+1);
 
@@ -133,17 +143,12 @@ if pegBackground
     vubx(:, 1) = backgroundPrimary;
 end
 
-% Construct the smoothness constraint
-theString = 'C';
-for i = 1:nModulations
-    theString = [theString ',C'];
-end
-eval(['Cx = blkdiag(' theString ');']);
-
 %% Do the optimization.
 options = optimset('fmincon');
 options = optimset(options,'Diagnostics','off','Display','off','LargeScale','off','Algorithm','sqp', 'MaxFunEvals', 100000, 'TolFun', 1e-10, 'TolCon', 1e-10, 'TolX', 1e-10);
-x = fmincon(@(x) IsolateFunction(x,B_primary,ambientSpd,T_receptors,whichReceptorsToIsolate,whichReceptorsToZero,whichReceptorsToMinimize,nModulations,directionsYoked,directionsYokedAbs),x,Cx,Qx,[],[],vlbx,vubx,@(x)nonlconstraint(x, nModulations),options);
+x = fmincon(@(x) IsolateFunction(x,B_primary,ambientSpd,T_receptors,...
+    whichReceptorsToIsolate,whichReceptorsToZero,whichReceptorsToMinimize,...
+    nModulations,directionsYoked,directionsYokedAbs),x,Cx,Qx,[],[],vlbx,vubx,@(x)nonlconstraint(x, nModulations),options);
 
 % Extract the output arguments to be passed back.
 backgroundPrimary = x(:, 1);
@@ -164,23 +169,22 @@ backgroundSpd = B_primary*x(:, 1) + ambientSpd;
 
 % Iterate over the modulations and calculate contrasts
 for i = 2:nModulations+1
-    % Compute contrasts for receptors we want to isolate.
+    % Compute contrasts for receptors we want to isolate
     modulationSpd = B_primary*(x(:, i)-x(:, 1));
     isolateContrasts{i-1} = T_receptors(whichReceptorsToIsolate{i-1},:)*modulationSpd ./ (T_receptors(whichReceptorsToIsolate{i-1},:)*backgroundSpd);
     zeroContrasts{i-1} = T_receptors(whichReceptorsToZero{i-1},:)*modulationSpd ./ (T_receptors(whichReceptorsToZero{i-1},:)*backgroundSpd);
 end
 
-% Want the sum of the isolated receptor contrasts to be big. fmincon
-% minimizes, hence the negative sign.  Acheive this by minimizing
-% the difference between the isolatedContrasts and unity.  For
-% reasons not fully understood, this works better numerically than
-% simply minimizing the negative sum of squared contrasts.
+% Here, we calculate the error term for the optimization.
 theSum = 0;
-
 for i = 1:nModulations
     if directionsYoked(i)
-        theSum = theSum + 1000*sum( (isolateContrasts{i}  - (sum(isolateContrasts{i})/length(whichReceptorsToIsolate{i})) ).^2 )  + sum((isolateContrasts{i}-1).^2) + 1000*sum(zeroContrasts{i}.^2);
+        % Case for when the receptors should see the same amount of
+        % contrast
+        theSum = theSum + 1000*sum( (isolateContrasts{i}  - (sum(isolateContrasts{i})/length(whichReceptorsToIsolate{i})) ).^2 ) + sum((isolateContrasts{i}-1).^2) + 1000*sum(zeroContrasts{i}.^2);
     elseif directionsYokedAbs(i)
+        % Case for when the receptors should see the same amount of
+        % contrast, regardless of sign (e.g. 10% L, -10% M contrast)
         theSum = theSum + 1000*sum( isolateContrasts{i} )  + sum((isolateContrasts{i}-1).^2) + 1000*sum(zeroContrasts{i}.^2);
     else
         theSum = theSum + sum((isolateContrasts{i}-1).^2) + 1000*sum(zeroContrasts{i}.^2);
@@ -190,6 +194,8 @@ f = theSum;
 end
 
 % Set up the smoothness parameter as a nonlinear constraint
+%
+% <!> It is not clear to me what is happening here.
 function [c ceq] = nonlconstraint(x, nModulations)
 backgroundPrimary = x(:, 1);
 c = [];
