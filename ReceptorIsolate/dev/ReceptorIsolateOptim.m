@@ -146,11 +146,11 @@ end
 
 %% Do the optimization.
 options = optimset('fmincon');
-options = optimset(options,'Diagnostics','off','Display','off','LargeScale','off','Algorithm','sqp', ...
+options = optimset(options,'Diagnostics','on','Display','on','LargeScale','off','Algorithm','sqp', ...
     'MaxFunEvals', 100000, 'TolFun', 1e-16, 'TolCon', 1e-16, 'TolX', 1e-16);
 x = fmincon(@(x) IsolateFunction(x,B_primary,ambientSpd,T_receptors,...
     whichReceptorsToIsolate,whichReceptorsToZero,whichReceptorsToMinimize,...
-    nModulations,directionsYoked,directionsYokedAbs),x,Cx,Qx,[],[],vlbx,vubx,@(x)nonlconstraint(x, nModulations),options);
+    nModulations,directionsYoked,directionsYokedAbs),x,Cx,Qx,[],[],vlbx,vubx,@(x)nonlconstraint(x, nModulations, unipolarYesNo),options);
 
 % Extract the output arguments to be passed back.
 backgroundPrimary = x(:, 1);
@@ -198,7 +198,7 @@ end
 % Set up the smoothness parameter as a nonlinear constraint
 %
 % <!> It is not clear to me what is happening here.
-function [c ceq] = nonlconstraint(x, nModulations)
+function [c ceq] = nonlconstraint(x, nModulations, unipolarYesNo)
 backgroundPrimary = x(:, 1);
 c = [];
 for i = 1:nModulations+1
@@ -210,8 +210,11 @@ for i = 1:nModulations+1
     c3 = -([backgroundPrimary isolatingPrimary{i}]*[0 1]'); % negative arm
     c4 = [backgroundPrimary isolatingPrimary{i}]*[0 1]' - 1; % positive arm
     
-    %c = [c c1 c2 c3 c4];
-    c = [c c2 c4];
+    if unipolarYesNo
+        c = [c c2 c4];
+    else
+        c = [c c1 c2 c3 c4];
+    end
 end
 ceq = [];
 end

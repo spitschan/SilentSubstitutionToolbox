@@ -48,21 +48,22 @@ primaryHeadRoom = 0.02;
 maxPowerDiff = 0.005;
 
 whichDirection = 'MelDirected';
-whichReceptorsToTarget = {[3] [4]};
-whichReceptorsToIgnore = {[] [5]};
-whichReceptorsToMinimize = {[] []};
-desiredContrasts = {[] []};
-directionsYoked = [0 0];
-directionsYokedAbs = [0 0];
-pegBackground = false;
+%%
+whichReceptorsToTarget = {[1 2 3] [3] [4]};
+whichReceptorsToIgnore = {[5] [] [5]};
+whichReceptorsToMinimize = {[] [] []};
+desiredContrasts = {[] [] []};
+directionsYoked = [1 0 0];
+directionsYokedAbs = [0 0 0];
 
 % Isolate the receptors by calling the wrapper
 initialPrimary = backgroundPrimary;
+unipolarYesNo = false;
+pegBackground = false;
 [modulationPrimary backgroundPrimary] = ReceptorIsolateOptim(receptorObj.T.T_energy, whichReceptorsToTarget, ...
     whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,...
     initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,...
-    desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground);
-
+    desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground,unipolarYesNo);
 
 % Compute the contrasts that we got.
 for ii = 1:size(modulationPrimary, 2)
