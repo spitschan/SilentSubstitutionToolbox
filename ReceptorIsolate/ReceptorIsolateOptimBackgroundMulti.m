@@ -47,6 +47,7 @@ function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundM
 %
 %
 % 7/18/17   ms      Commented.
+% 8/7/17    ms      Further comments.
 
 % Check whether the desired contrasts were passed, and if so check
 % consistency of its dimensions.
