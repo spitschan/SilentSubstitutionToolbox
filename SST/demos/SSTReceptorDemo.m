@@ -40,7 +40,7 @@ CheckSSTInstalled();
 
 % Infer the SST root
 sstRoot0 = mfilename('fullpath');
-sstRoot1 = cd(fullfile(fileparts(sstRoot0), '..'));
+sstRoot1 = cd(fullfile(fileparts(sstRoot0), '../..'));
 sstRoot = pwd;
 
 %% Get plot colors
@@ -94,7 +94,7 @@ end
 % individual difference parameters.
 
 % Define the number of samples.
-NSamples = 1000;
+NSamples = 200;
 
 % Resample! This gets saved out in the "Ts" field of the receptor object.
 receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
