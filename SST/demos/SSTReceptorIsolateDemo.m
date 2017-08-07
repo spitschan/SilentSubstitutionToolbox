@@ -10,6 +10,17 @@ receptorObj = SSTReceptorHuman('S', S, 'verbosity', 'high', 'obsAgeYrs', 32);
 
 
 %%
+lightSource = 'LED'
+switch lightSource
+    case 'LED'
+        
+    case 'OneLight'
+        calPath = fullfile(fileparts(mfilename('fullpath')), 'ReceptorIsolateDemoData', []);
+        cal = LoadCalFile('OneLightDemoCal.mat',[],calPath);
+        S = cal.describe.S;
+        B_primary = cal.computed.pr650M;
+        ambientSpd = cal.computed.pr650MeanDark;
+end
 % Construct LEDs
 NLEDs = 8;
 peakWls = [450 472.5 502.5 530 590 615 632.5 660];
@@ -26,6 +37,7 @@ for i = 1:length(fwhm)
     spd(:, i) = normpdf(wls, peakWls(i), fwhm(i));
     spd(:, i) = spd(:, i)./max(spd(:, i))*maxPower(i);
 end
+
 
 B_primary = spd;
 
@@ -49,12 +61,12 @@ maxPowerDiff = 0.005;
 
 whichDirection = 'MelDirected';
 %%
-whichReceptorsToTarget = {[1 2 3] [3] [4]};
-whichReceptorsToIgnore = {[5] [] [5]};
-whichReceptorsToMinimize = {[] [] []};
-desiredContrasts = {[] [] []};
-directionsYoked = [1 0 0];
-directionsYokedAbs = [0 0 0];
+whichReceptorsToTarget = {[3] [4]};
+whichReceptorsToIgnore = {[] [5]};
+whichReceptorsToMinimize = {[] []};
+desiredContrasts = {[] []};
+directionsYoked = [0 0];
+directionsYokedAbs = [0 0];
 
 % Isolate the receptors by calling the wrapper
 initialPrimary = backgroundPrimary;
