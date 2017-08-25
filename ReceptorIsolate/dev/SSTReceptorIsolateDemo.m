@@ -1,3 +1,6 @@
+tbUse('SilentSubstitutionToolbox');
+
+
 %% Do a little bit of house keeping
 clear all; close all; clc
 
@@ -10,7 +13,8 @@ receptorObj = SSTReceptorHuman('S', S, 'verbosity', 'high', 'obsAgeYrs', 32);
 
 
 %%
-lightSource = 'LED'
+lightSource = 'LED';
+lightSource = 'OneLight';
 switch lightSource
     case 'LED'
         % Construct LEDs
@@ -33,7 +37,7 @@ switch lightSource
         
         B_primary = spd;
     case 'OneLight'
-        calPath = fullfile(fileparts(mfilename('fullpath')), 'ReceptorIsolateDemoData', []);
+        calPath = fullfile(fileparts(mfilename('fullpath')), '..', 'ReceptorIsolateDemoData', []);
         cal = LoadCalFile('OneLightDemoCal.mat',[],calPath);
         S = cal.describe.S;
         B_primary = cal.computed.pr650M;
@@ -43,7 +47,7 @@ end
 
 % Set background to the monitor midpoint, and use the ambient
 % spectrum from the calibration file.
-backgroundPrimary = 0.5*ones(NLEDs, 1);
+backgroundPrimary = 0.5*ones(size(B_primary, 2), 1);
 ambientSpd = wls; ambientSpd(:) = 0;
 
 % Don't pin any primaries.  Do enforce a constraint that we don't
@@ -51,7 +55,7 @@ ambientSpd = wls; ambientSpd(:) = 0;
 % defined in the [0-1] device primary space.  Using a little head
 % room keeps us a bit away from the hard edge of the device.
 whichPrimariesToPin = [];
-primaryHeadRoom = 0.02;
+primaryHeadRoom = 0.05;
 
 % No smoothness constraint envforced here.  It really wouldn't make
 % to much sense for a three-primary monitor, as the smoothness of a
@@ -60,7 +64,7 @@ primaryHeadRoom = 0.02;
 maxPowerDiff = 0.005;
 
 whichDirection = 'MelDirected';
-%%
+%
 whichReceptorsToTarget = {[3] [4]};
 whichReceptorsToIgnore = {[] [5]};
 whichReceptorsToMinimize = {[] []};
@@ -80,14 +84,16 @@ pegBackground = false;
 % Compute the contrasts that we got.
 for ii = 1:size(modulationPrimary, 2)
     bgSpd = B_primary*backgroundPrimary + ambientSpd;
-    modSpd = B_primary*modulationPrimary{ii} + ambientSpd;
+    modSpd1 = B_primary*modulationPrimary{ii} + ambientSpd;
+    modSpd2 = B_primary*(backgroundPrimary-(modulationPrimary{ii}-backgroundPrimary)) + ambientSpd;
     backgroundReceptors = receptorObj.T.T_energy*bgSpd;
-    modulationReceptors = receptorObj.T.T_energy*modSpd;
+    modulationReceptors = receptorObj.T.T_energy*modSpd1;
     contrastReceptors = (modulationReceptors-backgroundReceptors) ./ backgroundReceptors;
     fprintf('\n');
     for j = 1:size(receptorObj.T.T_energy,1)
         fprintf('\t%s: contrast = %0.4f\n',receptorObj.labels{j},contrastReceptors(j));
     end
     plot(bgSpd, '-k'); hold on;
-    plot(modSpd, '-r');
+    plot(modSpd1, '-b');
+    plot(modSpd2, '-r');
 end
