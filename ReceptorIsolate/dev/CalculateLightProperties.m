@@ -1,15 +1,15 @@
 function out = CalculateLightProperties(S, spd, pupilDiameterMm)
 
-out.radianceWattsPerM2Sr = spd;
-out.radianceWattsPerM2Sr(out.radianceWattsPerM2Sr < 0) = 0;
-out.radianceWattsPerCm2Sr = (10.^-4)*out.radianceWattsPerM2Sr;
-out.radianceQuantaPerCm2SrSec = EnergyToQuanta(S,out.radianceWattsPerCm2Sr);
+out.spd.radianceWattsPerM2Sr = spd;
+out.spd.radianceWattsPerM2Sr(out.spd.radianceWattsPerM2Sr < 0) = 0;
+out.spd.radianceWattsPerCm2Sr = (10.^-4)*out.spd.radianceWattsPerM2Sr;
+out.spd.radianceQuantaPerCm2SrSec = EnergyToQuanta(S,out.spd.radianceWattsPerCm2Sr);
 
 %% Load CIE functions.   
 load T_xyz1931
 T_xyz = SplineCmf(S_xyz1931,683*T_xyz1931,S);
-out.photopicLuminanceCdM2 = T_xyz(2,:)*out.radianceWattsPerM2Sr;
-out.chromaticityXY = T_xyz(1:2,:)*out.radianceWattsPerM2Sr/sum(T_xyz*out.radianceWattsPerM2Sr);
+out.photopicLuminanceCdM2 = T_xyz(2,:)*out.spd.radianceWattsPerM2Sr;
+out.chromaticityXY = T_xyz(1:2,:)*out.spd.radianceWattsPerM2Sr/sum(T_xyz*out.spd.radianceWattsPerM2Sr);
 
 %% Load cone spectral sensitivities
 load T_cones_ss2
@@ -21,7 +21,7 @@ T_cones = SplineCmf(S_cones_ss2,T_cones_ss2,S);
 load spd_phillybright
 spd_phillybright = SplineSpd(S_phillybright,spd_phillybright,S);
 photopicLuminancePhillyBrightCdM2 = T_xyz(2,:)*spd_phillybright;
-OLSLratio = out.radianceWattsPerM2Sr./spd_phillybright;
+OLSLratio = out.spd.radianceWattsPerM2Sr./spd_phillybright;
 
 %% Compute irradiance, trolands, etc.
 if ~exist('pupilDiameterMm', 'var') | isempty(pupilDiameterMm)
@@ -31,13 +31,13 @@ end
 pupilAreaMm2 = pi*((pupilDiameterMm/2)^2);
 eyeLengthMm = 17;
 degPerMm = RetinalMMToDegrees(1,eyeLengthMm);
-out.irradianceWattsPerUm2 = RadianceToRetIrradiance(out.radianceWattsPerM2Sr,S,pupilAreaMm2,eyeLengthMm);
-out.irradianceScotTrolands = RetIrradianceToTrolands(out.irradianceWattsPerUm2, S, 'Scotopic', [], num2str(eyeLengthMm));
-out.irradiancePhotTrolands = RetIrradianceToTrolands(out.irradianceWattsPerUm2, S, 'Photopic', [], num2str(eyeLengthMm));
-out.irradianceQuantaPerUm2Sec = EnergyToQuanta(S,out.irradianceWattsPerUm2);
-out.irradianceWattsPerCm2 = (10.^8)*out.irradianceWattsPerUm2;
-out.irradianceQuantaPerCm2Sec = (10.^8)*out.irradianceQuantaPerUm2Sec;
-out.irradianceQuantaPerDeg2Sec = (degPerMm^2)*(10.^-2)*out.irradianceQuantaPerCm2Sec;
+out.spd.irradianceWattsPerUm2 = RadianceToRetIrradiance(out.spd.radianceWattsPerM2Sr,S,pupilAreaMm2,eyeLengthMm);
+out.irradianceScotTrolands = RetIrradianceToTrolands(out.spd.irradianceWattsPerUm2, S, 'Scotopic', [], num2str(eyeLengthMm));
+out.irradiancePhotTrolands = RetIrradianceToTrolands(out.spd.irradianceWattsPerUm2, S, 'Photopic', [], num2str(eyeLengthMm));
+out.spd.irradianceQuantaPerUm2Sec = EnergyToQuanta(S,out.spd.irradianceWattsPerUm2);
+out.spd.irradianceWattsPerCm2 = (10.^8)*out.spd.irradianceWattsPerUm2;
+out.spd.irradianceQuantaPerCm2Sec = (10.^8)*out.spd.irradianceQuantaPerUm2Sec;
+out.spd.irradianceQuantaPerDeg2Sec = (degPerMm^2)*(10.^-2)*out.spd.irradianceQuantaPerCm2Sec;
 
 %% Pupil adjustment factor for Ansi MPE 
 mpepupilDiameterMm = 3;
@@ -56,13 +56,13 @@ pupilAdjustFactor = (pupilDiameterMm/mpepupilDiameterMm).^2;
 % as round off error.
 load T_rods
 T_scotopicVlambda = SplineCmf(S_rods,T_rods,S);
-out.irradianceScotTrolands_check = pupilAreaMm2*1700*(T_scotopicVlambda*out.radianceWattsPerM2Sr);
+out.irradianceScotTrolands_check = pupilAreaMm2*1700*(T_scotopicVlambda*out.spd.radianceWattsPerM2Sr);
 out.irradiancePhotTrolands_check = pupilAreaMm2*out.photopicLuminanceCdM2;
 
 %% Get cone coordinates from radiance, and also adjust by pupil area.
 % Useful for comparing to light levels produced by monochromatic lights
 % in other papers
-theLMS = T_cones*out.radianceWattsPerM2Sr;
+theLMS = T_cones*out.spd.radianceWattsPerM2Sr;
 theLMSTimesPupilArea = pupilAreaMm2*theLMS;
 
 %% Compute irradiance arriving at cornea
@@ -77,10 +77,34 @@ stimulusAreaM2 = pi*(stimulusRadiusM^2);
 stimulusDistanceM = stimulusDistanceMm/1000;
 stimulusRadiusDeg = rad2deg(stimulusRadiusMm/stimulusDistanceMm);
 stimulusAreaDegrees2 = pi*(stimulusRadiusDeg^2);
-out.cornealIrradianceWattsPerM2 = RadianceAndDistanceAreaToCornIrradiance(out.radianceWattsPerM2Sr,stimulusDistanceM,stimulusAreaM2);
-out.cornealIrradianceWattsPerCm2 = (10.^-4)*out.cornealIrradianceWattsPerM2;
-out.cornealIrradianceQuantaPerCm2Sec = EnergyToQuanta(S,out.cornealIrradianceWattsPerCm2);
-    
+out.spd.cornealIrradianceWattsPerM2 = RadianceAndDistanceAreaToCornIrradiance(out.spd.radianceWattsPerM2Sr,stimulusDistanceM,stimulusAreaM2);
+out.spd.cornealIrradianceWattsPerCm2 = (10.^-4)*out.spd.cornealIrradianceWattsPerM2;
+out.spd.cornealIrradianceQuantaPerCm2Sec = EnergyToQuanta(S,out.spd.cornealIrradianceWattsPerCm2);
+
+
+
+%% Calculate derivatives of the spectra
+out.sumRadianceWattsPerM2Sr = sum(out.spd.radianceWattsPerM2Sr);
+out.log10SumRadianceWattsPerM2Sr = log10(sum(out.spd.radianceWattsPerM2Sr));
+
+out.sumRadianceWattsPerCm2Sr = sum(out.spd.radianceWattsPerCm2Sr);
+out.log10SumRadianceWattsPerCm2Sr = log10(sum(out.spd.radianceWattsPerCm2Sr));
+
+out.sumIrradianceWattsPerCm2 = sum(out.spd.irradianceWattsPerCm2);
+out.log10SumIrradianceWattsPerCm2 = log10(sum(out.spd.irradianceWattsPerCm2));
+
+out.sumIrradianceQuantaPerCm2Sec = sum(out.spd.irradianceQuantaPerCm2Sec);
+out.log10SumIrradianceQuantaPerCm2Sec = log10(sum(out.spd.irradianceQuantaPerCm2Sec));
+
+out.sumIrradianceQuantaPerDeg2Sec = sum(out.spd.irradianceQuantaPerDeg2Sec);
+out.log10SumIrradianceQuantaPerDeg2Sec = log10(sum(out.spd.irradianceQuantaPerDeg2Sec));
+
+out.sumCornealIrradianceWattsPerCm2 = sum(out.spd.cornealIrradianceWattsPerCm2); 
+out.log10SumCornealIrradianceWattsPerCm2 = log10(sum(out.spd.cornealIrradianceWattsPerCm2)); 
+
+out.sumCornealIrradianceQuantaPerCm2Sec = sum(out.spd.cornealIrradianceQuantaPerCm2Sec);
+out.log10SumCornealIrradianceQuantaPerCm2Sec = log10(sum(out.spd.cornealIrradianceQuantaPerCm2Sec));
+
 %% Let's convert to melanopic units, as well as to equivalent stimulation at specific wavelengths
 %
 % We have retinal and corneal spectral irradiance
@@ -91,8 +115,8 @@ melanopsinAssumedFieldSizeDeg = 10;
 melanopsonAssumeAgeYears = 32;
 [~,T_melanopsinQuantal] = GetHumanPhotoreceptorSS(S, {'Melanopsin'},melanopsinAssumedFieldSizeDeg,melanopsonAssumeAgeYears,pupilDiameterMm,[],[],[],[]);
 T_melanopsinQuantal = T_melanopsinQuantal/max(T_melanopsinQuantal(1,:));
-out.melIrradianceQuantaPerCm2Sec = T_melanopsinQuantal*out.irradianceQuantaPerCm2Sec;
-out.melCornealIrradianceQuantaPerCm2Sec = T_melanopsinQuantal*out.cornealIrradianceQuantaPerCm2Sec;
+out.melIrradianceQuantaPerCm2Sec = T_melanopsinQuantal*out.spd.irradianceQuantaPerCm2Sec;
+out.melCornealIrradianceQuantaPerCm2Sec = T_melanopsinQuantal*out.spd.cornealIrradianceQuantaPerCm2Sec;
 fprintf('\n');
 fprintf('  * Melanopic retinal irradiance %0.1f log10 melanopic quanta/[cm2-sec]\n',log10(out.melIrradianceQuantaPerCm2Sec));
 fprintf('  * Melanopic corneal irradiance %0.1f log10 melanopic quanta/[cm2-sec]\n',log10(out.melCornealIrradianceQuantaPerCm2Sec));
@@ -105,10 +129,10 @@ index = find(SToWls(S) == 470);
 if (isempty(index))
     error('Oops.  Need to find closest wavelength match as exact is not in sampled wls');
 end
-tempSpd = zeros(size(out.irradianceQuantaPerCm2Sec));
+tempSpd = zeros(size(out.spd.irradianceQuantaPerCm2Sec));
 tempSpd(index) = 10^11;
 fprintf('  * Dacey 2005 low, 11 log10 quanta/[cm2-sec] at 470 nm, is %0.1f is log10 melanopic quanta/[cm2-sec]\n',log10(T_melanopsinQuantal*tempSpd));
-tempSpd = zeros(size(out.irradianceQuantaPerCm2Sec));
+tempSpd = zeros(size(out.spd.irradianceQuantaPerCm2Sec));
 tempSpd(index) = 10^15;
 fprintf('  * Dacey 2005 high, 15 log10 quanta/[cm2-sec] at 470 nm, is %0.1f is log10 melanopic quanta/[cm2-sec]\n',log10(T_melanopsinQuantal*tempSpd));
 
@@ -135,7 +159,7 @@ fprintf('  * Dacey 2005 high, 15 log10 quanta/[cm2-sec] at 470 nm, is %0.1f is l
 % Lucas gives something like 11 log quanta/[cm2-sec] in mice as the low end of the
 % melanopsin operating range for light between 480 and 500 nm.  We convert
 % to retinal illuminance by multiplying by 0.5, and then to melanopic units
-tempSpd = zeros(size(out.irradianceQuantaPerCm2Sec));
+tempSpd = zeros(size(out.spd.irradianceQuantaPerCm2Sec));
 index = find(SToWls(S) == 480);
 tempSpd(index) = (0.5*10^11)/3;
 index = find(SToWls(S) == 490);
@@ -231,8 +255,8 @@ fprintf('  * Compute ANSI 2007 MPE as a function of wavelength.  For each wavele
 fprintf('    * Size range: %0.1f to %0.1f degrees\n',min(stimulusSizesDeg),max(stimulusSizesDeg));
 fprintf('    * Duration range: %0.1f to %0.1f seconds\n',min(stimulusDurationsSec),max(stimulusDurationsSec));
 fprintf('  * Minimum ANSI MPE value over wavelengths: radiance %0.1f log W/[cm2-sr]\n',log10(minMPERadiance));
-fprintf('    * Compare with total stimulus radiance %0.1f log  W/[cm2-sr]\n',log10(sum(out.radianceWattsPerCm2Sr)));
-fprintf('    * Compare with total pupil adjusted radiance %0.1f log  W/[cm2-sr]\n',log10(sum(out.radianceWattsPerCm2Sr))+log10(pupilAdjustFactor));
+fprintf('    * Compare with total stimulus radiance %0.1f log  W/[cm2-sr]\n',log10(sum(out.spd.radianceWattsPerCm2Sr)));
+fprintf('    * Compare with total pupil adjusted radiance %0.1f log  W/[cm2-sr]\n',log10(sum(out.spd.radianceWattsPerCm2Sr))+log10(pupilAdjustFactor));
 fprintf('    * Pupil adjustment assumes observer pupil diameter of %0.1f mm, MPE standard diameter of %0.1f mm\n',pupilDiameterMm,mpepupilDiameterMm);
 
 %% Sum over wavelength of power divided by MPE
@@ -251,7 +275,7 @@ fprintf('    * Pupil adjustment assumes observer pupil diameter of %0.1f mm, MPE
 
 %% Now compare to the ISO Standard
 stimulusDurationForISOMPESecs = 60*60;
-[IsOverLimit,ISO2007MPEStruct] = ISO2007MPECheckType1ContinuousRadiance(S,out.radianceWattsPerM2Sr,stimulusDurationForISOMPESecs,stimulusAreaDegrees2,eyeLengthMm);
+[IsOverLimit,ISO2007MPEStruct] = ISO2007MPECheckType1ContinuousRadiance(S,out.spd.radianceWattsPerM2Sr,stimulusDurationForISOMPESecs,stimulusAreaDegrees2,eyeLengthMm);
 fprintf('  * ISO MPE Analysis\n');
 ISO2007MPEPrintAnalysis(IsOverLimit,ISO2007MPEStruct);
 fprintf('  * Assumed duration seconds %0.1f, hours %0.1f\n',stimulusDurationForISOMPESecs,stimulusDurationForISOMPESecs/3600);

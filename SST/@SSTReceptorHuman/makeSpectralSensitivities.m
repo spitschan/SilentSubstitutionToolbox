@@ -28,6 +28,26 @@ function obj = makeSpectralSensitivities(obj)
 [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod] = ComputeCIERodFundamental(obj.S,...
     obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
 
+%% L*M*S* (penumbral) cones if required
+if obj.doPenumbralConesTrueFalse
+    [T_quantalAbsorptionsNormalizedLMSPenumbral,T_quantalAbsorptionsLMSPenumbral,T_quantalIsomerizationsLMSPenumbral] = ComputeCIEConeFundamentals(obj.S,...
+        obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
+    
+    % We assume standard parameters here.
+    source = 'Prahl';
+    vesselOxyFraction = 0.85;
+    vesselOverallThicknessUm = 5;
+    trans_Hemoglobin = GetHemoglobinTransmittance(obj.S, vesselOxyFraction, vesselOverallThicknessUm, source);
+    
+    % Expand for the three cones
+    trans_Hemoglobin = repmat(trans_Hemoglobin, 1, size(T_quantalAbsorptionsNormalizedLMSPenumbral, 1));
+    
+    T_quantalAbsorptionsNormalizedLMSPenumbral = T_quantalAbsorptionsNormalizedLMSPenumbral .* trans_Hemoglobin';
+    T_quantalAbsorptionsNormalizedLMSPenumbral = bsxfun(@rdivide,T_quantalAbsorptionsNormalizedLMSPenumbral,max(T_quantalAbsorptionsNormalizedLMSPenumbral, [], 2));
+    T_quantalAbsorptionsLMSPenumbral = T_quantalAbsorptionsLMSPenumbral .* trans_Hemoglobin';
+    T_quantalIsomerizationsLMSPenumbral = T_quantalIsomerizationsLMSPenumbral .* trans_Hemoglobin';
+end
+
 %% Assemble the sensitivities
 % Normalized quantal sensitivities
 T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalizedLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
@@ -37,6 +57,13 @@ T_quantalIsomerizations = [T_quantalIsomerizationsLMS ; T_quantalIsomerizationsM
 
 % Quantal absorption
 T_quantalAbsorptions = [T_quantalAbsorptionsLMS ; T_quantalAbsorptionsMel ; T_quantalAbsorptionsRod];
+
+%% Add the penumbral cones if required
+if obj.doPenumbralConesTrueFalse
+    T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalized ; T_quantalAbsorptionsNormalizedLMSPenumbral];
+    T_quantalAbsorptions = [T_quantalAbsorptions ; T_quantalAbsorptionsLMSPenumbral];
+    T_quantalIsomerizations= [T_quantalIsomerizations ; T_quantalIsomerizationsLMSPenumbral];
+end
 
 % Convert to energy fundamentals
 T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
@@ -50,4 +77,8 @@ obj.T.T_quantalAbsorptions = T_quantalAbsorptions;
 obj.T.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
 obj.T.T_energy = T_energy;
 obj.T.T_energyNormalized = T_energyNormalized;
-obj.labels = {'LCone' 'MCone' 'SCone' 'Mel' 'Rod'};
+if obj.doPenumbralConesTrueFalse == 0
+    obj.labels = {'LCone' 'MCone' 'SCone' 'Mel' 'Rod'};
+elseif obj.doPenumbralConesTrueFalse == 1
+    obj.labels = {'LCone' 'MCone' 'SCone' 'Mel' 'Rod' 'LConePenumbral' 'MConePenumbral' 'SConePenumbral'};
+end

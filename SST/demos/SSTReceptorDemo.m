@@ -55,7 +55,7 @@ modSpd = tmp.spd;
 %% Set up receptor object
 % This creates a static version of the spectral sensitivities which
 % correspond to the parameters passed into the SSTReceptorHuman function.
-receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
+receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeInYrs', 32, 'doPenumbralConesTrueFalse', true);
 
 %% Plot the fundamentals in various formats
 %receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalIsomerizations', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
