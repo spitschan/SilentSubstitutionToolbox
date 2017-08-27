@@ -136,7 +136,7 @@ while c <= NSamples
     if obj.doPenumbralConesTrueFalse
         T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalized ; T_quantalAbsorptionsNormalizedLMSPenumbral];
         T_quantalAbsorptions = [T_quantalAbsorptions ; T_quantalAbsorptionsLMSPenumbral];
-        T_quantalIsomerizations= [T_quantalIsomerizations ; T_quantalIsomerizationsLMSPenumbral];
+        T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizationsLMSPenumbral];
     end
 
     %% Convert to energy

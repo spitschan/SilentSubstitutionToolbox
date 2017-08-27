@@ -123,7 +123,7 @@ for ss = 1:length(theIndDiffParams)
             contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
         end
         lmContrast(:, ii) = [1 1 0  0 0]' \ contrasts(:, ii);
-        postRecepContrasts(:, ii) = [1 1 1 0 0 ; 1 -1 0  0 0 ; 0 0 1 0 0 ]' \ contrasts(:, ii);
+        postRecepContrasts(:, ii) = [1 1 1 0 0 0 0 0 ; 1 -1 0 0 0 0 0 0 ; 0 0 1 0 0 0 0 0]' \ contrasts(:, ii);
     end
     
     % Plot contrast as a function of the individual difference parameters
@@ -161,7 +161,7 @@ for ii = 1:NSamples
     for jj = 1:size(receptorObj.Ts{ii}.T_energyNormalized, 1)
         contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
     end
-    postRecepContrasts(:, ii) = [1 1 1 0 0; 1 -1 0 0 0; 0 0 1 0 0]' \ contrasts(:, ii);
+    postRecepContrasts(:, ii) = [1 1 1 0 0 0 0 0; 1 -1 0 0 0 0 0 0; 0 0 1 0 0 0 0 0]' \ contrasts(:, ii);
 end
 
 %% [1] L+M+S vs. L-M contrast
