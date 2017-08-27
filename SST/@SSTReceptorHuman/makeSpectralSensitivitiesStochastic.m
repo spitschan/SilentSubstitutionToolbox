@@ -87,15 +87,39 @@ while c <= NSamples
     indDiffParamsMel.shiftType = 'linear';
     indDiffParamsRod.shiftType = 'linear';
     
-    % Call ComputeCIEConeFundamentals to get the spectral sensitivities
+    %% Call ComputeCIEConeFundamentals to get the spectral sensitivities
     try
+        %% LMS cones
         [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParamsLMS] = ComputeCIEConeFundamentals(obj.S,...
             obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[],[],[], ...
             false,[],[],indDiffParamsLMS);
+        
+        %% Melanopsin
         [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParamsMel] = ComputeCIEMelFundamental(obj.S,...
             obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,indDiffParamsMel);
+        
+        %% Rods
         [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParamsRod] = ComputeCIERodFundamental(obj.S,...
             obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,indDiffParamsRod);
+        
+        %% L*M*S* (penumbral) cones, if required
+        if obj.doPenumbralConesTrueFalse
+            % We assume standard parameters here.
+            source = 'Prahl';
+            vesselOxyFraction = 0.85;
+            vesselOverallThicknessUm = 5;
+            trans_Hemoglobin = GetHemoglobinTransmittance(obj.S, vesselOxyFraction, vesselOverallThicknessUm, source);
+            
+            % Expand for the three cones
+            trans_Hemoglobin = repmat(trans_Hemoglobin, 1, size(T_quantalAbsorptionsNormalizedLMS, 1));
+            
+            T_quantalAbsorptionsNormalizedLMSPenumbral = T_quantalAbsorptionsNormalizedLMS .* trans_Hemoglobin';
+            T_quantalAbsorptionsNormalizedLMSPenumbral = bsxfun(@rdivide,T_quantalAbsorptionsNormalizedLMSPenumbral,max(T_quantalAbsorptionsNormalizedLMSPenumbral, [], 2));
+            T_quantalAbsorptionsLMSPenumbral = T_quantalAbsorptionsLMS .* trans_Hemoglobin';
+            T_quantalIsomerizationsLMSPenumbral = T_quantalIsomerizationsLMS .* trans_Hemoglobin';
+        end
+        
+        % Increment
         c = c+1;
     catch e
         fprintf('* Sampling not successful for sample %g. Rejecting this sample.\n', c);
@@ -103,11 +127,19 @@ while c <= NSamples
         cr = cr + 1; % Add to the counter
     end
     
+    %% Assemble the spectral sensitivities
     T_quantalIsomerizations = [T_quantalIsomerizationsLMS ; T_quantalIsomerizationsMel ; T_quantalIsomerizationsRod];
     T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalizedLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
     T_quantalAbsorptions = [T_quantalAbsorptionsLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
     
-    % Convert to energy
+    %% Add the penumbral cones if required
+    if obj.doPenumbralConesTrueFalse
+        T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalized ; T_quantalAbsorptionsNormalizedLMSPenumbral];
+        T_quantalAbsorptions = [T_quantalAbsorptions ; T_quantalAbsorptionsLMSPenumbral];
+        T_quantalIsomerizations= [T_quantalIsomerizations ; T_quantalIsomerizationsLMSPenumbral];
+    end
+
+    %% Convert to energy
     T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
     T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
     

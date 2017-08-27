@@ -28,11 +28,8 @@ function obj = makeSpectralSensitivities(obj)
 [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod] = ComputeCIERodFundamental(obj.S,...
     obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
 
-%% L*M*S* (penumbral) cones if required
+%% L*M*S* (penumbral) cones, if required
 if obj.doPenumbralConesTrueFalse
-    [T_quantalAbsorptionsNormalizedLMSPenumbral,T_quantalAbsorptionsLMSPenumbral,T_quantalIsomerizationsLMSPenumbral] = ComputeCIEConeFundamentals(obj.S,...
-        obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
-    
     % We assume standard parameters here.
     source = 'Prahl';
     vesselOxyFraction = 0.85;
@@ -40,12 +37,12 @@ if obj.doPenumbralConesTrueFalse
     trans_Hemoglobin = GetHemoglobinTransmittance(obj.S, vesselOxyFraction, vesselOverallThicknessUm, source);
     
     % Expand for the three cones
-    trans_Hemoglobin = repmat(trans_Hemoglobin, 1, size(T_quantalAbsorptionsNormalizedLMSPenumbral, 1));
+    trans_Hemoglobin = repmat(trans_Hemoglobin, 1, size(T_quantalAbsorptionsNormalizedLMS, 1));
     
-    T_quantalAbsorptionsNormalizedLMSPenumbral = T_quantalAbsorptionsNormalizedLMSPenumbral .* trans_Hemoglobin';
+    T_quantalAbsorptionsNormalizedLMSPenumbral = T_quantalAbsorptionsNormalizedLMS .* trans_Hemoglobin';
     T_quantalAbsorptionsNormalizedLMSPenumbral = bsxfun(@rdivide,T_quantalAbsorptionsNormalizedLMSPenumbral,max(T_quantalAbsorptionsNormalizedLMSPenumbral, [], 2));
-    T_quantalAbsorptionsLMSPenumbral = T_quantalAbsorptionsLMSPenumbral .* trans_Hemoglobin';
-    T_quantalIsomerizationsLMSPenumbral = T_quantalIsomerizationsLMSPenumbral .* trans_Hemoglobin';
+    T_quantalAbsorptionsLMSPenumbral = T_quantalAbsorptionsLMS .* trans_Hemoglobin';
+    T_quantalIsomerizationsLMSPenumbral = T_quantalIsomerizationsLMS .* trans_Hemoglobin';
 end
 
 %% Assemble the sensitivities
