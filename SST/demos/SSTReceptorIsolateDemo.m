@@ -6,10 +6,10 @@ S = [380 2 201];
 wls = SToWls(S);
 
 %% Construct the receptor object
-receptorObj = SSTReceptorHuman('S', S, 'verbosity', 'high', 'obsAgeYrs', 32);
+receptorObj = SSTReceptorHuman('S', S, 'verbosity', 'high', 'obsAgeInYrs', 32);
 
-%% 
-lightSource = 'OneLight';
+%%
+lightSource = 'LEDCube';
 switch lightSource
     case 'LED'
         % Construct LEDs
@@ -43,6 +43,12 @@ switch lightSource
         
         % Assign the ambient
         ambientSpd = cal.computed.pr650MeanDark;
+    case 'LEDCube'
+        wls0 = (380:5:730)';
+        S0 = WlsToS(wls0);
+        M0 = csvread('/Users/spitschan/Projects/LightAndReceptorCalculations/xLightSources/LEDCube/ledcubespd.csv');
+        B_primary = SplineSpd(S0, M0, S);
+        ambientSpd = zeros(size(wls));
 end
 
 % Set background to the device midpoint.

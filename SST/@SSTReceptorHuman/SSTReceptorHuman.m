@@ -44,6 +44,7 @@ classdef SSTReceptorHuman < SSTReceptor
             p.addParameter('fieldSizeDeg', 10, @isnumeric);
             p.addParameter('doPenumbralConesTrueFalse', false, @islogical);
             p.addParameter('verbosity', 'high', @ischar);
+            p.addParameter('S',[380 2 201],@isnumeric);
             p.KeepUnmatched = true;
             p.parse(varargin{:});
             

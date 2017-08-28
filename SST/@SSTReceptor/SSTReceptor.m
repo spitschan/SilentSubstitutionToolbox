@@ -30,7 +30,7 @@ classdef SSTReceptor < handle
         verbosity;
         
         % Wavelength sampling
-        S ;
+        S;
     end
     
     % Protected properties; Methods of the parent class and all of its
