@@ -1,11 +1,17 @@
 function out = CalculateLightProperties(S, spd, pupilDiameterMm)
+% out = CalculateLightProperties(S, spd, pupilDiameterMm)
+%
+% Calculates various quantities based on a radiance spectrum.
+%
+% 8/29/17   ms      Written.
 
+%% Start with the spd
 out.spd.radianceWattsPerM2Sr = spd;
 out.spd.radianceWattsPerM2Sr(out.spd.radianceWattsPerM2Sr < 0) = 0;
 out.spd.radianceWattsPerCm2Sr = (10.^-4)*out.spd.radianceWattsPerM2Sr;
 out.spd.radianceQuantaPerCm2SrSec = EnergyToQuanta(S,out.spd.radianceWattsPerCm2Sr);
 
-%% Load CIE functions.   
+%% Load CIE functions.
 load T_xyz1931
 T_xyz = SplineCmf(S_xyz1931,683*T_xyz1931,S);
 out.photopicLuminanceCdM2 = T_xyz(2,:)*out.spd.radianceWattsPerM2Sr;
@@ -39,7 +45,7 @@ out.spd.irradianceWattsPerCm2 = (10.^8)*out.spd.irradianceWattsPerUm2;
 out.spd.irradianceQuantaPerCm2Sec = (10.^8)*out.spd.irradianceQuantaPerUm2Sec;
 out.spd.irradianceQuantaPerDeg2Sec = (degPerMm^2)*(10.^-2)*out.spd.irradianceQuantaPerCm2Sec;
 
-%% Pupil adjustment factor for Ansi MPE 
+%% Pupil adjustment factor for Ansi MPE
 mpepupilDiameterMm = 3;
 %mpepupilDiameterMm  = GetWithDefault('Enter ANSI 2007 MPE caclulations assumed pupil diameter in mm',mpepupilDiameterMm );
 pupilAdjustFactor = (pupilDiameterMm/mpepupilDiameterMm).^2;
@@ -62,8 +68,8 @@ out.irradiancePhotTrolands_check = pupilAreaMm2*out.photopicLuminanceCdM2;
 %% Get cone coordinates from radiance, and also adjust by pupil area.
 % Useful for comparing to light levels produced by monochromatic lights
 % in other papers
-theLMS = T_cones*out.spd.radianceWattsPerM2Sr;
-theLMSTimesPupilArea = pupilAreaMm2*theLMS;
+%theLMS = T_cones*out.spd.radianceWattsPerM2Sr;
+%theLMSTimesPupilArea = pupilAreaMm2*theLMS;
 
 %% Compute irradiance arriving at cornea
 %
@@ -81,8 +87,6 @@ out.spd.cornealIrradianceWattsPerM2 = RadianceAndDistanceAreaToCornIrradiance(ou
 out.spd.cornealIrradianceWattsPerCm2 = (10.^-4)*out.spd.cornealIrradianceWattsPerM2;
 out.spd.cornealIrradianceQuantaPerCm2Sec = EnergyToQuanta(S,out.spd.cornealIrradianceWattsPerCm2);
 
-
-
 %% Calculate derivatives of the spectra
 out.sumRadianceWattsPerM2Sr = sum(out.spd.radianceWattsPerM2Sr);
 out.log10SumRadianceWattsPerM2Sr = log10(sum(out.spd.radianceWattsPerM2Sr));
@@ -99,183 +103,26 @@ out.log10SumIrradianceQuantaPerCm2Sec = log10(sum(out.spd.irradianceQuantaPerCm2
 out.sumIrradianceQuantaPerDeg2Sec = sum(out.spd.irradianceQuantaPerDeg2Sec);
 out.log10SumIrradianceQuantaPerDeg2Sec = log10(sum(out.spd.irradianceQuantaPerDeg2Sec));
 
-out.sumCornealIrradianceWattsPerCm2 = sum(out.spd.cornealIrradianceWattsPerCm2); 
-out.log10SumCornealIrradianceWattsPerCm2 = log10(sum(out.spd.cornealIrradianceWattsPerCm2)); 
+out.sumCornealIrradianceWattsPerCm2 = sum(out.spd.cornealIrradianceWattsPerCm2);
+out.log10SumCornealIrradianceWattsPerCm2 = log10(sum(out.spd.cornealIrradianceWattsPerCm2));
 
 out.sumCornealIrradianceQuantaPerCm2Sec = sum(out.spd.cornealIrradianceQuantaPerCm2Sec);
 out.log10SumCornealIrradianceQuantaPerCm2Sec = log10(sum(out.spd.cornealIrradianceQuantaPerCm2Sec));
 
-%% Let's convert to melanopic units, as well as to equivalent stimulation at specific wavelengths
-%
-% We have retinal and corneal spectral irradiance
-%  S
-%  irradianceQuantaPerCm2Sec
-%  cornealIrradianceWattsPerCm2
+%% Melanopic analysis
+% We have retinal and corneal spectral irradiances above and calculate a
+% melanopsin-weighted melanopic irradiance from the quantities irradianceQuantaPerCm2Sec and cornealIrradianceWattsPerCm2
 melanopsinAssumedFieldSizeDeg = 10;
-melanopsonAssumeAgeYears = 32;
-[~,T_melanopsinQuantal] = GetHumanPhotoreceptorSS(S, {'Melanopsin'},melanopsinAssumedFieldSizeDeg,melanopsonAssumeAgeYears,pupilDiameterMm,[],[],[],[]);
-T_melanopsinQuantal = T_melanopsinQuantal/max(T_melanopsinQuantal(1,:));
-out.melIrradianceQuantaPerCm2Sec = T_melanopsinQuantal*out.spd.irradianceQuantaPerCm2Sec;
-out.melCornealIrradianceQuantaPerCm2Sec = T_melanopsinQuantal*out.spd.cornealIrradianceQuantaPerCm2Sec;
-fprintf('\n');
-fprintf('  * Melanopic retinal irradiance %0.1f log10 melanopic quanta/[cm2-sec]\n',log10(out.melIrradianceQuantaPerCm2Sec));
-fprintf('  * Melanopic corneal irradiance %0.1f log10 melanopic quanta/[cm2-sec]\n',log10(out.melCornealIrradianceQuantaPerCm2Sec));
+melanopsonAssumedAgeYears = 32;
 
-% Convert Dacey reference retinal irradiances to melanopic units for
-% comparison.  Dacey et al. 2005 gives 11-15 log quanta/[cm2-sec] as
-% the range over which they measured sustained melanopsin responses.  It
-% isn't clear that things were saturating at the high end, though.
-index = find(SToWls(S) == 470);
-if (isempty(index))
-    error('Oops.  Need to find closest wavelength match as exact is not in sampled wls');
-end
-tempSpd = zeros(size(out.spd.irradianceQuantaPerCm2Sec));
-tempSpd(index) = 10^11;
-fprintf('  * Dacey 2005 low, 11 log10 quanta/[cm2-sec] at 470 nm, is %0.1f is log10 melanopic quanta/[cm2-sec]\n',log10(T_melanopsinQuantal*tempSpd));
-tempSpd = zeros(size(out.spd.irradianceQuantaPerCm2Sec));
-tempSpd(index) = 10^15;
-fprintf('  * Dacey 2005 high, 15 log10 quanta/[cm2-sec] at 470 nm, is %0.1f is log10 melanopic quanta/[cm2-sec]\n',log10(T_melanopsinQuantal*tempSpd));
+% Get the spectral sensitivities from the 
+receptorObj = SSTReceptorHuman('verbosity', 'low', 'obsAgeInYrs', melanopsonAssumedAgeYears, 'fieldSizeDeg', melanopsinAssumedFieldSizeDeg);
+T_melanopsinQuantal = receptorObj.T.T_quantalAbsorptionsNormalized(4, :)
 
-% Lucas (2012) says that a mouse retina has an area of 18 mm2 and that the
-% mouse pupil varies between 9 to 0.1 mm2 in are.  For a fully
-% dialated pupil and a full field stimulus, this givea a correction between
-% corneal and retinal irradiance is that retinal is
-% corneal*(pupilArea/retinalArea).  So for fully dialated pupil, retinal
-% illuminance is about about half of corneal.
-%
-% As a check of this formula, we could ask whether our retinal and corneal
-% irradiances are related in this way.  We have our pupil area, and we are
-% assuming that the stimulus is 6 mm in radius at 25 mm from the eye.
-% Given an eye length of 17 mm, which is about right, we can compute the
-% retina radius of the stimulus as 6*17/25 as about 4 mm, and its area as
-% about 50 mm2.  Given a pupil diameter of 4.7 mm, the pupil area is 17.34.
-% So we should have retinal illuminance is 17.34/50*corneal illuminance, or
-% 0.34 * corneal illuminance
-%   sum(irradianceQuantaPerCm2Sec)
-%   0.34*sum(cornealIrradianceQuantaPerCm2Sec)
-% These numbers agree within 3 percent, which we're taking to be good
-% enough for now.
-%
-% Lucas gives something like 11 log quanta/[cm2-sec] in mice as the low end of the
-% melanopsin operating range for light between 480 and 500 nm.  We convert
-% to retinal illuminance by multiplying by 0.5, and then to melanopic units
-tempSpd = zeros(size(out.spd.irradianceQuantaPerCm2Sec));
-index = find(SToWls(S) == 480);
-tempSpd(index) = (0.5*10^11)/3;
-index = find(SToWls(S) == 490);
-tempSpd(index) = (0.5*10^11)/3;
-index = find(SToWls(S) == 500);
-tempSpd(index) = (0.5*10^11)/3;
-fprintf('  * Lucas low is %0.1f log10 melanopic quanta/[cm2-sec]\n',log10(T_melanopsinQuantal*tempSpd));
+% Retinal irradiance
+out.sumMelIrradianceQuantaPerCm2Sec = T_melanopsinQuantal*out.spd.irradianceQuantaPerCm2Sec;
+out.log10SumMelIrradianceQuantaPerCm2Sec = log10(out.sumMelIrradianceQuantaPerCm2Sec);
 
-% At the high end, Lucas gives estimate of 10^15 quanta/[cm2-sec] in same
-% wl range as melanopsin saturation, at the retina.
-index = find(SToWls(S) == 480);
-tempSpd(index) = (10^15)/3;
-index = find(SToWls(S) == 490);
-tempSpd(index) = (10^15)/3;
-index = find(SToWls(S) == 500);
-tempSpd(index) = (10^15)/3;
-fprintf('  * Lucas high is %0.1f log10 melanopic quanta/[cm2-sec]\n',log10(T_melanopsinQuantal*tempSpd));
-
-%% Get MPE from as a function of wavelength.  For each wavelength,
-% take minimum radiance over specified sizes and durations.
-
-% Specify what parameters to test
-minLogSize = -1; maxLogSize = 2;
-minLogDuration = -1; maxLogDuration = 4;
-minLogYRad = -3; maxLogYRad = 2;
-minLogYIrrad = -5; maxLogYIrrad = 0;
-minLogYIntRad = 0; maxLogYIntRad = 3;
-minLogYRadExp = -4; maxLogYRadExp = -1;
-measuredWls = SToWls(S);
-index = find(measuredWls >= 400);
-stimulusWavelengthsNm = measuredWls(index);
-stimulusSizesDeg = logspace(minLogSize,maxLogSize,5);
-stimulusDurationsSec = logspace(minLogDuration,maxLogDuration,5);
-%fprintf('Computing MPE over wavelengths from %0.1f to %0.1f deg\n',min(stimulusWavelengthsNm),max(stimulusWavelengthsNm));
-clear MPELimitIntegratedRadiance_JoulesPerCm2Sr MPELimitRadiance_WattsPerCm2Sr MPELimitCornealIrradiance_WattsPerCm2 MPELimitCornealRadiantExposure_JoulesPerCm2
-for w = 1:length(stimulusWavelengthsNm)
-    stimulusWavelengthNm = stimulusWavelengthsNm(w);
-    if (rem(w,10) == 0)  
-        %fprintf('\tComputing minimum MPE for wavelength %d nm\n',stimulusWavelengthNm);
-    end
-    MPELimitIntegratedRadiance_JoulesPerCm2Sr(w) = Inf;
-    MPELimitRadiance_WattsPerCm2Sr(w) = Inf;
-    MPELimitCornealIrradiance_WattsPerCm2(w) = Inf;
-    MPELimitCornealRadiantExposure_JoulesPerCm2(w) = Inf;
-    for s = 1:length(stimulusSizesDeg)
-        stimulusSizeDeg = stimulusSizesDeg(s);
-        stimulusSizeMrad = DegToMrad(stimulusSizeDeg);
-        for t = 1:length(stimulusDurationsSec)
-            stimulusDurationSec = stimulusDurationsSec(t);
-            
-            % Compute MPE.  We don't understand how the cone limit computations fit in with
-            % the standard, or not.  So, we run it both ways and take the lower limit returned.
-            [temp1, temp2, temp3, temp4] = ...
-                AnsiZ136MPEComputeExtendedSourceLimit(stimulusDurationSec,stimulusSizeDeg,stimulusWavelengthNm,0);
-            [temp5, temp6, temp7, temp8] = ...
-                AnsiZ136MPEComputeExtendedSourceLimit(stimulusDurationSec,stimulusSizeDeg,stimulusWavelengthNm,1);
-            if (temp5 < temp1)
-                temp1 = temp5;
-            end
-            if (temp6 < temp2)
-                temp2 = temp6;
-            end
-            if (temp7 < temp3);
-                temp3 = temp7;
-            end
-            if (temp8 < temp4)
-                temp4 = temp8;
-            end
-            clear temp5 temp6 temp7 temp8
-            
-            % Store minimum at each wavelength.
-            if (temp1 < MPELimitIntegratedRadiance_JoulesPerCm2Sr(w))
-                MPELimitIntegratedRadiance_JoulesPerCm2Sr(w) = temp1;
-            end
-            if (temp2 < MPELimitRadiance_WattsPerCm2Sr(w))
-                MPELimitRadiance_WattsPerCm2Sr(w) = temp2;
-            end
-            if (temp3 < MPELimitCornealIrradiance_WattsPerCm2(w))
-                MPELimitCornealIrradiance_WattsPerCm2(w) = temp3;
-            end
-            if (temp4 < MPELimitCornealRadiantExposure_JoulesPerCm2(w))
-                MPELimitCornealRadiantExposure_JoulesPerCm2(w) = temp4;
-            end
-        end
-    end
-end
-
-%% Find how much total radiance we could tolerate if all our power was at the 
-% wavelength with minimum MPE.
-minMPERadiance = min(MPELimitRadiance_WattsPerCm2Sr(:));
-fprintf('\n');
-fprintf('  * Compute ANSI 2007 MPE as a function of wavelength.  For each wavelength, took minimum over size and duration\n');
-fprintf('    * Size range: %0.1f to %0.1f degrees\n',min(stimulusSizesDeg),max(stimulusSizesDeg));
-fprintf('    * Duration range: %0.1f to %0.1f seconds\n',min(stimulusDurationsSec),max(stimulusDurationsSec));
-fprintf('  * Minimum ANSI MPE value over wavelengths: radiance %0.1f log W/[cm2-sr]\n',log10(minMPERadiance));
-fprintf('    * Compare with total stimulus radiance %0.1f log  W/[cm2-sr]\n',log10(sum(out.spd.radianceWattsPerCm2Sr)));
-fprintf('    * Compare with total pupil adjusted radiance %0.1f log  W/[cm2-sr]\n',log10(sum(out.spd.radianceWattsPerCm2Sr))+log10(pupilAdjustFactor));
-fprintf('    * Pupil adjustment assumes observer pupil diameter of %0.1f mm, MPE standard diameter of %0.1f mm\n',pupilDiameterMm,mpepupilDiameterMm);
-
-%% Sum over wavelength of power divided by MPE
-% Could put this back in, but would have to think
-% a bit harder about wavelength spacing adjustment.
-%
-% index = find(stimulusWavelengthsNm >= 400);
-% deltaMeasuredWls = measuredWls(2)-measuredWls(1);
-% deltaMPEWls = stimulusWavelengthsNm(2)-stimulusWavelengthsNm(1);
-% MPERatioSum = 0;
-% for i = 1:length(stimulusWavelengthsNm)
-%     index = find(measuredWls == stimulusWavelengthsNm(i));
-%     MPERatioSum = MPERatioSum + radianceWattsPerCm2Sr(index)/MPELimitRadiance_WattsPerCm2Sr(i);
-% end
-% fprintf('MPERatioSum = %0.4f\n',MPERatioSum*deltaMPEWls/deltaMeasuredWls);
-
-%% Now compare to the ISO Standard
-stimulusDurationForISOMPESecs = 60*60;
-[IsOverLimit,ISO2007MPEStruct] = ISO2007MPECheckType1ContinuousRadiance(S,out.spd.radianceWattsPerM2Sr,stimulusDurationForISOMPESecs,stimulusAreaDegrees2,eyeLengthMm);
-fprintf('  * ISO MPE Analysis\n');
-ISO2007MPEPrintAnalysis(IsOverLimit,ISO2007MPEStruct);
-fprintf('  * Assumed duration seconds %0.1f, hours %0.1f\n',stimulusDurationForISOMPESecs,stimulusDurationForISOMPESecs/3600);
+% Corneal irradiance
+out.sumMelCornealIrradianceQuantaPerCm2Sec = T_melanopsinQuantal*out.spd.cornealIrradianceQuantaPerCm2Sec;
+out.log10SumMelCornealIrradianceQuantaPerCm2Sec = log10(out.sumMelCornealIrradianceQuantaPerCm2Sec);
