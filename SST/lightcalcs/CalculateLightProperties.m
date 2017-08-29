@@ -17,10 +17,6 @@ T_xyz = SplineCmf(S_xyz1931,683*T_xyz1931,S);
 out.photopicLuminanceCdM2 = T_xyz(2,:)*out.spd.radianceWattsPerM2Sr;
 out.chromaticityXY = T_xyz(1:2,:)*out.spd.radianceWattsPerM2Sr/sum(T_xyz*out.spd.radianceWattsPerM2Sr);
 
-%% Load cone spectral sensitivities
-load T_cones_ss2
-T_cones = SplineCmf(S_cones_ss2,T_cones_ss2,S);
-
 %% Load in a directly measured sunlight through window
 % and off piece of white paper towel on floor for comparison.
 % Surely that is safe to look at.
@@ -30,7 +26,7 @@ photopicLuminancePhillyBrightCdM2 = T_xyz(2,:)*spd_phillybright;
 OLSLratio = out.spd.radianceWattsPerM2Sr./spd_phillybright;
 
 %% Compute irradiance, trolands, etc.
-if ~exist('pupilDiameterMm', 'var') | isempty(pupilDiameterMm)
+if ~exist('pupilDiameterMm', 'var') || isempty(pupilDiameterMm)
     pupilDiameterMm = 4.7;
     pupilDiameterMm = GetWithDefault('Enter observer pupil diameter in mm',pupilDiameterMm);
 end
@@ -117,7 +113,7 @@ melanopsonAssumedAgeYears = 32;
 
 % Get the spectral sensitivities from the 
 receptorObj = SSTReceptorHuman('verbosity', 'low', 'obsAgeInYrs', melanopsonAssumedAgeYears, 'fieldSizeDeg', melanopsinAssumedFieldSizeDeg);
-T_melanopsinQuantal = receptorObj.T.T_quantalAbsorptionsNormalized(4, :)
+T_melanopsinQuantal = receptorObj.T.T_quantalAbsorptionsNormalized(4, :);
 
 % Retinal irradiance
 out.sumMelIrradianceQuantaPerCm2Sec = T_melanopsinQuantal*out.spd.irradianceQuantaPerCm2Sec;

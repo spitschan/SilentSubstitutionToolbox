@@ -2,7 +2,8 @@ function PrintLightProperties(out)
 % PrintLightProperties(out)
 %
 % Print out the properties of the stimulus.
-
+%
+% 8/29/17       ms      Written.
 
 %% Report on stimulus
 fprintf('* <strong>Radiance</strong>\n');
