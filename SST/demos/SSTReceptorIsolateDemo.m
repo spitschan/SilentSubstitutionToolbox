@@ -9,13 +9,13 @@ wls = SToWls(S);
 receptorObj = SSTReceptorHuman('S', S, 'verbosity', 'high', 'obsAgeInYrs', 32);
 
 %%
-lightSource = 'LEDCube';
+lightSource = 'LED';
 switch lightSource
     case 'LED'
         % Construct LEDs
         NLEDs = 8;
-        peakWls = [450 472.5 502.5 530 590 615 632.5 660];
-        fwhm = 12*ones(1, NLEDs);
+        peakWls = [440 470 500 530 560 590 620 650];
+        fwhm = 10*ones(1, NLEDs);
         maxPower = ones(1, NLEDs);
         for i = 1:length(fwhm)
             % Figure out the standard deviation.
@@ -32,7 +32,7 @@ switch lightSource
         B_primary = spd;
         
         % Assign the ambient
-        ambientSpd(:) = zeros(size(wls));
+        ambientSpd = zeros(size(wls));
     case 'OneLight'
         calPath = '/Users/spitschan/Documents/MATLAB/Toolboxes/SilentSubstitutionToolbox/ReceptorIsolate/ReceptorIsolateDemoData';
         cal = LoadCalFile('OneLightDemoCal.mat',[],calPath);
@@ -70,7 +70,7 @@ maxPowerDiff = 0.005;
 whichDirection = 'MelDirected';
 %%
 whichReceptorsToTarget = {[3] [4]};
-whichReceptorsToIgnore = {[] [5]};
+whichReceptorsToIgnore = {[] []};
 whichReceptorsToMinimize = {[] []};
 desiredContrasts = {[] []};
 directionsYoked = [0 0];
