@@ -5,8 +5,10 @@
 % serially iterating through various parameters sets (varying pupil
 % diameter, field size and observer age, which are the front-end
 % parameters).
-%
+
 % 8/29/17   ms      Written.
+% 09/08/17  dhb     Comment out pause.  This seems useful for debugging but once it's working 
+%                   we just want to run through the whole thing and see all the OKs scroll by.
 
 % Define wavelength spacing
 S = [380 2 201];
@@ -50,7 +52,7 @@ for pupilDiameterMm = [2 4 6 8] % ... pupil diameter
             subplot(1, 2, 2);
             plot(wls, receptorObj.T.T_energyNormalized-T_energyNormalized, '-r'); hold on;
             xlabel('Wavelength [nm]'); ylabel('\Delta Sensitivity');
-            pause;
+            %pause;
             
             % Clear the drawing
             subplot(1, 2, 1); hold off;
