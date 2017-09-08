@@ -96,7 +96,7 @@ NTitrations = 16;
 % parameters. This gets saved out in the "Tp" field of the receptor object.
 for ss = 1:length(theIndDiffParams)
     [~, parv{ss}, parvlabel{ss}, parvlabellong{ss}, parvreal{ss}] = makeSpectralSensitivitiesParametricVariation(receptorObj, ...
-        'WhichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
+        'whichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
 end
 
 %% Stochastic variation of individual difference parameters by resampling

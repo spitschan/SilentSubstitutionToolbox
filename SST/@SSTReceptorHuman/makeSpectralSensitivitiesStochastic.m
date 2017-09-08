@@ -11,6 +11,14 @@ function obj = makeSpectralSensitivitiesStochastic(obj, varargin)
 %     estimates of the natural physiological variability of the
 %     photoreceptor model.
 %
+%     The outputs are returned to the field "Ts" of the receptor object, in
+%     the following formats/units:
+%       Ts{}.T_quantalIsomerizations - Quantal isomerizations
+%       Ts{}.T_quantalAbsorptions - Quantal absorptions
+%       Ts{}.T_quantalAbsorptionsNormalized - Normalized quantal absoprtions
+%       Ts{}.T_energy - Energy fundamentals
+%       Ts{}.T_energyNormalized - Normalized energy fundamentals
+%
 % Input:
 %     obj - The receptorObj (e.g. from @SSTReceptor or @SSTReceptorHuman)
 %

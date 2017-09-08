@@ -1,16 +1,62 @@
 function [obj, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
-% [obj, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
+% makeSpectralSensitivitiesParametricVariation(obj, varargin)
 %
-% This method calculates spectral sensitivities along variation in the
-% individual difference parameters.
+% Usage:
+%     [obj, parv, parvlabel, parvlabellong, parvreal] = receptorObj.makeSpectralSensitivitiesParametricVariation(obj);
 %
-% Currently, does not support the melanopsin and rod fundamentals.
+% Description:
+%     This method of @SSTReceptorHuman creates generates spectral
+%     sensitivities which differ in one of the parameters of the
+%     8-parameter Asano et al. model.  The ranges are: ±50% for dlens,
+%     dmac, dphotopigment{L|M|S}; ±2 nm for lambdaMaxShift{L|M|S}, and 2 to
+%     9 mm for obsPupilDiameterMm.
+%    
+%     The outputs are returned to the field "Tp" of the receptor object, in
+%     the following formats/units:
+%       Tp{}.T_quantalIsomerizations - Quantal isomerizations
+%       Tp{}.T_quantalAbsorptions - Quantal absorptions
+%       Tp{}.T_quantalAbsorptionsNormalized - Normalized quantal absoprtions
+%       Tp{}.T_energy - Energy fundamentals
+%       Tp{}.T_energyNormalized - Normalized energy fundamentals
 %
-% 7/25/17    ms       Commented.
+% Input:
+%     obj - The receptorObj (e.g. from @SSTReceptor or @SSTReceptorHuman)
+%
+% Output:
+%     obj - The receptorObj
+%     parv
+%     parvlabel
+%     parvlabellong
+%     parvreal
+%
+% Optional key/value pairs:
+%     'whichParameter' - Determines which parameter which should be varied.
+%                        Possible options are:
+%                           'dlens' - lens density
+%                           'dmac' - macular pigment density
+%                           'dphotopigmentL' - L cone photopigment density
+%                           'dphotopigmentM' - M cone photopigment density
+%                           'dphotopigmentS' - S cone photopigment density
+%                           'lambdaMaxShiftL' - L lambda-max shift
+%                           'lambdaMaxShiftM' - M lambda-max shift
+%                           'lambdaMaxShiftS' - S lambda-max shift
+%                           'obsPupilDiameterMm' - observer's pupil diameter
+%                        (Default: 'dlens', i.e. lens density)
+%
+%     'NTitrations' - The step sizes for each parameter variation, i.e. how
+%                     many individual parameter values are calculated.
+%                     (Default: 50)
+%
+% See also:
+%     @SSTReceptorHuman, makeSpectralSensitivities,
+%     makeSpectralSensitivitiesStochastic
+%
+% 7/25/17   ms  Commented.
+% 9/7/17    ms  Updated header comments.
 
 % Parse vargin for options passed here
 p = inputParser;
-p.addParameter('WhichParameter', 'dlens', @ischar);
+p.addParameter('whichParameter', 'dlens', @ischar);
 p.addParameter('NTitrations', 50, @isnumeric);
 p.KeepUnmatched = true;
 p.parse(varargin{:});
