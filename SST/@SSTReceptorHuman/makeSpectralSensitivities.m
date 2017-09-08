@@ -2,13 +2,14 @@ function obj = makeSpectralSensitivities(obj)
 % obj = makeSpectralSensitivities(obj)
 %
 % Usage:
-%     receptorObj.makeSpectralSensitivities(obj);
+%     receptorObj.makeSpectralSensitivities;
+%     makeSpectralSensitivities(receptorObj);
 %
 % Description:
 %     This method of @SSTReceptorHuman creates the point estimate of the cone
 %     fundamentals using machinery from Psychtoolbox-3. By default, both the
 %     LMS cone fundamentals, and the melanopsin and rod spectral sensitivities
-%     are returned.
+%     are returned in the rows of the created T matrix.
 %    
 %     The outputs are returned to the field "T" of the receptor object, in
 %     the following formats/units:

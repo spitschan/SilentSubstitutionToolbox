@@ -158,11 +158,15 @@ classdef SSTReceptorHuman < SSTReceptor
                 end
             end
         end
+        
         makeSpectralSensitivitiesStochastic(obj, varargin);
-        [obj, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin);
+        
+        [parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin);
+        
         setMD5Hash(obj);
     end
     
+
     % Get methods for dependent properties
     methods
     end

@@ -1,18 +1,22 @@
-function [obj, parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
+function [parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
 % makeSpectralSensitivitiesParametricVariation(obj, varargin)
 %
 % Usage:
-%     [obj, parv, parvlabel, parvlabellong, parvreal] = receptorObj.makeSpectralSensitivitiesParametricVariation(obj);
+%     [parv, parvlabel, parvlabellong, parvreal] = receptorObj.makeSpectralSensitivitiesParametricVariation;
 %
 % Description:
 %     This method of @SSTReceptorHuman creates generates spectral
 %     sensitivities which differ in one of the parameters of the
-%     8-parameter Asano et al. model.  The ranges are: ±50% for dlens,
-%     dmac, dphotopigment{L|M|S}; ±2 nm for lambdaMaxShift{L|M|S}, and 2 to
-%     9 mm for obsPupilDiameterMm.
+%     8-parameter Asano et al. model.
+%
+%     The ranges are:
+%       ±50% for dlens, dmac, dphotopigment{L|M|S}
+%       ±2 nm for lambdaMaxShift{L|M|S}
+%       2 to 9 mm for obsPupilDiameterMm.
 %    
-%     The outputs are returned to the field "Tp" of the receptor object, in
-%     the following formats/units:
+%     The outputs are returned as sets of receptor matrices in the cell
+%     array field "Tp" of the receptor object, in the following
+%     formats/units:
 %       Tp{}.T_quantalIsomerizations - Quantal isomerizations
 %       Tp{}.T_quantalAbsorptions - Quantal absorptions
 %       Tp{}.T_quantalAbsorptionsNormalized - Normalized quantal absoprtions
@@ -78,12 +82,12 @@ indDiffParams.shiftType = 'linear';
 
 if strcmp(obj.verbosity, 'high')
     % Print out some info if verbosity is high
-    fprintf('* Generating parametric variation in <strong>%s</strong>... ', p.Results.WhichParameter);
+    fprintf('* Generating parametric variation in <strong>%s</strong>... ', p.Results.whichParameter);
 end
 
 % Sample
 for ii = 1:NTitrations
-    switch p.Results.WhichParameter
+    switch p.Results.whichParameter
         case 'dlens' % Lens density
             parv = linspace(-50, 50, NTitrations);
             indDiffParams = DefaultIndDiffParams;
@@ -249,7 +253,7 @@ for ii = 1:NTitrations
     T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
     
     % Save out the parameter values
-    switch p.Results.WhichParameter
+    switch p.Results.whichParameter
         case 'dlens'
             parvreal(:, ii) = adjIndDiffParams.lens;
         case 'dmac'
