@@ -14,8 +14,14 @@ receptorObj = SSTReceptorHuman('S', S, 'verbosity', 'high', 'obsAgeYrs', 32);
 
 %%
 lightSource = 'LED';
-lightSource = 'OneLight';
+lightSource = 'LEDCube';
 switch lightSource
+    case 'LEDCube'
+        wls0 = (380:5:730)';
+        S0 = WlsToS(wls0);
+        M0 = csvread('/Users/spitschan/Projects/LightAndReceptorCalculations/xLightSources/LEDCube/ledcubespd.csv');
+        B_primary = SplineSpd(S0, M0, S);
+        ambientSpd = zeros(size(wls));
     case 'LED'
         % Construct LEDs
         NLEDs = 8;
@@ -75,7 +81,7 @@ directionsYokedAbs = [0 0];
 % Isolate the receptors by calling the wrapper
 initialPrimary = backgroundPrimary;
 unipolarYesNo = false;
-pegBackground = false;
+pegBackground = true;
 [modulationPrimary backgroundPrimary] = ReceptorIsolateOptim(receptorObj.T.T_energy, whichReceptorsToTarget, ...
     whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,...
     initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,...

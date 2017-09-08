@@ -1,12 +1,50 @@
 function f1 = plotSpectralSensitivities(obj, varargin)
 % plotSpectralSensitivities(obj, varargin)
 %
+% Usage:
+%     f1 = plotSpectralSensitivities(obj, varargin)
+%
+% Description:
+%     This method plots the spectral sensitivities of a receptorObj.
+%
+% Input:
+%     obj - The receptorObj (e.g. @SSTReceptor or @SSTReceptorHuman)
+%
+% Output:
+%     f1 - Figure handle to the created plot.
+%
+% Optional key/value pairs:
+%     'NewWindow' - Logical determing whether to create a new window or to
+%                   keep on plotting in gcf. Can be true or false.
+%                   (Default: true)
+%
+%     'whichFormat' - String determining which field of the receptorObj
+%                     gets plotted. Possible options are:
+%                           T_quantalIsomerizations
+%                           T_quantalAbsorptions
+%                           T_quantalAbsorptionsNormalized
+%                           T_energy
+%                           T_energyNormalized
+%                     (Default: T_energyNormalized)
+%
+p.addParameter('NewWindow', true, @islogical);
+p.addParameter('whichFormat', 'T_energyNormalized', @ischar);
+p.addParameter('logUnits', false, @islogical);
+p.addParameter('saveFig', true, @islogical);
+p.addParameter('saveFigPath', '', @ischar);
+%
+% See also:
+%     @SSTReceptorHuman
+%
+% 9/8/17  ms  Added header comments.
+
+
+% plotSpectralSensitivities(obj, varargin)
+%
 % Plot the spectral sensitivities in rudimentary form.
 %
 % Key/value pairs
-%   'NewWindow' - Logical determing whether to create a new window or to
-%                 keep on plotting in gcf. Can be true or false.
-%                 Default: true
+%   'NewWindow' -
 %
 %   'whichFormat' - String determining which types of fundamentals to plot.
 %                   Possible ones are:

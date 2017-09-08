@@ -1,9 +1,32 @@
 classdef SSTReceptorHuman < SSTReceptor
     % SSTReceptorHuman
     %
-    %   receptor = SSTReceptorHuman(varargin)
+    % Constructor for the SSTReceptorHuman object class.
     %
-    % Inherits optional key/value pairs from parent class SSTReceptor.
+    % Usage:
+    %     minIndex = qpListMinArg(theArray)
+    %
+    % Description:
+    %     Find the minIndex to the minimum value in an array.
+    %
+    %     NOTE: This returns a single number, rather than a
+    %     vector of indices into each dimension into the array,
+    %     and thus differs from the Mathematica version.  This is
+    %     the more natural way in Matlab -- it is hard to index
+    %     N-dimensional arrays with a vector in Matlab.
+    %
+    % Input:
+    %     theArray       An array of values.
+    %
+    % Output:
+    %     minIndex       Index to minimum value.
+    %
+    % Optional key/value pairs
+    %     None
+    
+    % 9/8/17  ms  Added header comments.
+    
+    
     
     % Public, read-only properties.
     properties (SetAccess = private, GetAccess = public)
@@ -72,7 +95,7 @@ classdef SSTReceptorHuman < SSTReceptor
             obj.fieldSizeDeg = p.Results.fieldSizeDeg;
             obj.doPenumbralConesTrueFalse = p.Results.doPenumbralConesTrueFalse;
             obj = makeSpectralSensitivities(obj);
-
+            
             % Print out some output
             if strcmp(obj.verbosity, 'high')
                 fprintf('* Setting up receptor object with parameters:\n');
