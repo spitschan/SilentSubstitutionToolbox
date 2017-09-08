@@ -98,8 +98,8 @@ while c <= NSamples
             obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,indDiffParamsRod);
         c = c+1;
     catch e
-        fprintf('* Sampling not successful for sample %g. Rejecting this sample.\n', c);
-        warning(e.message);
+        fprintf('* Sampling not successful for sample %g. Rejecting this sample. It is expected that we will sometimes reject samples, given that we are drawing from normal distributions.\n', c);
+        %warning(e.message);
         cr = cr + 1; % Add to the counter
     end
     
