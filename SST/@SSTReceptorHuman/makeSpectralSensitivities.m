@@ -1,34 +1,56 @@
 function obj = makeSpectralSensitivities(obj)
 % obj = makeSpectralSensitivities(obj)
 %
-% This method of @SSTReceptorHuman creates the point estimate of the cone
-% fundamentals using machinery from Psychtoolbox-3. By default, both the
-% LMS cone fundamentals, and the melanopsin and rod spectral sensitivities
-% are returned.
+% Usage:
+%     receptorObj.makeSpectralSensitivities(obj);
 %
-% The outputs are returned to the field "T" of the receptor object, in the
-% following formats:
-%     T.T_quantalIsomerizations - Quantal isomerizations
-%     T.T_quantalAbsorptions - Quantal absorptions
-%     T.T_quantalAbsorptionsNormalized - Normalized quantal absoprtions
-%     T.T_energy - Energy fundamentals
-%     T.T_energyNormalized - Normalized energy fundamentals
+% Description:
+%     This method of @SSTReceptorHuman creates the point estimate of the cone
+%     fundamentals using machinery from Psychtoolbox-3. By default, both the
+%     LMS cone fundamentals, and the melanopsin and rod spectral sensitivities
+%     are returned.
+%    
+%     The outputs are returned to the field "T" of the receptor object, in
+%     the following formats/units:
+%       T.T_quantalIsomerizations - Quantal isomerizations
+%       T.T_quantalAbsorptions - Quantal absorptions
+%       T.T_quantalAbsorptionsNormalized - Normalized quantal absoprtions
+%       T.T_energy - Energy fundamentals
+%       T.T_energyNormalized - Normalized energy fundamentals
+%
+%     This routine gets called when the receptor object gets created by
+%     @SSTReceptorHuman.
+%
+% Input:
+%     obj - The receptorObj (e.g. from @SSTReceptor or @SSTReceptorHuman)
+%
+% Output:
+%     obj - The receptorObj
+%
+% Optional key/value pairs:
+%     None
+%
+% See also:
+%     @SSTReceptorHuman, makeSpectralSensitivities,
+%     makeSpectralSensitivitiesParametricVariation
 %
 % 7/25/17   ms  Commented.
+% 9/7/17    ms  Updated header comments.
 
-%% LMS cones
+%% Generate the spectral sensitivities
+% LMS cones
 [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS] = ComputeCIEConeFundamentals(obj.S,...
     obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
 
-%% Melanopsin
+% Melanopsin
 [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel] = ComputeCIEMelFundamental(obj.S,...
     obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
 
-%% Rod
+% Rod
 [T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod] = ComputeCIERodFundamental(obj.S,...
     obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
 
-%% L*M*S* (penumbral) cones, if required
+% L*M*S* (penumbral) cones, if required
 if obj.doPenumbralConesTrueFalse
     % We assume standard parameters here.
     source = 'Prahl';

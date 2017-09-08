@@ -23,6 +23,10 @@ function obj = makeSpectralSensitivitiesStochastic(obj, varargin)
 %     'RandStream' - String determining which seed should be used to reset
 %                    the random number generator.
 %
+% See also:
+%     @SSTReceptorHuman, makeSpectralSensitivities,
+%     makeSpectralSensitivitiesParametricVariation
+%
 % 7/25/17    ms       Commented.
 % 9/8/17     dhb      Change reject text to indicate that we expect sometimes to reject a draw.
 %            dhb      Comment out warning message - that reduces faith of the user that the code is doing what it should.
