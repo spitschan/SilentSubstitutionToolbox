@@ -45,6 +45,3 @@ if ~any(strfind(path, 'Psychtoolbox-3'))
         error('Psychtoolbox-3 is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/Psychtoolbox-3/Psychtoolbox-3 and add to your MATLAB path.');
     end
 end
-
-end
-
