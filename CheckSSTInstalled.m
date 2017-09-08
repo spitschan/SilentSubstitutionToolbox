@@ -1,27 +1,44 @@
+function CheckSSTInstalled
 % CheckSSTInstalled.m
 %
 % Check that SST and its dependencies are set up properly.
 %
-% 7/24/17   ms      Written.
+% If ToolboxToolbox is installed, this will go ahead and do
+% the setup for you.
 
-% Check if the TbTb is on the path. If yes, we use tbUse to set up
-% dependencies. If not, we alert the user to download
-if any(strfind(path, 'ToolboxToolbox'))
-    % Set up paths
-    r = tbUse('SilentSubstitutionToolbox');
-else
-    % Check if the SilentSubstitutionToolbox is on the path
-    if ~any(strfind(path, 'BrainardLabToolbox'))
-        error('* The SilentSubstitutionToolbox is required to run this demo.\nPlease install from https://github.com/spitschan/SilentSubstitutionToolbox and add to your MATLAB path.')
-    end
-    
-    % Check if the BrainardLabToolbox is on the path
-    if ~any(strfind(path, 'BrainardLabToolbox'))
-        error('* The BrainardLabToolbox is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/DavidBrainard/BrainardLabToolbox and add to your MATLAB path.')
-    end
-    
-    % Check if PTB-3 is on the path
-    if ~any(strfind(path, 'Psychtoolbox-3'))
-        error('Psychtoolbox-3 is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/Psychtoolbox-3/Psychtoolbox-3 and add to your MATLAB path.')
+% 07/24/17   ms      Written.
+% 09/08/17   dhb     Edit so it doesn't reinstall if things are already there.
+%            dhb     Edit so that tbUse call doesn't reset Matlab path.
+%            dhb     Make this a function, not a script.
+
+% Check if the SilentSubstitutionToolbox is on the path.
+% If not and if you have TbTb, then set up.
+if ~any(strfind(path, 'SilentSubstitutionToolbox'))
+    if any(strfind(path, 'ToolboxToolbox'))
+        % Set up paths
+        tbUse('SilentSubstitutionToolbox','reset','as-is');
+    else
+        error('* The SilentSubstitutionToolbox and its dependencies required to run this demo.\nPlease install from https://github.com/spitschan/SilentSubstitutionToolbox and add it and its dependencies to your MATLAB path.');
     end
 end
+
+% Check if the BrainardLabToolbox is on the path
+if ~any(strfind(path, 'BrainardLabToolbox'))
+    if any(strfind(path, 'ToolboxToolbox'))
+        tbUse('SilentSubstitutionToolbox','reset','as-is');
+    else
+        error('* The BrainardLabToolbox is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/DavidBrainard/BrainardLabToolbox and add to your MATLAB path.');
+    end
+end
+
+% Check if PTB-3 is on the path
+if ~any(strfind(path, 'Psychtoolbox-3'))
+    if any(strfind(path, 'ToolboxToolbox'))
+        tbUse('SilentSubstitutionToolbox','reset','as-is');
+    else
+    error('Psychtoolbox-3 is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/Psychtoolbox-3/Psychtoolbox-3 and add to your MATLAB path.');
+    end
+end
+
+end
+
