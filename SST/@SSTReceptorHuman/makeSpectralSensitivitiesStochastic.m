@@ -19,7 +19,7 @@ function makeSpectralSensitivitiesStochastic(obj, varargin)
 %
 %     Parameters for observer age, field size, and pupil diameter are assumed known and held fixed.
 %
-%     The lambdaMaxShift is implemented along a linear or log (SAY WHICH) wavelength axis.
+%     The lambdaMaxShift is implemented along a linear or log wavelength axis.
 %
 %     The standard deviations used are given in Table 5 of Asano et al. (2016),
 %     doi.org/10.1371/journal.pone.0145671.
