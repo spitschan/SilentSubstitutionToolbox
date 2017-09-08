@@ -1,4 +1,4 @@
-function obj = setMD5Hash(obj)
+function setMD5Hash(obj)
 % setMD5Hash(ob)
 %
 % Usage:
@@ -12,7 +12,7 @@ function obj = setMD5Hash(obj)
 %     obj - The receptorObj (e.g. from @SSTReceptor or @SSTReceptorHuman)
 %
 % Output:
-%     obj - The receptorObj
+%     None.
 %
 % Optional key/value pairs:
 %     None

@@ -1,5 +1,5 @@
-function obj = makeSpectralSensitivities(obj)
-% obj = makeSpectralSensitivities(obj)
+function makeSpectralSensitivities(obj)
+% makeSpectralSensitivities
 %
 % Usage:
 %     receptorObj.makeSpectralSensitivities;
@@ -7,9 +7,13 @@ function obj = makeSpectralSensitivities(obj)
 %
 % Description:
 %     This method of @SSTReceptorHuman creates the point estimate of the cone
-%     fundamentals using machinery from Psychtoolbox-3. By default, both the
+%     fundamentals using machinery from Psychtoolbox-3. By default, the
 %     LMS cone fundamentals, and the melanopsin and rod spectral sensitivities
-%     are returned in the rows of the created T matrix.
+%     are returned in the rows of the created T matrix, in that order.
+%
+%     The field obj.doPenumbralConesTrueFalse determines whether penumbral L*M*S*
+%     fundamentals are computed and added as the last rows of the T matrix.  This
+%     can be controlled by a key/value pair on the creation of the object.
 %    
 %     The outputs are returned to the field "T" of the receptor object, in
 %     the following formats/units:
@@ -26,19 +30,20 @@ function obj = makeSpectralSensitivities(obj)
 %     obj - The receptorObj (e.g. from @SSTReceptor or @SSTReceptorHuman)
 %
 % Output:
-%     obj - The receptorObj
+%     None.
 %
 % Optional key/value pairs:
-%     None
+%     None.
 %
 % See also:
 %     @SSTReceptorHuman, makeSpectralSensitivities,
 %     makeSpectralSensitivitiesParametricVariation
-%
+
 % 7/25/17   ms  Commented.
 % 9/7/17    ms  Updated header comments.
 
 %% Generate the spectral sensitivities
+%
 % LMS cones
 [T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS] = ComputeCIEConeFundamentals(obj.S,...
     obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
@@ -69,6 +74,7 @@ if obj.doPenumbralConesTrueFalse
 end
 
 %% Assemble the sensitivities
+%
 % Normalized quantal sensitivities
 T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalizedLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
 
@@ -85,13 +91,13 @@ if obj.doPenumbralConesTrueFalse
     T_quantalIsomerizations= [T_quantalIsomerizations ; T_quantalIsomerizationsLMSPenumbral];
 end
 
-% Convert to energy fundamentals
+%% Convert to energy fundamentals
 T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
 
 % And normalize the energy fundamentals
 T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
 
-% Assign the fields in the receptor object
+%% Assign the fields in the receptor object
 obj.T.T_quantalIsomerizations = T_quantalIsomerizations;
 obj.T.T_quantalAbsorptions = T_quantalAbsorptions;
 obj.T.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;

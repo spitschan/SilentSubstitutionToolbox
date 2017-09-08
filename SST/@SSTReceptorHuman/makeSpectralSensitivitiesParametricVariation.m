@@ -1,5 +1,5 @@
 function [parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
-% makeSpectralSensitivitiesParametricVariation(obj, varargin)
+% makeSpectralSensitivitiesParametricVariation
 %
 % Usage:
 %     [parv, parvlabel, parvlabellong, parvreal] = receptorObj.makeSpectralSensitivitiesParametricVariation;
@@ -35,7 +35,7 @@ function [parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesP
 %
 % Optional key/value pairs:
 %     'whichParameter' - Determines which parameter which should be varied.
-%                        Possible options are:
+%                        Possible options are (default, 'dlens'):
 %                           'dlens' - lens density
 %                           'dmac' - macular pigment density
 %                           'dphotopigmentL' - L cone photopigment density
@@ -44,8 +44,7 @@ function [parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesP
 %                           'lambdaMaxShiftL' - L lambda-max shift
 %                           'lambdaMaxShiftM' - M lambda-max shift
 %                           'lambdaMaxShiftS' - S lambda-max shift
-%                           'obsPupilDiameterMm' - observer's pupil diameter
-%                        (Default: 'dlens', i.e. lens density)
+%                           'obsPupilDiameterMm' - observer's pupil diameter 
 %
 %     'NTitrations' - The step sizes for each parameter variation, i.e. how
 %                     many individual parameter values are calculated.
@@ -54,7 +53,7 @@ function [parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesP
 % See also:
 %     @SSTReceptorHuman, makeSpectralSensitivities,
 %     makeSpectralSensitivitiesStochastic
-%
+
 % 7/25/17   ms  Commented.
 % 9/7/17    ms  Updated header comments.
 

@@ -1,8 +1,8 @@
-function obj = makeSpectralSensitivitiesStochastic(obj, varargin)
-% makeSpectralSensitivitiesStochastic(obj, varargin)
+function makeSpectralSensitivitiesStochastic(obj, varargin)
+% makeSpectralSensitivitiesStochastic
 %
 % Usage:
-%     receptorObj.makeSpectralSensitivitiesStochastic(obj, varargin);
+%     receptorObj.makeSpectralSensitivitiesStochastic
 %
 % Description:
 %     This method allows for stochastic resampling of the individual
@@ -11,34 +11,51 @@ function obj = makeSpectralSensitivitiesStochastic(obj, varargin)
 %     estimates of the natural physiological variability of the
 %     photoreceptor model.
 %
-%     The outputs are returned to the field "Ts" of the receptor object, in
-%     the following formats/units:
+%     The following individual difference parameters are varied
+%       dlens - Deviation in % from CIE computed peak lens density
+%       dmac - Deviation in % from CIE peak macular pigment density
+%       dphotopigment - Vector of deviations in % from CIE photopigment peak density
+%       lambdaMaxShift - Vector of values (in nm) to shift lambda max of each photopigment absorbance by
+%
+%     Parameters for observer age, field size, and pupil diameter are assumed known and held fixed.
+%
+%     The lambdaMaxShift is implemented along a linear or log (SAY WHICH) wavelength axis.
+%
+%     The standard deviations used are given in Table 5 of Asano et al. (2016),
+%     doi.org/10.1371/journal.pone.0145671.
+%
+%     The outputs are returned as cell arrays of spectral sensitivity matrices, 
+%     to the field "Ts" of the receptor object, in the following formats/units:
 %       Ts{}.T_quantalIsomerizations - Quantal isomerizations
 %       Ts{}.T_quantalAbsorptions - Quantal absorptions
 %       Ts{}.T_quantalAbsorptionsNormalized - Normalized quantal absoprtions
 %       Ts{}.T_energy - Energy fundamentals
 %       Ts{}.T_energyNormalized - Normalized energy fundamentals
 %
+%     Note that the macular pigment parameter often lens to macular
+%     transmittances of >1, which leads to out-of-bound sampling. In that case,
+%     a note is printed and the sample is rejected.
+%
 % Input:
 %     obj - The receptorObj (e.g. from @SSTReceptor or @SSTReceptorHuman)
 %
 % Output:
-%     obj - The receptorObj
+%     None.
 %
 % Optional key/value pairs:
-%     'NSamples' - Number of samples to do (Default: 1000)
+%     'NSamples' - Number of samples to do (default 1000)
 %
 %     'RandStream' - String determining which seed should be used to reset
-%                    the random number generator.
+%                    the random number generator (default 'mrg32k3a').
 %
 % See also:
 %     @SSTReceptorHuman, makeSpectralSensitivities,
 %     makeSpectralSensitivitiesParametricVariation
-%
+
 % 7/25/17    ms       Commented.
 % 9/8/17     dhb      Change reject text to indicate that we expect sometimes to reject a draw.
 %            dhb      Comment out warning message - that reduces faith of the user that the code is doing what it should.
-%            ms .     Updated header comments
+%            ms       Updated header comments
 
 % Parse vargin for options passed here
 p = inputParser;
@@ -48,20 +65,6 @@ p.KeepUnmatched = true;
 p.parse(varargin{:});
 NSamples = p.Results.NSamples;
 whichRandStream = p.Results.RandStream;
-
-% The following individual difference parameters are supported:
-%   indDiffParams.dlens - Deviation in % from CIE computed peak lens density
-%   indDiffParams.dmac - Deviation in % from CIE peak macular pigment density
-%   indDiffParams.dphotopigment - Vector of deviations in % from CIE photopigment peak density
-%   indDiffParams.lambdaMaxShift - Vector of values (in nm) to shift lambda max of each photopigment absorbance by
-%   indDiffParams.shiftType - 'linear' (default) or 'log'
-%
-% The standard deviations are given in Table 5 of Asano et al. (2016),
-% doi.org/10.1371/journal.pone.0145671.
-%
-% Note that the macular pigment parameter often lens to macular
-% transmittances of >1, which leads to out-of-bound sampling. In that case,
-% a warning is thrown and the sample is rejected.
 
 % Note also that this assumes the standard deviation is constant for all
 % baseline parameters.
