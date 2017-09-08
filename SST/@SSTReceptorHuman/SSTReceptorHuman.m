@@ -26,8 +26,6 @@ classdef SSTReceptorHuman < SSTReceptor
     
     % 9/8/17  ms  Added header comments.
     
-    
-    
     % Public, read-only properties.
     properties (SetAccess = private, GetAccess = public)
         obsAgeInYrs; % Age of the observer in years
