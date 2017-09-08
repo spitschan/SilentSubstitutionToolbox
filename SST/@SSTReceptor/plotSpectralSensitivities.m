@@ -5,7 +5,10 @@ function f1 = plotSpectralSensitivities(obj, varargin)
 %     f1 = plotSpectralSensitivities(obj, varargin)
 %
 % Description:
-%     This method plots the spectral sensitivities of a receptorObj.
+%     This method plots the spectral sensitivities of a receptorObj. The
+%     color for each spectral sensitivity is determined using the function
+%     DefaultReceptorColors(), which reads the labels in the receptor
+%     object and returns predefined RGB triplets.
 %
 % Input:
 %     obj - The receptorObj (e.g. @SSTReceptor or @SSTReceptorHuman)
@@ -27,43 +30,21 @@ function f1 = plotSpectralSensitivities(obj, varargin)
 %                           T_energyNormalized
 %                     (Default: T_energyNormalized)
 %
-p.addParameter('NewWindow', true, @islogical);
-p.addParameter('whichFormat', 'T_energyNormalized', @ischar);
-p.addParameter('logUnits', false, @islogical);
-p.addParameter('saveFig', true, @islogical);
-p.addParameter('saveFigPath', '', @ischar);
+%     'logUnits' - Logical determining whether the quantity specified in
+%                  'whichFormat' should be plotted on a log scale.
+%                  (Default: false)
+%
+%     'saveFig' - Logical determining whether the figure should be saved.
+%                 (Default: true)
+%
+%     'saveFigPath' - String determining the path where the figure should
+%                     be saved. The default is empty ('') so that it will
+%                     just get saved in the current directory.
 %
 % See also:
-%     @SSTReceptorHuman
+%     @SSTReceptorHuman, DefaultReceptorColors
 %
 % 9/8/17  ms  Added header comments.
-
-
-% plotSpectralSensitivities(obj, varargin)
-%
-% Plot the spectral sensitivities in rudimentary form.
-%
-% Key/value pairs
-%   'NewWindow' -
-%
-%   'whichFormat' - String determining which types of fundamentals to plot.
-%                   Possible ones are:
-%                       T_quantalIsomerizations
-%                       T_quantalAbsorptions
-%                       T_quantalAbsorptionsNormalized
-%                       T_energy
-%                       T_energyNormalized
-%                   Default: T_energyNormalized
-%
-%  'logUnits' - Logical determining whether plot should be in log units.
-%               Default: false
-%
-%  'saveFig' - Logical determining whether plot should be saved
-%              Default: false
-%
-%  'saveFigPlot' - Path to save figure out
-%
-% 7/25/17   ms  Commented.
 
 %% Parse vargin for options passed here
 %
@@ -133,7 +114,7 @@ wls = SToWls(obj.S);
 % Get the colors
 theRGB = DefaultReceptorColors(obj.labels);
 
-% Find out xy maxima
+% Find out xy limit
 xLims = [wls(1) wls(end)];
 yLims = [min(min(T_receptors))*0.9  max(max(T_receptors))*1.1];
 
