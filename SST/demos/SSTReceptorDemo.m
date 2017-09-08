@@ -255,116 +255,116 @@ for ii = 1:NSamples
     lambdaMaxShiftS(ii) = receptorObj.Ts{ii}.indDiffParams.lambdaMaxShift(3);
 end
 
-%% Plot the contrasts as a function of the parameter values from the resampling
-whichContrastToPlot = contrasts;
-%whichContrastToPlot = postRecepContrasts;
-
-%% Lens
-subplot(3, 8, 1);
-plot(lensTransmittance, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-ylabel('Contrast');
-
-subplot(3, 8, 9);
-plot(lensTransmittance, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-ylabel('Contrast');
-
-subplot(3, 8, 17);
-plot(lensTransmittance, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-ylabel('Contrast');
-
-% Macula
-subplot(3, 8, 2);
-plot(macTransmittance, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 10);
-plot(macTransmittance, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 18);
-plot(macTransmittance, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-
-% dphotopigmentL
-subplot(3, 8, 3);
-plot(dphotopigmentL, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 11);
-plot(dphotopigmentL, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 19);
-plot(dphotopigmentL, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-
-% dphotopigmentM
-subplot(3, 8, 4);
-plot(dphotopigmentM, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 12);
-plot(dphotopigmentM, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 20);
-plot(dphotopigmentM, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-
-% dphotopigmentS
-subplot(3, 8, 5);
-plot(dphotopigmentS, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 13);
-plot(dphotopigmentS, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 21);
-plot(dphotopigmentS, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-
-% lambdaMaxShiftL
-subplot(3, 8, 6);
-plot(lambdaMaxShiftL, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 14);
-plot(lambdaMaxShiftL, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 22);
-plot(lambdaMaxShiftL, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-
-% lambdaMaxShiftM
-subplot(3, 8, 7);
-plot(lambdaMaxShiftM, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 15);
-plot(lambdaMaxShiftM, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 23);
-plot(lambdaMaxShiftM, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-
-% lambdaMaxShiftS
-subplot(3, 8, 8);
-plot(lambdaMaxShiftS, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 16);
-plot(lambdaMaxShiftS, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-
-subplot(3, 8, 24);
-plot(lambdaMaxShiftS, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-
-%%
-%F = [lensTransmittance ; macTransmittance ; dphotopigmentL ; dphotopigmentM ; dphotopigmentS ; lambdaMaxShiftL ; lambdaMaxShiftM ; lambdaMaxShiftS]
+% %% Plot the contrasts as a function of the parameter values from the resampling
+% whichContrastToPlot = contrasts;
+% %whichContrastToPlot = postRecepContrasts;
+% 
+% %% Lens
+% subplot(3, 8, 1);
+% plot(lensTransmittance, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% ylabel('Contrast');
+% 
+% subplot(3, 8, 9);
+% plot(lensTransmittance, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% ylabel('Contrast');
+% 
+% subplot(3, 8, 17);
+% plot(lensTransmittance, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
+% ylabel('Contrast');
+% 
+% % Macula
+% subplot(3, 8, 2);
+% plot(macTransmittance, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 10);
+% plot(macTransmittance, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 18);
+% plot(macTransmittance, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
+% 
+% % dphotopigmentL
+% subplot(3, 8, 3);
+% plot(dphotopigmentL, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 11);
+% plot(dphotopigmentL, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 19);
+% plot(dphotopigmentL, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
+% 
+% % dphotopigmentM
+% subplot(3, 8, 4);
+% plot(dphotopigmentM, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 12);
+% plot(dphotopigmentM, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 20);
+% plot(dphotopigmentM, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
+% 
+% % dphotopigmentS
+% subplot(3, 8, 5);
+% plot(dphotopigmentS, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 13);
+% plot(dphotopigmentS, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 21);
+% plot(dphotopigmentS, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
+% 
+% % lambdaMaxShiftL
+% subplot(3, 8, 6);
+% plot(lambdaMaxShiftL, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 14);
+% plot(lambdaMaxShiftL, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 22);
+% plot(lambdaMaxShiftL, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
+% 
+% % lambdaMaxShiftM
+% subplot(3, 8, 7);
+% plot(lambdaMaxShiftM, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 15);
+% plot(lambdaMaxShiftM, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 23);
+% plot(lambdaMaxShiftM, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
+% 
+% % lambdaMaxShiftS
+% subplot(3, 8, 8);
+% plot(lambdaMaxShiftS, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 16);
+% plot(lambdaMaxShiftS, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
+% 
+% subplot(3, 8, 24);
+% plot(lambdaMaxShiftS, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
+% 
+% %%
+% %F = [lensTransmittance ; macTransmittance ; dphotopigmentL ; dphotopigmentM ; dphotopigmentS ; lambdaMaxShiftL ; lambdaMaxShiftM ; lambdaMaxShiftS]
