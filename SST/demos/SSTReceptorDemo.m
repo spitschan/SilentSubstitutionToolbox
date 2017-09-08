@@ -55,7 +55,7 @@ modSpd = tmp.spd;
 %% Set up receptor object
 % This creates a static version of the spectral sensitivities which
 % correspond to the parameters passed into the SSTReceptorHuman function.
-receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
+receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeInYrs', 32, 'doPenumbralConesTrueFalse', true);
 
 %% Plot the fundamentals in various formats
 %receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalIsomerizations', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
@@ -63,6 +63,18 @@ receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeYrs', 32);
 %receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalAbsorptionsNormalized', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
 %receptorObj.plotSpectralSensitivities('whichFormat', 'T_energy', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
 receptorObj.plotSpectralSensitivities('whichFormat', 'T_energyNormalized', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
+
+%% Print out nominal contrast
+fprintf('* Contrast values:\n');
+for ii = 1:size(receptorObj.T.T_energyNormalized, 1)
+    theContrast = (receptorObj.T.T_energyNormalized(ii, :)*(modSpd-bgSpd)) ./ (receptorObj.T.T_energyNormalized(ii, :)*(bgSpd));
+    if length(receptorObj.labels{ii}) < 6
+        fprintf('  - <strong>%s</strong>: \t\t%+.2f%s\n', receptorObj.labels{ii}, 100*theContrast, '%');
+    else
+        fprintf('  - <strong>%s</strong>: \t%+.2f%s\n', receptorObj.labels{ii}, 100*theContrast, '%');
+    end
+end
+fprintf('\n');
 
 %% Parametric variation of individual difference parameters
 % Define the individual difference parameters that we want to look at here.
@@ -122,8 +134,7 @@ for ss = 1:length(theIndDiffParams)
         for jj = 1:size(T_receptors, 1)
             contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
         end
-        lmContrast(:, ii) = [1 1 0  0 0]' \ contrasts(:, ii);
-        postRecepContrasts(:, ii) = [1 1 1 0 0 ; 1 -1 0  0 0 ; 0 0 1 0 0 ]' \ contrasts(:, ii);
+        postRecepContrasts(:, ii) = [1 1 1 0 0 0 0 0 ; 1 -1 0 0 0 0 0 0 ; 0 0 1 0 0 0 0 0]' \ contrasts(:, ii);
     end
     
     % Plot contrast as a function of the individual difference parameters
@@ -161,7 +172,7 @@ for ii = 1:NSamples
     for jj = 1:size(receptorObj.Ts{ii}.T_energyNormalized, 1)
         contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
     end
-    postRecepContrasts(:, ii) = [1 1 1 0 0; 1 -1 0 0 0; 0 0 1 0 0]' \ contrasts(:, ii);
+    postRecepContrasts(:, ii) = [1 1 1 0 0 0 0 0; 1 -1 0 0 0 0 0 0; 0 0 1 0 0 0 0 0]' \ contrasts(:, ii);
 end
 
 %% [1] L+M+S vs. L-M contrast

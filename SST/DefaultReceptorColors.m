@@ -7,7 +7,7 @@ function theRGB = DefaultReceptorColors(whichReceptors)
 
 % Assume some default receptors
 if ~exist('whichReceptors', 'var') || isempty(whichReceptors)
-   whichReceptors  = {'LCone' 'MCone' 'SCone' 'Melanopsin' 'Rod'}; 
+    whichReceptors  = {'LCone' 'MCone' 'SCone' 'Melanopsin' 'Rod'};
 end
 
 % Reformat the whichReceptors variable if only has been passed
