@@ -1,8 +1,8 @@
-function [parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesParametricVariation(obj, varargin)
+function makeSpectralSensitivitiesParametricVariation(obj, varargin)
 % makeSpectralSensitivitiesParametricVariation
 %
 % Usage:
-%     [parv, parvlabel, parvlabellong, parvreal] = receptorObj.makeSpectralSensitivitiesParametricVariation;
+%     receptorObj.makeSpectralSensitivitiesParametricVariation;
 %
 % Description:
 %     This method of @SSTReceptorHuman creates generates spectral
@@ -23,15 +23,29 @@ function [parv, parvlabel, parvlabellong, parvreal] = makeSpectralSensitivitiesP
 %       Tp{}.T_energy - Energy fundamentals
 %       Tp{}.T_energyNormalized - Normalized energy fundamentals
 %
+%     Each index item in Tp{} also contains the fields indDiffParams and
+%     adjIndDiffParams, which correspond to the set of individual
+%     difference parameters for that specific set of spectral
+%     sensitivities.
+%
+%     In addition, which parameter values are varied in a given cell are
+%     saved in the field Tp{}.parameterVariation, which contains the
+%     following information:
+%           Tp{}.parameterVariation.labelShort - (short) string telling us which parameter is varied
+%           Tp{}.parameterVariation.label - string telling us which parameter is varied
+%           Tp{}.parameterVariation.value - value of the parameter (e.g. -20% in dlens)
+%           Tp{}.parameterVariation.adjValue - actual lens density value corresponding to the change in Tp{}.parameterVariation.value
+%
+%     This adds a little bit of redundancy, but helps in interpreting the
+%     parameter changes. This is because it is not straightforward to know,
+%     from the indDiffParams and adjIndDiffParams which parameters where
+%     adjusted.
+%
 % Input:
 %     obj - The receptorObj (e.g. from @SSTReceptor or @SSTReceptorHuman)
 %
 % Output:
-%     obj - The receptorObj
-%     parv
-%     parvlabel
-%     parvlabellong
-%     parvreal
+%     None.
 %
 % Optional key/value pairs:
 %     'whichParameter' - Determines which parameter which should be varied.
@@ -242,7 +256,7 @@ for ii = 1:NTitrations
     if obj.doPenumbralConesTrueFalse
         T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalized ; T_quantalAbsorptionsNormalizedLMSPenumbral];
         T_quantalAbsorptions = [T_quantalAbsorptions ; T_quantalAbsorptionsLMSPenumbral];
-        T_quantalIsomerizations= [T_quantalIsomerizations ; T_quantalIsomerizationsLMSPenumbral];
+        T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizationsLMSPenumbral];
     end
     
     % Convert to energy fundamentals
@@ -273,6 +287,12 @@ for ii = 1:NTitrations
     obj.Tp{theIdx, ii}.T_energyNormalized = T_energyNormalized;
     obj.Tp{theIdx, ii}.indDiffParams = indDiffParams;
     obj.Tp{theIdx, ii}.adjIndDiffParams = adjIndDiffParams;
+    
+    % Assign some additional info
+    obj.Tp{theIdx, ii}.parameterVariation.labelShort = parvlabel;
+    obj.Tp{theIdx, ii}.parameterVariation.label = parvlabellong;
+    obj.Tp{theIdx, ii}.parameterVariation.value = parv;
+    obj.Tp{theIdx, ii}.parameterVariation.adjValue = parvreal;
 end
 
 if strcmp(obj.verbosity, 'high')
