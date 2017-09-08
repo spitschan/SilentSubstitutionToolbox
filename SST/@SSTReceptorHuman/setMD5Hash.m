@@ -1,11 +1,27 @@
-function obj = setMD5Hash(obj, varargin)
-% obj = setMD5Hash(obj, varargin)
+function obj = setMD5Hash(obj)
+% setMD5Hash(ob)
 %
-% This method calculates and sets an MD5 data hash. May be at some point
-% useful to store the receptor object as well as a check sum.
+% Usage:
+%     receptorObj.setMD5Hash(obj);
 %
-% 7/25/17   ms      Commented.
-
+% Description:
+%     This method calculates an MD5 checksum on the receptor object and
+%     assigns it to the MD5Hash field in the object.
+%
+% Input:
+%     obj - The receptorObj (e.g. from @SSTReceptor or @SSTReceptorHuman)
+%
+% Output:
+%     obj - The receptorObj
+%
+% Optional key/value pairs:
+%     None
+%
+% See also:
+%     @SSTReceptorHuman
+%
+% 7/25/17    ms       Commented.
+% 9/8/17     ms .      Updated header comments
 if isempty(obj.MD5Hash)
     tmp = DataHash(obj);
     if strcmp(obj.verbosity, 'high')
