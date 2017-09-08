@@ -3,8 +3,14 @@ function CheckSSTInstalled
 %
 % Check that SST and its dependencies are set up properly.
 %
-% If ToolboxToolbox is installed, this will go ahead and do
-% the setup for you.
+% If ToolboxToolbox (TbTb, http://github.com/ToolboxHub/ToolboxToolbox) is
+% installed, this will go ahead and do the required setup for you.  Note
+% that the TbTb call does NOT reset the path before it does its stuff, so
+% that calling this routine will not clobber a larger setup that is already
+% in place.
+%
+% If you don't have TbTb then this routine prints out an error message
+% with info about what you need to install.
 
 % 07/24/17   ms      Written.
 % 09/08/17   dhb     Edit so it doesn't reinstall if things are already there.
@@ -36,7 +42,7 @@ if ~any(strfind(path, 'Psychtoolbox-3'))
     if any(strfind(path, 'ToolboxToolbox'))
         tbUse('SilentSubstitutionToolbox','reset','as-is');
     else
-    error('Psychtoolbox-3 is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/Psychtoolbox-3/Psychtoolbox-3 and add to your MATLAB path.');
+        error('Psychtoolbox-3 is required to run SilentSubstitutionToolbox.\nPlease install from https://github.com/Psychtoolbox-3/Psychtoolbox-3 and add to your MATLAB path.');
     end
 end
 
