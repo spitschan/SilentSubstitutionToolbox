@@ -42,10 +42,6 @@ CheckSSTInstalled();
 sstRoot0 = mfilename('fullpath');
 sstRoot1 = cd(fullfile(fileparts(sstRoot0), '../..'));
 sstRoot = pwd;
-
-%% Get plot colors
-theRGB = DefaultReceptorColors;
-
 %% Load backgound and modulation spectra from some demo data in SST
 tmp = load(fullfile(sstRoot, 'ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_bg.mat'));
 bgSpd = tmp.spd;
@@ -63,6 +59,9 @@ receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeInYrs', 32, 'doPenumb
 %receptorObj.plotSpectralSensitivities('whichFormat', 'T_quantalAbsorptionsNormalized', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
 %receptorObj.plotSpectralSensitivities('whichFormat', 'T_energy', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
 receptorObj.plotSpectralSensitivities('whichFormat', 'T_energyNormalized', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
+
+%% Get plot colors
+theRGB = DefaultReceptorColors(receptorObj.labels);
 
 %% Print out nominal contrast
 fprintf('* Contrast values:\n');
