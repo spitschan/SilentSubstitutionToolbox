@@ -11,7 +11,7 @@ function f1 = plotSpectralSensitivities(obj, varargin)
 %     object and returns predefined RGB triplets.
 %
 % Input:
-%     obj - The receptorObj (e.g. @SSTReceptor or @SSTReceptorHuman)
+%     obj - The receptorObj (e.g. from @SSTReceptor or @SSTReceptorHuman)
 %
 % Output:
 %     f1 - Figure handle to the created plot.
