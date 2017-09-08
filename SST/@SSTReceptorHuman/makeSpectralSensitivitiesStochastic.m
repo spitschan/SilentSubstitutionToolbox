@@ -6,8 +6,10 @@ function obj = makeSpectralSensitivitiesStochastic(obj, varargin)
 %
 % Currently, does not support resampling the melanopsin and rod
 % fundamentals
-%
+
 % 7/25/17    ms       Commented.
+% 09/08/17   dhb      Change reject text to indicate that we expect sometimes to reject a draw.
+%            dhb      Comment out warning message - that reduces faith of the user that the code is doing what it should.
 
 % Parse vargin for options passed here
 p = inputParser;
@@ -122,8 +124,8 @@ while c <= NSamples
         % Increment
         c = c+1;
     catch e
-        fprintf('* Sampling not successful for sample %g. Rejecting this sample.\n', c);
-        warning(e.message);
+        fprintf('* Sampling not successful for sample %g. Rejecting this sample. It is expected that we will sometimes reject samples, given that we are drawing from normal distributions.\n', c);
+        %warning(e.message);
         cr = cr + 1; % Add to the counter
     end
     

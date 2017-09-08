@@ -12,7 +12,7 @@ function obj = makeSpectralSensitivities(obj)
 %     T.T_quantalAbsorptions - Quantal absorptions
 %     T.T_quantalAbsorptionsNormalized - Normalized quantal absoprtions
 %     T.T_energy - Energy fundamentals
-%     T.T_energyNormalized - Normalized energy fundamentals%
+%     T.T_energyNormalized - Normalized energy fundamentals
 %
 % 7/25/17   ms  Commented.
 

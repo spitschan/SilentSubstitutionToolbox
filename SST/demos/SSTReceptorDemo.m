@@ -88,8 +88,8 @@ fprintf('\n');
 theIndDiffParams = {'dlens' 'dmac' 'dphotopigmentL' 'dphotopigmentM' 'dphotopigmentS' ...
     'lambdaMaxShiftL' 'lambdaMaxShiftM' 'lambdaMaxShiftS' 'obsPupilDiameterMm'};
 
-% Set the number sampling spacing for each of the individual difference
-% parameters that we're interested in.
+% Set the number of titrations for each of the individual difference
+% parameter that we're interested in.
 NTitrations = 16;
 
 % Iterate over the parameters. This creates versions of the spectral
