@@ -2,7 +2,7 @@ function obj = makeSpectralSensitivitiesStochastic(obj, varargin)
 % makeSpectralSensitivitiesStochastic(obj, varargin)
 %
 % Usage:
-%     receptorObj = makeSpectralSensitivitiesStochastic(obj, varargin);
+%     receptorObj.makeSpectralSensitivitiesStochastic(obj, varargin);
 %
 % Description:
 %     This method allows for stochastic resampling of the individual
@@ -15,7 +15,7 @@ function obj = makeSpectralSensitivitiesStochastic(obj, varargin)
 %     obj - The receptorObj (e.g. from @SSTReceptor or @SSTReceptorHuman)
 %
 % Output:
-%     receptorObj       The receptorObj
+%     obj - The receptorObj
 %
 % Optional key/value pairs:
 %     'NSamples' - Number of samples to do (Default: 1000)
