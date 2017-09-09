@@ -8,7 +8,7 @@ This software is licensed under the license specified in `LICENSE.md` (MIT Licen
 
 #### 3. Developers
 This software was developed by: 
-* [Manuel Spitschan](https://github.com/spitschan) (Lead Developer; Stanford University, 2016-now, University of Pennsylvania, 2012-2016)
+* [Manuel Spitschan](https://github.com/spitschan) (Lead Developer; University of Oxford)
 * [Geoffrey K. Aguirre](https://github.com/gkaguirre) (University of Pennsylvania)
 * [David H. Brainard](https://github.com/DavidBrainard) (University of Pennsylvania)
 
@@ -24,6 +24,14 @@ The *Silent Substitution Toolbox* relies on functions from [Psychtoolbox-3](http
 tbUse('SilentSubstitutionToolbox');
 ```
 
+To check if the requirements are fullfilled, run the function:
+
+```
+CheckSSTInstalled();
+```
+
+It will check if the required toolboxes are on the path and yell at you if they're not.
+
 #### 6. Use
 For an overview of the functions contained within this toolbox, please look at `Contents.m`.
 
@@ -35,4 +43,4 @@ For an overview of the functions contained within this toolbox, please look at `
 * [v1.0](https://github.com/spitschan/SilentSubstitutionToolbox/releases/tag/v1.0) (December 14, 2014)
 
 #### 7. Questions, Feedback?
-Please open an issue on the GitHub page for this toolbox. For other questions, [email Manuel Spitschan](mailto:spitschan@stanford.edu).
+Please open an issue on the GitHub page for this toolbox. For other questions, [email Manuel Spitschan](mailto:manuel.spitschan@psy.ox.ac.uk).
