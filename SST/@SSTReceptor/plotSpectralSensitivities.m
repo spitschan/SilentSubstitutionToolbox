@@ -7,7 +7,7 @@ function f1 = plotSpectralSensitivities(obj, varargin)
 % Description:
 %     This method plots the spectral sensitivities of a receptorObj. The
 %     color for each spectral sensitivity is determined using the function
-%     DefaultReceptorColors(), which reads the labels in the receptor
+%     SSTDefaultReceptorColors(), which reads the labels in the receptor
 %     object and returns predefined RGB triplets.
 %
 % Input:
@@ -42,8 +42,8 @@ function f1 = plotSpectralSensitivities(obj, varargin)
 %                     just get saved in the current directory.
 %
 % See also:
-%     @SSTReceptorHuman, DefaultReceptorColors
-%
+%     @SSTReceptorHuman, SSTDefaultReceptorColors
+
 % 9/8/17  ms  Added header comments.
 
 %% Parse vargin for options passed here
@@ -112,7 +112,7 @@ end
 wls = SToWls(obj.S);
 
 % Get the colors
-theRGB = DefaultReceptorColors(obj.labels);
+theRGB = SSTDefaultReceptorColors(obj.labels);
 
 % Find out xy limit
 xLims = [wls(1) wls(end)];
@@ -134,8 +134,8 @@ pbaspect([1 1 1]); set(gca, 'TickDir', 'out');
 
 if saveFigYesNo
     % Save out the figures
-    set(f1, 'PaperPosition', [0 0 6 6]);
-    set(f1, 'PaperSize', [6 6]);
+    set(f1, 'PaperPosition', [0 0 15 15]);
+    set(f1, 'PaperSize', [15 15]);
     set(f1, 'Color', 'w');
     set(f1, 'InvertHardcopy', 'off');
     saveas(f1, saveFigPath, 'png');

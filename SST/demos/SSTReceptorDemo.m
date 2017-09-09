@@ -61,7 +61,7 @@ receptorObj = SSTReceptorHuman('verbosity', 'high', 'obsAgeInYrs', 32, 'doPenumb
 receptorObj.plotSpectralSensitivities('whichFormat', 'T_energyNormalized', 'saveFigPath', fullfile(sstRoot, 'SST', 'plots'));
 
 %% Get plot colors
-theRGB = DefaultReceptorColors(receptorObj.labels);
+theRGB = SSTDefaultReceptorColors(receptorObj.labels);
 
 %% Print out nominal contrast
 fprintf('* Contrast values:\n');
@@ -99,6 +99,55 @@ for ss = 1:length(theIndDiffParams)
         'whichParameter', theIndDiffParams{ss}, 'NTitrations', NTitrations);
 end
 
+%% Calculate contrast and plot - Parametric
+% Plot the contrast on the LMS cones as a function of the individual
+% parameters which we changed above  under "Parametric variation of
+% individual difference parameters".
+figParv = figure;
+yAxLims = [-0.06 0.06];
+for ss = 1:length(theIndDiffParams)
+    if receptorObj.Tp_i{ss}.parameterVariation.value(1) < 0
+        xAxLims = [receptorObj.Tp_i{ss}.parameterVariation.value(1)*1.1 receptorObj.Tp_i{ss}.parameterVariation.value(end)*1.1];
+    else
+        xAxLims = [receptorObj.Tp_i{ss}.parameterVariation.value(1)*0.9 receptorObj.Tp_i{ss}.parameterVariation.value(end)*1.1];
+    end
+    
+    % Calculate contrast on the LMS cones and the postreceptoral
+    % combinations
+    for ii = 1:size(receptorObj.Tp, 2)
+        T_receptors = receptorObj.Tp{ss, ii}.T_energyNormalized;
+        for jj = 1:size(T_receptors, 1)
+            contrastsParametricVariation{ss}(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
+        end
+        postRecepContrastsParametricVariation{ss}(:, ii) = [1 1 1 0 0 0 0 0 ; 1 -1 0 0 0 0 0 0 ; 0 0 1 0 0 0 0 0]' \ contrastsParametricVariation{ss}(:, ii);
+    end
+    
+    % Plot contrast as a function of the individual difference parameters
+    subplot(1, length(theIndDiffParams), ss);
+    hold on;
+    plot(xAxLims, [0 0], ':k');
+    for ii = 1:3 % LMS only
+        plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-o', 'Color', theRGB(ii, :), 'MarkerEdgeColor', 'k', ...
+            'MarkerFaceColor', theRGB(ii, :)); hold on;
+    end
+    
+    % Add title and tweak plots
+    title(receptorObj.Tp_i{ss}.parameterVariation.label);
+    box off;
+    xlabel(receptorObj.Tp_i{ss}.parameterVariation.labelShort);
+    xlim(xAxLims);
+    ylim(yAxLims);
+    pbaspect([1 1 1]);
+    set(gca, 'TickDir', 'out');
+end
+
+% Save out the figure
+set(figParv, 'PaperPosition', [0 0 40 10]);
+set(figParv, 'PaperSize', [40 10]);
+set(figParv, 'Color', 'w');
+set(figParv, 'InvertHardcopy', 'off');
+saveas(figParv, fullfile(sstRoot, 'SST', 'plots', 'SSTReceptorDemo_ParvFig.png'), 'png');
+
 %% Stochastic variation of individual difference parameters by resampling
 % Instead of varying only one parameter, as we did above, we can also
 % resample the spectral sensitivities, drawing from the distribution of the
@@ -113,55 +162,6 @@ receptorObj.makeSpectralSensitivitiesStochastic('NSamples', NSamples);
 % Save the receptor object hash
 receptorObj.setMD5Hash();
 
-%% Calculate contrast and plot - Parametric
-% Plot the contrast on the LMS cones as a function of the individual
-% parameters which we changed above  under "Parametric variation of
-% individual difference parameters".
-figParv = figure;
-yAxLims = [-0.06 0.06];
-for ss = 1:length(theIndDiffParams)
-    if parv{ss}(1) < 0
-        xAxLims = [parv{ss}(1)*1.1 parv{ss}(end)*1.1];
-    else
-        xAxLims = [parv{ss}(1)*0.9 parv{ss}(end)*1.1];
-    end
-    
-    % Calculate contrast on the LMS cones and the postreceptoral
-    % combinations
-    for ii = 1:size(receptorObj.Tp, 2)
-        T_receptors = receptorObj.Tp{ss, ii}.T_energyNormalized;
-        for jj = 1:size(T_receptors, 1)
-            contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
-        end
-        postRecepContrasts(:, ii) = [1 1 1 0 0 0 0 0 ; 1 -1 0 0 0 0 0 0 ; 0 0 1 0 0 0 0 0]' \ contrasts(:, ii);
-    end
-    
-    % Plot contrast as a function of the individual difference parameters
-    subplot(1, length(theIndDiffParams), ss);
-    hold on;
-    plot(xAxLims, [0 0], ':k');
-    for ii = 1:size(contrasts, 1)
-        plot(parv{ss}, contrasts(ii, :)', '-o', 'Color', theRGB(ii, :), 'MarkerEdgeColor', 'k', ...
-            'MarkerFaceColor', theRGB(ii, :)); hold on;
-    end
-    
-    % Add title and tweak plots
-    title(parvlabellong{ss});
-    box off;
-    xlabel(parvlabel{ss});
-    xlim(xAxLims);
-    ylim(yAxLims);
-    pbaspect([1 1 1]);
-    set(gca, 'TickDir', 'out');
-end
-
-% Save out the figure
-set(figParv, 'PaperPosition', [0 0 13 3.5]);
-set(figParv, 'PaperSize', [13 3.5]);
-set(figParv, 'Color', 'w');
-set(figParv, 'InvertHardcopy', 'off');
-saveas(figParv, fullfile(sstRoot, 'SST', 'plots', 'SSTReceptorDemo_ParvFig.png'), 'png');
-
 %% Calculate contrast and plot - Resampling approach
 % Calculate contrast for each of the spectral sensitivities in the Ts
 % field.
@@ -169,9 +169,9 @@ clear contrasts postRecepContrasts;
 for ii = 1:NSamples
     T_receptors = receptorObj.Ts{ii}.T_energyNormalized;
     for jj = 1:size(receptorObj.Ts{ii}.T_energyNormalized, 1)
-        contrasts(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
+        contrastsResampling(jj, ii) = (T_receptors(jj, :)*(modSpd-bgSpd))./(T_receptors(jj, :)*bgSpd);
     end
-    postRecepContrasts(:, ii) = [1 1 1 0 0 0 0 0; 1 -1 0 0 0 0 0 0; 0 0 1 0 0 0 0 0]' \ contrasts(:, ii);
+    postRecepContrastsResampling(:, ii) = [1 1 1 0 0 0 0 0; 1 -1 0 0 0 0 0 0; 0 0 1 0 0 0 0 0]' \ contrastsResampling(:, ii);
 end
 
 %% [1] L+M+S vs. L-M contrast
@@ -179,30 +179,30 @@ figLMSvsLMinusM = figure;
 XNominalContrast = 0;
 YNominalContrast = 0;
 XAxLims = XNominalContrast+[-0.03 0.03];
-YAxLims = YNominalContrast+[-0.03 0.03];
+yAxLims = YNominalContrast+[-0.03 0.03];
 XBinWidth = max(XAxLims)/10;
-YBinWidth = max(YAxLims)/10;
+YBinWidth = max(yAxLims)/10;
 
 % Throw it in a scatter plot
-ScatterplotWithHistogram(postRecepContrasts(1, :), postRecepContrasts(2, :), ...
-    'XLim', XAxLims, 'YLim', YAxLims, 'XBinWidth', XBinWidth, 'YBinWidth', YBinWidth, ...
+ScatterplotWithHistogram(postRecepContrastsResampling(1, :), postRecepContrastsResampling(2, :), ...
+    'XLim', XAxLims, 'YLim', yAxLims, 'XBinWidth', XBinWidth, 'YBinWidth', YBinWidth, ...
     'XLabel', 'L+M+S contrast', 'YLabel', 'L-M contrast', ...
     'XRefLines', [XAxLims ; YNominalContrast YNominalContrast], ...
-    'YRefLines', [XNominalContrast XNominalContrast ; YAxLims], ...
+    'YRefLines', [XNominalContrast XNominalContrast ; yAxLims], ...
     'XNominalContrast', XNominalContrast, ...
     'YNominalContrast', YNominalContrast, ...
     'Color', [theRGB(1, :) ; theRGB(2, :)]);
 
 % Plot mean
-plot(mean(postRecepContrasts(1, :)), mean(postRecepContrasts(2, :)), '+k');
+plot(mean(postRecepContrastsResampling(1, :)), mean(postRecepContrastsResampling(2, :)), '+k');
 
 % Get the error ellipse
-[X, Y] = get_error_ellipse([postRecepContrasts(1, :) ; postRecepContrasts(2, :)]', 0.95);
+[X, Y] = get_error_ellipse([postRecepContrastsResampling(1, :) ; postRecepContrastsResampling(2, :)]', 0.95);
 plot(X, Y, '-k');
 
 % Save out the figures
-set(figLMSvsLMinusM, 'PaperPosition', [0 0 6 6]);
-set(figLMSvsLMinusM, 'PaperSize', [6 6]);
+set(figLMSvsLMinusM, 'PaperPosition', [0 0 12 12]);
+set(figLMSvsLMinusM, 'PaperSize', [12 12]);
 set(figLMSvsLMinusM, 'Color', 'w');
 set(figLMSvsLMinusM, 'InvertHardcopy', 'off');
 saveas(figLMSvsLMinusM, fullfile(sstRoot, 'SST', 'plots', 'SSTReceptorDemo_LMSvsLMinusM_Contrast.png'), 'png');
@@ -212,30 +212,30 @@ figLMSvsS = figure;
 XNominalContrast = 0;
 YNominalContrast = 0;
 XAxLims = XNominalContrast+[-0.03 0.03];
-YAxLims = YNominalContrast+[-0.1 0.1];
+yAxLims = YNominalContrast+[-0.1 0.1];
 XBinWidth = max(XAxLims)/10;
-YBinWidth = max(YAxLims)/10;
+YBinWidth = max(yAxLims)/10;
 
 % Throw it in a scatter plot
-ScatterplotWithHistogram(postRecepContrasts(1, :), postRecepContrasts(3, :), ...
-    'XLim', XAxLims, 'YLim', YAxLims, 'XBinWidth', XBinWidth, 'YBinWidth', YBinWidth, ...
+ScatterplotWithHistogram(postRecepContrastsResampling(1, :), postRecepContrastsResampling(3, :), ...
+    'XLim', XAxLims, 'YLim', yAxLims, 'XBinWidth', XBinWidth, 'YBinWidth', YBinWidth, ...
     'XLabel', 'L+M+S contrast', 'YLabel', 'S contrast', ...
     'XRefLines', [XAxLims ; YNominalContrast YNominalContrast], ...
-    'YRefLines', [XNominalContrast XNominalContrast ; YAxLims], ...
+    'YRefLines', [XNominalContrast XNominalContrast ; yAxLims], ...
     'XNominalContrast', XNominalContrast, ...
     'YNominalContrast', YNominalContrast, ...
     'Color', [theRGB(1, :) ; theRGB(3, :)]);
 
 % Plot mean
-plot(mean(postRecepContrasts(1, :)), mean(postRecepContrasts(3, :)), '+k');
+plot(mean(postRecepContrastsResampling(1, :)), mean(postRecepContrastsResampling(3, :)), '+k');
 
 % Get the error ellipse
-[X, Y] = get_error_ellipse([postRecepContrasts(1, :) ; postRecepContrasts(3, :)]', 0.95);
+[X, Y] = get_error_ellipse([postRecepContrastsResampling(1, :) ; postRecepContrastsResampling(3, :)]', 0.95);
 plot(X, Y, '-k');
 
 % Save out the figures
-set(figLMSvsS, 'PaperPosition', [0 0 6 6]);
-set(figLMSvsS, 'PaperSize', [6 6]);
+set(figLMSvsS, 'PaperPosition', [0 0 12 12]);
+set(figLMSvsS, 'PaperSize', [12 12]);
 set(figLMSvsS, 'Color', 'w');
 set(figLMSvsS, 'InvertHardcopy', 'off');
 saveas(figLMSvsS, fullfile(sstRoot, 'SST', 'plots', 'SSTReceptorDemo_LMSvsS_Contrast.png'), 'png');
@@ -255,116 +255,300 @@ for ii = 1:NSamples
     lambdaMaxShiftS(ii) = receptorObj.Ts{ii}.indDiffParams.lambdaMaxShift(3);
 end
 
-% %% Plot the contrasts as a function of the parameter values from the resampling
-% whichContrastToPlot = contrasts;
-% %whichContrastToPlot = postRecepContrasts;
-% 
-% %% Lens
-% subplot(3, 8, 1);
-% plot(lensTransmittance, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% ylabel('Contrast');
-% 
-% subplot(3, 8, 9);
-% plot(lensTransmittance, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% ylabel('Contrast');
-% 
-% subplot(3, 8, 17);
-% plot(lensTransmittance, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-% ylabel('Contrast');
-% 
-% % Macula
-% subplot(3, 8, 2);
-% plot(macTransmittance, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 10);
-% plot(macTransmittance, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 18);
-% plot(macTransmittance, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-% 
-% % dphotopigmentL
-% subplot(3, 8, 3);
-% plot(dphotopigmentL, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 11);
-% plot(dphotopigmentL, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 19);
-% plot(dphotopigmentL, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-% 
-% % dphotopigmentM
-% subplot(3, 8, 4);
-% plot(dphotopigmentM, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 12);
-% plot(dphotopigmentM, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 20);
-% plot(dphotopigmentM, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-% 
-% % dphotopigmentS
-% subplot(3, 8, 5);
-% plot(dphotopigmentS, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 13);
-% plot(dphotopigmentS, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 21);
-% plot(dphotopigmentS, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-% 
-% % lambdaMaxShiftL
-% subplot(3, 8, 6);
-% plot(lambdaMaxShiftL, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 14);
-% plot(lambdaMaxShiftL, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 22);
-% plot(lambdaMaxShiftL, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-% 
-% % lambdaMaxShiftM
-% subplot(3, 8, 7);
-% plot(lambdaMaxShiftM, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 15);
-% plot(lambdaMaxShiftM, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 23);
-% plot(lambdaMaxShiftM, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-% 
-% % lambdaMaxShiftS
-% subplot(3, 8, 8);
-% plot(lambdaMaxShiftS, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 16);
-% plot(lambdaMaxShiftS, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.03 0.03]);
-% 
-% subplot(3, 8, 24);
-% plot(lambdaMaxShiftS, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
-% pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; ylim([-0.1 0.1]);
-% 
-% %%
-% %F = [lensTransmittance ; macTransmittance ; dphotopigmentL ; dphotopigmentM ; dphotopigmentS ; lambdaMaxShiftL ; lambdaMaxShiftM ; lambdaMaxShiftS]
+%% Plot the contrasts as a function of the parameter values from the resampling
+whichContrastToPlot = contrastsResampling;
+%whichContrastToPlot = postRecepContrasts;
+
+% Open a new figure
+figPars = figure;
+
+% Set some axis limits
+yAxLims = [-0.06 0.06];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lens
+xAxLims = [-50 50];
+subplot(3, 8, 1);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lensTransmittance, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+
+% Also add the values from the parametric variation approach
+ss = 1; ii = 1;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims); ylim(yAxLims);
+ylabel('Contrast');  title('Lens density');
+
+subplot(3, 8, 9);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lensTransmittance, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+
+% Also add the values from the parametric variation approach
+ss = 1; ii = 2;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+ylabel('Contrast');
+
+subplot(3, 8, 17);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lensTransmittance, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+
+% Also add the values from the parametric variation approach
+ss = 1; ii = 3;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+ylabel('Contrast'); xlabel('%\DeltaD_{lens}');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macula
+xAxLims = [-100 100];
+subplot(3, 8, 2);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(macTransmittance, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+
+% Also add the values from the parametric variation approach
+ss = 2; ii = 1;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+title('Macular density');
+
+subplot(3, 8, 10);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(macTransmittance, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+
+% Also add the values from the parametric variation approach
+ss = 2; ii = 2;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+
+subplot(3, 8, 18);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(macTransmittance, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+
+% Also add the values from the parametric variation approach
+ss = 2; ii = 3;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+xlabel('%\DeltaD_{mac}');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% dphotopigmentL
+xAxLims = [-50 50];
+subplot(3, 8, 3);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(dphotopigmentL, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+
+% Also add the values from the parametric variation approach
+ss = 3; ii = 1;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims); ylim(yAxLims);
+title({'Photopigment' ; 'optical density [L]'});
+
+subplot(3, 8, 11);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(dphotopigmentL, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+
+% Also add the values from the parametric variation approach
+ss = 3; ii = 2;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+
+subplot(3, 8, 19);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(dphotopigmentL, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+
+% Also add the values from the parametric variation approach
+ss = 3; ii = 3;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+xlabel('%\DeltaD_{pigment} [L]');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% dphotopigmentM
+xAxLims = [-50 50];
+subplot(3, 8, 4);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(dphotopigmentM, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+
+% Also add the values from the parametric variation approach
+ss = 4; ii = 1;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+title({'Photopigment' ; 'optical density [M]'});
+
+subplot(3, 8, 12);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(dphotopigmentM, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+
+% Also add the values from the parametric variation approach
+ss = 4; ii = 2;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+
+subplot(3, 8, 20);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(dphotopigmentM, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+
+% Also add the values from the parametric variation approach
+ss = 4; ii = 3;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+xlabel('%\DeltaD_{pigment} [M]');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% dphotopigmentS
+xAxLims = [-50 50];
+subplot(3, 8, 5);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(dphotopigmentS, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+
+% Also add the values from the parametric variation approach
+ss = 5; ii = 1;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+title({'Photopigment' ; 'optical density [S]'});
+
+subplot(3, 8, 13);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(dphotopigmentS, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+
+% Also add the values from the parametric variation approach
+ss = 5; ii = 2;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+
+subplot(3, 8, 21);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(dphotopigmentS, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+
+% Also add the values from the parametric variation approach
+ss = 5; ii = 3;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+xlabel('%\DeltaD_{pigment} [S]');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% lambdaMaxShiftL
+xAxLims = [-5 5];
+subplot(3, 8, 6);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lambdaMaxShiftL, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+
+% Also add the values from the parametric variation approach
+ss = 6; ii = 1;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+title({'Peak sensitivity' '\lambda_{max} [L]'});
+
+subplot(3, 8, 14);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lambdaMaxShiftL, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+
+% Also add the values from the parametric variation approach
+ss = 6; ii = 2;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+
+subplot(3, 8, 22);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lambdaMaxShiftL, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+
+% Also add the values from the parametric variation approach
+ss = 6; ii = 3;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+xlabel('\Delta\lambda_{max} [L]');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% lambdaMaxShiftM
+xAxLims = [-5 5];
+subplot(3, 8, 7);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lambdaMaxShiftM, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+
+% Also add the values from the parametric variation approach
+ss = 7; ii = 1;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims); ylim(yAxLims);
+title({'Peak sensitivity' '\lambda_{max} [M]'});
+
+subplot(3, 8, 15);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lambdaMaxShiftM, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+
+% Also add the values from the parametric variation approach
+ss = 7; ii = 2;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+
+subplot(3, 8, 23);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lambdaMaxShiftM, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+
+% Also add the values from the parametric variation approach
+ss = 7; ii = 3;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+xlabel('\Delta\lambda_{max} [M]');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% lambdaMaxShiftS
+xAxLims = [-5 5];
+subplot(3, 8, 8);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lambdaMaxShiftS, whichContrastToPlot(1, :), '.', 'Color', theRGB(1, :));
+
+% Also add the values from the parametric variation approach
+ss = 8; ii = 1;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+title({'Peak sensitivity' '\lambda_{max} [S]'});
+
+subplot(3, 8, 16);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lambdaMaxShiftS, whichContrastToPlot(2, :), '.', 'Color', theRGB(2, :));
+
+% Also add the values from the parametric variation approach
+ss = 8; ii = 2;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+
+subplot(3, 8, 24);
+plot([0 0], yAxLims, ':', xAxLims, [0 0], ':', 'Color', [0.1 0.1 0.1]); hold on;
+plot(lambdaMaxShiftS, whichContrastToPlot(3, :), '.', 'Color', theRGB(3, :));
+
+% Also add the values from the parametric variation approach
+ss = 8; ii = 3;
+plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation{ss}(ii, :)', '-k', 'LineWidth', 2); hold on;
+
+pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
+xlabel('\Delta\lambda_{max} [S]');
+
+% Save out the figure
+set(figPars, 'PaperPosition', [0 0 40 20]);
+set(figPars, 'PaperSize', [40 20]);
+set(figPars, 'Color', 'w');
+set(figPars, 'InvertHardcopy', 'off');
+saveas(figPars, fullfile(sstRoot, 'SST', 'plots', 'SSTReceptorDemo_ParvResamplingFig.png'), 'png');

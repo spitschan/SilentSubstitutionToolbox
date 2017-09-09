@@ -1,9 +1,27 @@
-function theRGB = DefaultReceptorColors(whichReceptors)
-% theRGB = DefaultReceptorColors(whichReceptors)
+function theRGB = SSTDefaultReceptorColors(whichReceptors)
+% SSTDefaultReceptorColors(whichReceptors)
 %
-% Returns RGB values in [0 1] for each of the receptors classes.
+% Usage:
+%     theRGB = SSTDefaultReceptorColors(whichReceptors)
 %
-% 7/25/17   ms   Written.
+% Description:
+%     This returns RGB triplets to plot spectral sensitivities and other
+%     quantities associated with receptors. If an unknown receptor is
+%     passed, [0 0 0] is returned.
+%
+% Input:
+%     whichReceptors - String or cell containing the receptor labels
+%                      Possible options are: 'LCone', 'MCone', 'SCone',
+%                      'Melanopsin', 'Rod', 'LConePenumbral',
+%                      'MConePenumbral' and 'SConePenumbral'.
+%
+% Output:
+%     theRGB - RGB triplets.
+%
+% Optional key/value pairs:
+%     None.
+
+% 9/9/17  ms  Added header comments.
 
 % Assume some default receptors
 if ~exist('whichReceptors', 'var') || isempty(whichReceptors)

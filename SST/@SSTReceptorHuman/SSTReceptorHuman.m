@@ -30,6 +30,8 @@ classdef SSTReceptorHuman < SSTReceptor
     %                      These describe variation in steps along the parameters of the Asano et al.
     %                      model.
     %
+    %     receptorObj.Tp_i - Information about the parametric variations
+    %
     %     receptorObj.Ts - Fundamentals created using makeSpectralSensitivitiesStochastic.  These
     %                      represent draws from the statistical model of Asano et al.
     %
@@ -81,6 +83,7 @@ classdef SSTReceptorHuman < SSTReceptor
         fieldSizeDeg; % Field size in degrees
         T;  % Fundamentals created using makeSpectralSensitivities
         Tp; % Fundamentals created using makeSpectralSensitivitiesParametricVariation
+        Tp_i; % Information about the parametric variation from makeSpectralSensitivitiesParametricVariation 
         Ts; % Fundamentals created using makeSpectralSensitivitiesStochastic
         labels; % Labels for the spectral sensitivities
         MD5Hash; % MD5 hash of the receptor object
