@@ -35,13 +35,14 @@
 %% Clear work space
 clearvars; close all; clc;
 
-% Check if the SST is installed properly
-CheckSSTInstalled();
-
 % Infer the SST root
 sstRoot0 = mfilename('fullpath');
 sstRoot1 = cd(fullfile(fileparts(sstRoot0), '../..'));
 sstRoot = pwd;
+
+% Check if the SST is installed properly
+CheckSSTInstalled();
+
 %% Load backgound and modulation spectra from some demo data in SST
 tmp = load(fullfile(sstRoot, 'ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_bg.mat'));
 bgSpd = tmp.spd;
@@ -140,6 +141,10 @@ for ss = 1:length(theIndDiffParams)
     pbaspect([1 1 1]);
     set(gca, 'TickDir', 'out');
 end
+
+% Enlargen the figure
+screenDims = get(0, 'Screensize');
+set(figParv, 'Position', [1 screenDims(4) screenDims(3)*0.8 screenDims(4)/3]);
 
 % Save out the figure
 set(figParv, 'PaperPosition', [0 0 40 10]);
@@ -545,6 +550,11 @@ plot(receptorObj.Tp_i{ss}.parameterVariation.value, contrastsParametricVariation
 
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out'); box off; xlim(xAxLims);  ylim(yAxLims);
 xlabel('\Delta\lambda_{max} [S]');
+
+% Enlargen the figure
+screenDims = get(0, 'Screensize');
+set(figPars, 'Position', [1 screenDims(4) screenDims(3)*0.9 screenDims(4)*0.9]);
+
 
 % Save out the figure
 set(figPars, 'PaperPosition', [0 0 40 20]);
