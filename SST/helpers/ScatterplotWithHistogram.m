@@ -1,5 +1,54 @@
-function ScatterPlotWithHistogram(x, y, varargin)
-% ScatterPlotWithHistogram(x, y, varargin)
+function ScatterplotWithHistogram(x, y, varargin)
+% ScatterplotWithHistogram(x, y, varargin)
+%
+% Usage:
+%     ScatterplotWithHistogram(x, y, varargin)
+%
+% Description:
+%     This function makes a scatter plot and marginal histograms
+%
+% Input:
+%     x - The X data
+%     y - The Y data
+%     
+% Output:
+%     None.
+%
+% Optional key/value pairs:
+%     XLim - x axis limits
+%     YLim - y axis limits
+%     XBinWidth - Bin width for the marginal histogram for the X data
+%     YBinWidth - Bin width for the marginal histogram for the Y data
+%     XLabel - x axis label
+%     YLabel - y axis label
+%     XRefLines - Coordinates for the reference lines on the x axis
+%     YRefLines - Coordinates for the reference lines on the y axis
+%     XNominalContrast - x coordinate for nominal contrast which will be
+%                        indicated in the marginal histogram
+%     XNominalContrast - y coordinate for nominal contrast which will be
+%                        indicated in the marginal histogram
+%     Color - Histogram face color
+%     PlotMean - Logical determining if the mean should be added to the
+%                marginal histograms
+%     PlotMedian - Logical determining if the median should be added to the
+%                  marginal histograms
+%     MaxP - Max. probability, useful for normalizing axis limtits across
+%            different figures with the same constant
+%     PlotMarginals - Logical determining whether the histograms should
+%                     be added
+%
+% See also:
+%     SSTReceptorDemo
+
+%
+% Optional key/value pairs:
+%     None.
+
+% 8/1/17    ms  Written.
+% 9/8/17    ms  Added header comments.
+
+
+% ScatterplotWithHistogram(x, y, varargin)
 %
 % Maks a scatter lot with histograms in the margins.
 

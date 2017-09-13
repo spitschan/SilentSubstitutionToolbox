@@ -41,11 +41,12 @@ function [T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIso
 %     params, staticParams - Params structs returned from the DefaultPhotoreceptors and
 %                            FillInPhotoreceptors
 %
-% Optional key/value pairs:
-%     None.
-%
 % See also:
 %     ComputeCIERodFundamental, ComputeCIEConeFundamentals, ComputeRawConeFundamentals
+
+%
+% Optional key/value pairs:
+%     None.
 
 % 8/1/17    ms  Written.
 % 9/8/17    ms  Added header comments.
