@@ -7,7 +7,7 @@
 % parameters).
 
 % 8/29/17   ms      Written.
-% 9/8/17  dhb     Comment out pause.  This seems useful for debugging but once it's working 
+% 9/8/17    dhb     Comment out pause.  This seems useful for debugging but once it's working
 %                   we just want to run through the whole thing and see all the OKs scroll by.
 
 % Define wavelength spacing
