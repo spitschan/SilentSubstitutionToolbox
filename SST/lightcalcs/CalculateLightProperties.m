@@ -112,7 +112,7 @@ melanopsinAssumedFieldSizeDeg = 10;
 melanopsonAssumedAgeYears = 32;
 
 % Get the spectral sensitivities from the 
-receptorObj = SSTReceptorHuman('verbosity', 'low', 'obsAgeInYrs', melanopsonAssumedAgeYears, 'fieldSizeDeg', melanopsinAssumedFieldSizeDeg);
+receptorObj = SSTReceptorHuman('verbosity', 'low', 'S', S, 'obsAgeInYrs', melanopsonAssumedAgeYears, 'fieldSizeDeg', melanopsinAssumedFieldSizeDeg);
 T_melanopsinQuantal = receptorObj.T.T_quantalAbsorptionsNormalized(4, :);
 
 % Retinal irradiance
