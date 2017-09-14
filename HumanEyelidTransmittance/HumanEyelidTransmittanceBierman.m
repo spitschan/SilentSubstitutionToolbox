@@ -76,7 +76,7 @@ trans_melanin = exp(-absorption_melanin);
 
 %% Bilirubin 
 % Load bilirubin
-tmp = csvread(fullfile('xSrc', 'Prahl2012_BilurubinAbsorptionSpectrum.txt'), 25, 0);
+tmp = dlmread(fullfile('xSrc', 'Prahl2012_BilurubinAbsorptionSpectrum.txt'), '\t',  25, 0);
 wls_bilirubin = tmp(:, 1);
 absorption_bilirubin = tmp(:, 2);
 
@@ -129,12 +129,12 @@ saveas(gc1Fig, 'HumanEyelidTransmittanceBierman_Components.pdf', 'pdf');
 
 %% Load in the data from Rea et al.
 % Average transmittance from 27 subjects
-tmp = csvread(fullfile('xSrc', 'Bierman2011_meanTransmittanceN27.txt'));
+tmp = dlmread(fullfile('xSrc', 'Bierman2011_meanTransmittanceN27.txt'));
 wls_eyelidMeas = tmp(:, 1);
 trans_eyelidMeas = tmp(:, 2);
 
 % Transmittance from average coeffiecients
-tmp = csvread(fullfile('xSrc', 'Bierman2011_EyelidTransFromAvgCoef.txt'));
+tmp = dlmread(fullfile('xSrc', 'Bierman2011_EyelidTransFromAvgCoef.txt'));
 wls_eyelidPred = tmp(:, 1);
 trans_eyelidPredOrig = tmp(:, 2);
 
@@ -178,7 +178,7 @@ saveas(gc2Fig, 'HumanEyelidTransmittanceBierman_Transmittance.pdf', 'pdf');
 %% Compare with Moseley et al.'s data
 % Load Moseley et al. 1988
 gc3Fig = figure;
-tmp = csvread(fullfile('xSrc', 'Moseley1988_EyelidTransmittance.txt'), 1, 0);
+tmp = dlmread(fullfile('xSrc', 'Moseley1988_EyelidTransmittance.txt'), '\t', 1, 0);
 wls_Moseley = tmp(:, 1);
 trans_Moseley = tmp(:, 2)/100; % Divide by 100 to get prop. and not percent
 gc3Fig = figure;
