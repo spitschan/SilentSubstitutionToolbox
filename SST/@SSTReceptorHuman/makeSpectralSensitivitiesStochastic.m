@@ -24,7 +24,7 @@ function makeSpectralSensitivitiesStochastic(obj, varargin)
 %     The standard deviations used are given in Table 5 of Asano et al. (2016),
 %     doi.org/10.1371/journal.pone.0145671.
 %
-%     The outputs are returned as cell arrays of spectral sensitivity matrices, 
+%     The outputs are returned as cell arrays of spectral sensitivity matrices,
 %     to the field "Ts" of the receptor object, in the following formats/units:
 %       Ts{}.T_quantalIsomerizations - Quantal isomerizations
 %       Ts{}.T_quantalAbsorptions - Quantal absorptions
@@ -87,8 +87,8 @@ if strcmp(obj.verbosity, 'high')
 end
 
 % Resample!
-c = 0;
-cr = 0;
+c = 1;
+cr = 1;
 while c <= NSamples
     % Print out some info if the verbosity level is high
     if strcmp(obj.verbosity, 'high')
@@ -153,38 +153,39 @@ while c <= NSamples
             T_quantalIsomerizationsLMSPenumbral = T_quantalIsomerizationsLMS .* trans_Hemoglobin';
         end
         
+        
+        %% Assemble the spectral sensitivities
+        T_quantalIsomerizations = [T_quantalIsomerizationsLMS ; T_quantalIsomerizationsMel ; T_quantalIsomerizationsRod];
+        T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalizedLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
+        T_quantalAbsorptions = [T_quantalAbsorptionsLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
+        
+        %% Add the penumbral cones if required
+        if obj.doPenumbralConesTrueFalse
+            T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalized ; T_quantalAbsorptionsNormalizedLMSPenumbral];
+            T_quantalAbsorptions = [T_quantalAbsorptions ; T_quantalAbsorptionsLMSPenumbral];
+            T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizationsLMSPenumbral];
+        end
+        
+        %% Convert to energy
+        T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
+        T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
+        
+        % Assign the sub-fields in the "Ts" field
+        obj.Ts{c}.T_quantalIsomerizations = T_quantalIsomerizations;
+        obj.Ts{c}.T_quantalAbsorptions = T_quantalAbsorptions;
+        obj.Ts{c}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
+        obj.Ts{c}.T_energy = T_energy;
+        obj.Ts{c}.T_energyNormalized = T_energyNormalized;
+        obj.Ts{c}.indDiffParams = indDiffParamsLMS;
+        adjIndDiffParamsLMS.lambdaMaxShift = indDiffParamsLMS.lambdaMaxShift;
+        obj.Ts{c}.adjIndDiffParams = adjIndDiffParamsLMS;
+        
         % Increment
         c = c+1;
     catch e
         fprintf('* Sampling not successful for sample %g. Rejecting this sample. It is expected that we will sometimes reject samples, given that we are drawing from normal distributions.\n', c);
-        %warning(e.message);
         cr = cr + 1; % Add to the counter
     end
     
-    %% Assemble the spectral sensitivities
-    T_quantalIsomerizations = [T_quantalIsomerizationsLMS ; T_quantalIsomerizationsMel ; T_quantalIsomerizationsRod];
-    T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalizedLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
-    T_quantalAbsorptions = [T_quantalAbsorptionsLMS ; T_quantalAbsorptionsNormalizedMel ; T_quantalAbsorptionsNormalizedRod];
-    
-    %% Add the penumbral cones if required
-    if obj.doPenumbralConesTrueFalse
-        T_quantalAbsorptionsNormalized = [T_quantalAbsorptionsNormalized ; T_quantalAbsorptionsNormalizedLMSPenumbral];
-        T_quantalAbsorptions = [T_quantalAbsorptions ; T_quantalAbsorptionsLMSPenumbral];
-        T_quantalIsomerizations = [T_quantalIsomerizations ; T_quantalIsomerizationsLMSPenumbral];
-    end
-    
-    %% Convert to energy
-    T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
-    T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
-    
-    % Assign the sub-fields in the "Ts" field
-    obj.Ts{c}.T_quantalIsomerizations = T_quantalIsomerizations;
-    obj.Ts{c}.T_quantalAbsorptions = T_quantalAbsorptions;
-    obj.Ts{c}.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
-    obj.Ts{c}.T_energy = T_energy;
-    obj.Ts{c}.T_energyNormalized = T_energyNormalized;
-    obj.Ts{c}.indDiffParams = indDiffParamsLMS;
-    adjIndDiffParamsLMS.lambdaMaxShift = indDiffParamsLMS.lambdaMaxShift;
-    obj.Ts{c}.adjIndDiffParams = adjIndDiffParamsLMS;
 end
 fprintf('* # of rejected samples: %g\n', cr);
