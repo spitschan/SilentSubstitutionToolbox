@@ -19,7 +19,7 @@ function B_primary = GetMultiPrimarySource(SOrWls, whichSource, rectifyYesOrNo)
 %                       - 'LEDCube'
 %                       - 'LIFXColour1000'
 %                       - 'OneLight'
-%                       - 'Allen5Primary'
+%                       - 'AllenFivePrimary'
 %     rectifyYesOrNo - Logical determining whether to rectify negative 
 %                      values
 %
