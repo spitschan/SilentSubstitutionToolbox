@@ -6,7 +6,8 @@ function B_primary = GetMultiPrimarySource(SOrWls, whichSource, rectifyYesOrNo)
 %
 % Description:
 %     This function returns the spectral bases for a set of multi-primary
-%     light sources.
+%     light sources. Note that this requires access to the private
+%     'LightAndReceptorCalculations' repository.
 %
 % Input:
 %     SOrWls - Wavelength column vector or S triplet to specify wavelength
@@ -18,6 +19,7 @@ function B_primary = GetMultiPrimarySource(SOrWls, whichSource, rectifyYesOrNo)
 %                       - 'LEDCube'
 %                       - 'LIFXColour1000'
 %                       - 'OneLight'
+%                       - 'Allen5Primary'
 %     rectifyYesOrNo - Logical determining whether to rectify negative 
 %                      values
 %
