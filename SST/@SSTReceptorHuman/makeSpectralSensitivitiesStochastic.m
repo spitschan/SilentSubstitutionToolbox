@@ -32,6 +32,12 @@ function makeSpectralSensitivitiesStochastic(obj, varargin)
 %       Ts{}.T_energy - Energy fundamentals
 %       Ts{}.T_energyNormalized - Normalized energy fundamentals
 %
+%     The spectral sensitivites are specified for light reaching the cornea
+%     (i.e., these are receptor fundamentals) and are, in order, L cones, M
+%     cones, S cones, Melanopsin, and Rods.  If the object's
+%     'doPenumbralConesTrueFalse' field is true, then penumbral L*, M* and
+%     S* sensitivities are tacked on at the end.
+%
 %     Note that the macular pigment parameter often lens to macular
 %     transmittances of >1, which leads to out-of-bound sampling. In that case,
 %     a note is printed and the sample is rejected.
@@ -167,7 +173,7 @@ while c <= NSamples
         end
         
         %% Convert to energy
-        T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
+        T_energy = EnergyToQuanta(obj.S,T_quantalIsomerizationsNormalized')';
         T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
         
         % Assign the sub-fields in the "Ts" field

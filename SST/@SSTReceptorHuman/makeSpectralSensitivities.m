@@ -92,7 +92,7 @@ if obj.doPenumbralConesTrueFalse
 end
 
 %% Convert to energy fundamentals
-T_energy = EnergyToQuanta(obj.S,T_quantalAbsorptionsNormalized')';
+T_energy = EnergyToQuanta(obj.S,T_quantalIsomerizationsNormalized')';
 
 % And normalize the energy fundamentals
 T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
