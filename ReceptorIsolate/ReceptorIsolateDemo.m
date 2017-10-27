@@ -176,7 +176,7 @@ end
 
 %% Get sensitivities and set other relvant parameters
 switch (whichModel)
-    case 'HumanPhotopigments';
+    case 'HumanPhotopigments'
         % The routines that do these computations are in the
         % ContrastSplatter directory of the SilentSubstitutionToolbox. They
         % provide pre-defined receptor types and compute spectral
