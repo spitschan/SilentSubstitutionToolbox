@@ -44,6 +44,9 @@ sstRoot = pwd;
 CheckSSTInstalled();
 
 %% Load backgound and modulation spectra from some demo data in SST
+%
+% We magically know that the wavelength sampling of these spectra is
+% 380nm to 780 nm in 2nm increments.
 tmp = load(fullfile(sstRoot, 'ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_bg.mat'));
 bgSpd = tmp.spd;
 tmp = load(fullfile(sstRoot, 'ContrastSplatter/ContrastSplatterDemoData/spd_contrastsplatterdemo_mod.mat'));

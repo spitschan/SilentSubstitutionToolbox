@@ -263,7 +263,7 @@ for ii = 1:NTitrations
     end
     
     % Convert to energy fundamentals
-    T_energy = EnergyToQuanta(obj.S,T_quantalIsomerizationsNormalized')';
+    T_energy = EnergyToQuanta(obj.S,T_quantalIsomerizations')';
     
     % And normalize the energy fundamentals
     T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));

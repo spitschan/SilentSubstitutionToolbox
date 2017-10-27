@@ -10,6 +10,62 @@ classdef SSTReceptorHuman < SSTReceptor
     %     standard set of nominal spectral sensitivities will be generated
     %     using this class's makeSpectralSensitivities function.
     %
+    %     The spectral sensitivites are specified for light reaching the
+    %     cornea (i.e., these are receptor fundamentals) and are, in order,
+    %     L cones, M cones, S cones, Melanopsin, and Rods.  If the object's
+    %     'doPenumbralConesTrueFalse' field is true, then penumbral L*, M*
+    %     and S* sensitivities are tacked on at the end.  These in up as
+    %     rows in the separate fields of the various T... (e.g. T, Tp,
+    %     Tp_i, Ts) properites of the object, where each T... is a struct.
+    %     The labels property of the object provides string labels for each
+    %     receptor type.
+    %   
+    %     When fundamentals are computed, we get them in various units as
+    %     fields of the corresponding struct.  The individual T_ matrices
+    %     follow Psychtoolbox conventions.  Each row is the sensitivity for
+    %     one class, and each column represents one wavelength band.  In
+    %     this form, you can multiply T_ into a column vector that
+    %     describes the radiance and get back a column vector that contains
+    %     the receptor responses.
+    %
+    %        T_quantalIsomerizations - light specified as radiance with
+    %        power in quanta/sec per wavelength band and result is the
+    %        number of isomerizations per second.  The geometric units of
+    %        radiance are [m2-sr].
+    %
+    %        T_quantalAbsorptions - light specific as radiance in quantal
+    %        units as just above, but result is the number of quanta
+    %        absorbed per second.  Not all absorptions lead to an isomerization, so
+    %        this is different from isomerizations in our nomenclature.
+    %        The two differ by a factor for each receptor type which is called
+    %        the quantal efficiency.  [NOTE: DHB - I can't imagine why
+    %        anyone would want to actually use this, if I correctly
+    %        understand what it is.  It may be a mistake to expose it,
+    %        because the most likely effect is to cause confusion.  Some
+    %        people use "absorptions" as a synonym for "isomerizations",
+    %        which is one reason I wrote this long comment but as still
+    %        worried.]
+    %
+    %        T_quantalAbsorptionsNormalized: These are like the quantal
+    %        absorptions but with each sensitivity normlizeed to a peak of
+    %        1. Since they are normalized, what you get out doesn't really
+    %        correspond to anything physical, and we might call the results
+    %        cone coordinates.  The coordinates will predict color matches
+    %        as long as the input was in quantal units.  [NOTE: DHB - I am
+    %        not sure we want to encourage use of this either, and might
+    %        delete it as a propery.]
+    %
+    %        T_energy: These are fundamentals that expect radiance to be
+    %        specified in terms of Watts, rather than quanta/sec, but
+    %        none-the-less return the number of isomerizations per second.
+    %
+    %        T_energyNormalized: These are fundamentals each normalized to
+    %        a max of 1.  This is often how tabulated fundamentals are
+    %        provided.  If you use these, you get cone coordinates where
+    %        the numbers are on a human scale and predict color matches,
+    %        but there is no direct relation to the biopysically
+    %        meaningful quantity of isomerizations/sec.  
+    %
     % Input:
     %     None.
     %

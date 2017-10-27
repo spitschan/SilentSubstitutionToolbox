@@ -173,7 +173,7 @@ while c <= NSamples
         end
         
         %% Convert to energy
-        T_energy = EnergyToQuanta(obj.S,T_quantalIsomerizationsNormalized')';
+        T_energy = EnergyToQuanta(obj.S,T_quantalIsomerizations')';
         T_energyNormalized = bsxfun(@rdivide,T_energy,max(T_energy, [], 2));
         
         % Assign the sub-fields in the "Ts" field
