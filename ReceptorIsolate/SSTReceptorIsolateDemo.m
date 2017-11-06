@@ -54,11 +54,8 @@ receptors = SSTReceptorHuman('verbosity','high',...
 
 %% Plot receptor fundamentals
 f1 = figure(); clf;
-subplot(2,3,1); plot_quantalIsomerizations = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_quantalIsomerizations','saveFig',false);
-subplot(2,3,2); plot_quantalAbsorptions = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_quantalAbsorptions','saveFig',false);
-subplot(2,3,3); plot_quantalAbsorptionsNormalized = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_quantalAbsorptionsNormalized','saveFig',false);
-subplot(2,2,3); plot_energy = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_energy','saveFig',false);
-subplot(2,2,4); plot_energyNormalized = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_energyNormalized','saveFig',false);
+subplot(1,2,1); plot_quantalIsomerizations = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_quantalIsomerizations','saveFig',false);
+subplot(1,2,2); plot_energy = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_energy','saveFig',false);
 
 
 %% Define devices
