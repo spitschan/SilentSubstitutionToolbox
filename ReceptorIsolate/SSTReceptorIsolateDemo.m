@@ -21,7 +21,6 @@ CheckSSTInstalled();
 % Select receptor model Description of models can be added to this cell
 % array; all will be presented as options.
 availableModels = {'Human cones, penumbral cones, rods, and melanopsin',...
-    %                   'Dog photoreceptors' TODO
     };
 
 % Print each entry
@@ -137,9 +136,9 @@ devices(4).maxPowerDiff = 10000;
 
 %% Select device
 % Print each entry
-fprintf('Available device primaries:\n');
+fprintf('\n<strong>Available devices:</strong>\n');
 for i = 1:numel(devices)
-    fprintf('\t[%i] %s (%s)\n',i,devices(i).name,devices(i).description)
+    fprintf('<strong>\t[%i] %s</strong>: %s\n',i,devices(i).name,devices(i).description)
 end
 
 % Prompt, and check input
@@ -147,7 +146,7 @@ input = GetWithDefault('Enter device number',1);
 assert(input > 0 && input <= numel(devices),...
     'SST:InputError','Unknown device entered: %i. Range [1-%i] expected',input,numel(devices));
 device = devices(input);
-fprintf('Device [%i] selected: %s (%s)\n',input,device.name,device.description);
+fprintf('<strong>Device [%i] selected:</strong> %s (%s)\n',input,device.name,device.description);
 
 %% Set background spectrum
 % Half-on in whatever primary space we are working in
@@ -158,15 +157,21 @@ backgroundPrimary = repmat(.5,size(device.B_primary,2),1);
 
 %% Prompt for direction of modulation
 receptorSelection = [receptors.labels',cell(size(receptors.labels'))];
-fprintf('Target [1], Silence [2], or Ignore [3] receptor:\n')
+fprintf('\n<strong>Target [1], Silence [2], or Ignore [3] receptor:</strong>\n')
 for i = 1:size(receptorSelection,1)
-    receptorSelection{i,2} = GetWithDefault(sprintf('\t %s',receptorSelection{i,1}),3);
+    receptorSelection{i,2} = GetWithDefault(sprintf('\t%s',receptorSelection{i,1}),3);
     assert(receptorSelection{i,2} > 0 && receptorSelection{i,2} <= 3,...
         'SST:InputError','Receptors should either be targeted [1], silenced [2], or Ignored [3]');
 end
 targetReceptors = find([receptorSelection{:,2}] == 1);
 silenceReceptors = find([receptorSelection{:,2}] == 2);
 ignoredReceptors = find([receptorSelection{:,2}] == 3);
+
+fprintf('<strong>Seeking direction that isolates</strong>')
+fprintf(' %ss,',receptors.labels{targetReceptors});
+fprintf('\n<strong>while silencing</strong>')
+fprintf(' %ss,',receptors.labels{silenceReceptors});
+fprintf('...');
 
 %% Maximize contrast vs. desired contrast TODO
 desiredContrast = [];
@@ -175,6 +180,7 @@ desiredContrast = [];
 directionPrimary = ReceptorIsolate(receptors.T.T_energyNormalized,targetReceptors,ignoredReceptors,[],...
     device.B_primary, backgroundPrimary, backgroundPrimary, [],...
     device.primaryHeadRoom, device.maxPowerDiff, desiredContrast, device.ambientSpd);
+fprintf('done.\n');
 
 %% Calculate nominal contrasts
 backgroundReceptor = receptors.T.T_quantalIsomerizations * (device.B_primary * backgroundPrimary + device.ambientSpd);
