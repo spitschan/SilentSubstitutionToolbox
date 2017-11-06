@@ -17,8 +17,13 @@ function f1 = plotSpectralSensitivities(obj, varargin)
 %     f1 - Figure handle to the created plot.
 %
 % Optional key/value pairs:
-%     'NewWindow' - Logical determing whether to create a new window or to
-%                   keep on plotting in gcf. Can be true or false.
+%     'ax' - Axes object to plot in, rather than gca. If none is provided,
+%            creates a new figure window and new axes object to plot in.
+%
+%     'NewWindow' - LEGACY, replaced by 'ax'. If passed instead of 'ax',
+%                   functions as expected. Ignored if both are passed.
+%                   Logical determing whether to  create a new window or to
+%                   keep on plotting in gcf. Can be true or false. 
 %                   (Default: true)
 %
 %     'whichFormat' - String determining which field of the receptorObj
@@ -52,6 +57,7 @@ function f1 = plotSpectralSensitivities(obj, varargin)
 % along from a calling routine without an error here, if the key/value
 % pairs recognized by the calling routine are not needed here.
 p = inputParser; p.KeepUnmatched = true;
+p.addParameter('ax',[], @ishandle);
 p.addParameter('NewWindow', true, @islogical);
 p.addParameter('whichFormat', 'T_energyNormalized', @ischar);
 p.addParameter('logUnits', false, @islogical);
@@ -101,9 +107,16 @@ if p.Results.logUnits
 end
 
 %% Make the figure
-if (p.Results.NewWindow)
-    f1 = figure; clf; hold on;
+if isempty(p.Results.ax)
+    if p.Results.NewWindow
+        f1 = figure(); clf; hold on;
+    else
+        f1 = gcf;
+    end
+    ax = gca;
 else
+    ax = p.Results.ax;
+    axes(ax);
     f1 = gcf;
 end
 
@@ -122,13 +135,14 @@ yLims = [min(min(T_receptors))*0.9  max(max(T_receptors))*1.1];
 NReceptorsToPlot = length(obj.labels);
 for ii = 1:NReceptorsToPlot
     % Plot the fundamentals
-    h(ii) = plot(wls, T_receptors(ii, :), '-', 'LineWidth', 2, 'Color', theRGB(ii, :)); hold on;
+    h(ii) = plot(ax,wls, T_receptors(ii, :), '-', 'LineWidth', 2, 'Color', theRGB(ii, :)); hold on;
 end
 
 % Tune the plot properties
 title(sublabel);
 legend(h, obj.labels); legend boxoff;
 xlim(xLims); ylim(yLims);
+xlabel('Wavelength');
 ylabel(yLabel);
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out');
 
