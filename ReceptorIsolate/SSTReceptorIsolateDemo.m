@@ -184,34 +184,72 @@ directionPrimary = ReceptorIsolate(receptors.T.T_energyNormalized,targetReceptor
     device.primaryHeadRoom, device.maxPowerDiff, desiredContrast, device.ambientSpd);
 fprintf('done.\n');
 
-%% Calculate nominal contrasts
-backgroundReceptor = receptors.T.T_quantalIsomerizations * (device.B_primary * backgroundPrimary + device.ambientSpd);
-directionReceptor = receptors.T.T_quantalIsomerizations * (device.B_primary * directionPrimary + device.ambientSpd);
-contrasts = (directionReceptor - backgroundReceptor) ./ backgroundReceptor;
-fprintf('\n<strong>Nominal contrasts:</strong>\n')
+%% Calculate nominal contrasts (energy)
+backgroundReceptorEnergyNormalized = receptors.T.T_energyNormalized * (device.B_primary * backgroundPrimary + device.ambientSpd);
+directionReceptorEnergyNormalized = receptors.T.T_energyNormalized * (device.B_primary * directionPrimary + device.ambientSpd);
+contrastEnergy = (directionReceptorEnergyNormalized - backgroundReceptorEnergyNormalized) ./ backgroundReceptorEnergyNormalized;
+fprintf('\n<strong>Nominal contrasts (energy):</strong>\n')
 for i = 1:numel(receptors.labels)
-    fprintf('<strong>\t%s:</strong> %.2f%%\n',receptors.labels{i},contrasts(i)*100);
+    fprintf('<strong>\t%s:</strong>',receptors.labels{i});
+    fprintf(' %.2f%% contrast (background = %.2e, direction = %.2e)\n',...
+        contrastEnergy(i)*100,backgroundReceptorEnergyNormalized(i),directionReceptorEnergyNormalized(i));
 end
 
 %% Generate some plots
+f = figure(); clf;
+% Plot primaries
+subplt_modulationPrimaries = subplot(2,3,1); hold on;
+plot(backgroundPrimary,'ko ','LineWidth',2);
+plot(directionPrimary,'ro ','LineWidth',2);
+title('Modulation primaries settings');
+legend({'Background','Direction'});
+xlim([0 length(backgroundPrimary+1)]);
+ylim([0 1]);
+xlabel('Primary number (nominal)');
+ylabel('Setting');
+pbaspect([1 1 1]);
+
 % Plot modulation spectra
-plt_modulationSpectra = figure; hold on;
-plot(SToWls(device.S),device.B_primary*directionPrimary,'r','LineWidth',2);
+subplt_modulationSpectra = subplot(2,3,4); hold on;
 plot(SToWls(device.S),device.B_primary*backgroundPrimary,'k','LineWidth',2);
+plot(SToWls(device.S),device.B_primary*directionPrimary,'r','LineWidth',2);
 title('Modulation spectra');
-legend({'Direction','Background'});
 xlim([380 780]);
 xlabel('Wavelength');
 ylabel('Power');
 pbaspect([1 1 1]);
 
-% Plot primaries
-plt_modulationPrimaries = figure; hold on;
-stem(directionPrimary,'r','LineWidth',2);
-stem(backgroundPrimary,'k','LineWidth',2);
-title('Modulation primaries settings');
-legend({'Direction','Background'});
-xlim([1 length(backgroundPrimary)]);
-ylim([0 1]);
-xlabel('Primary number (nominal)');
-ylabel('Setting');
+% Sensitivities
+subplt_energySensitivities = subplot(1,3,2); hold on;
+receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_energyNormalized','saveFig',false);
+pbaspect([1 1 1]);
+
+% Receptor energy
+subplt_energyReceptor = subplot(2,4,4); hold on;
+plot(1:numel(backgroundReceptorEnergyNormalized),backgroundReceptorEnergyNormalized,'ko ','LineWidth',2);
+plot(1:numel(backgroundReceptorEnergyNormalized),directionReceptorEnergyNormalized,'ro ','LineWidth',2);
+legend({'Background','Direction'});
+title('Receptor response');
+xlim(xlim+[-1 1]);
+xticks(1:numel(backgroundReceptorEnergyNormalized));
+xticklabels(receptors.labels);
+subplt_energyReceptor.XTickLabelRotation = 90;
+subplt_energyReceptor.XGrid = 'on';
+ylabel('Energy');
+pbaspect([1 1 1]);
+
+% Receptor contrast
+subplt_energyContrasts = subplot(2,4,8); hold on;
+plot(1:numel(backgroundReceptorEnergyNormalized),backgroundReceptorEnergyNormalized./backgroundReceptorEnergyNormalized,'ko ','LineWidth',2);
+plot(1:numel(backgroundReceptorEnergyNormalized),directionReceptorEnergyNormalized./backgroundReceptorEnergyNormalized,'ro ','LineWidth',2);
+title('Relative receptor response');
+xlim(xlim+[-1 1]);
+ylim([0 2]);
+xticks(1:numel(backgroundReceptorEnergyNormalized));
+xticklabels([]);
+subplt_energyContrasts.XGrid = 'on';
+subplt_energyContrasts.XAxisLocation = 'top';
+subplt_energyContrasts.XTickLabelRotation = 90;
+xlabel('');
+ylabel('Relative energy');
+pbaspect([1 1 1]);

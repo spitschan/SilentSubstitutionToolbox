@@ -142,6 +142,7 @@ end
 title(sublabel);
 legend(h, obj.labels); legend boxoff;
 xlim(xLims); ylim(yLims);
+xlabel('Wavelength');
 ylabel(yLabel);
 pbaspect([1 1 1]); set(gca, 'TickDir', 'out');
 
