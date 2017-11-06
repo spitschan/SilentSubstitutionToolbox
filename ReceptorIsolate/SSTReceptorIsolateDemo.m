@@ -176,7 +176,14 @@ directionPrimary = ReceptorIsolate(receptors.T.T_energyNormalized,targetReceptor
     device.B_primary, backgroundPrimary, backgroundPrimary, [],...
     device.primaryHeadRoom, device.maxPowerDiff, desiredContrast, device.ambientSpd);
 
-%% Calculate nominal contrasts TODO
+%% Calculate nominal contrasts
+backgroundReceptor = receptors.T.T_quantalIsomerizations * (device.B_primary * backgroundPrimary + device.ambientSpd);
+directionReceptor = receptors.T.T_quantalIsomerizations * (device.B_primary * directionPrimary + device.ambientSpd);
+contrasts = (directionReceptor - backgroundReceptor) ./ backgroundReceptor;
+fprintf('\n<strong>Nominal contrasts:</strong>\n')
+for i = 1:numel(receptors.labels)
+    fprintf('<strong>\t%s:</strong> %.2f%%\n',receptors.labels{i},contrasts(i)*100);
+end
 
 %% Generate some plots
 % Plot modulation spectra
