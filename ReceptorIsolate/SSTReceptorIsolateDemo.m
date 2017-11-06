@@ -1,16 +1,20 @@
-% SSTReceptor Receptor Isolate Demo
+% SSTReceptor based demo of ReceptorIsolate
 %
 % Demonstration of the ReceptorIsolate engine for finding modulations that
 % isolate various receptors; the receptor fundamentals in this
 % demonstration are generated using the SSTReceptor class(es).
 %
-% NOTE: the SSTReceptorHuman class does not (currently - 10/30/17) correct
-% for photopigment bleaching, unlike the legacy GetHumanPhotoreceptorSS
-% code that the legacy ReceptorIsolateDemo used.
+% NOTES:
+%  NOTE - JV: the SSTReceptorHuman class does not (currently - 10/30/17) correct
+%  for photopigment bleaching, unlike the legacy GetHumanPhotoreceptorSS
+%  code that the legacy ReceptorIsolateDemo used.
 %
-% NOTE: the SSTReceptorHuman class (currently - 10/30/17) uses fixed
-% standard parameters for vessel oxygenation fraction (.85), and vessel
-% overall thickness (5um).
+%  NOTE - JV: the SSTReceptorHuman class (currently - 10/30/17) uses fixed
+%  standard parameters for vessel oxygenation fraction (.85), and vessel
+%  overall thickness (5um).
+%
+% KNOWN BUGS:
+%  Seems to only work for S = [380 2 201]
 
 %% Setup
 % Clear workspace and command window, close plots
@@ -103,7 +107,7 @@ devices(1).maxPowerDiff = 10^-1.5;
 devices(2).name = 'Spectral';
 devices(2).description = 'Hypothetical ideal spectrum producing device (delta function primaries at each wavelength with unit power)';
 devices(2).cal = struct(); % hypothetical devices don't have a calibration file
-devices(2).S = [400 4 76];
+devices(2).S = [380 2 201];
 devices(2).B_primary = eye(devices(2).S(3));
 devices(2).ambientSpd = zeros(size(devices(2).B_primary,2),1);
 devices(2).primaryHeadRoom = 0;
@@ -117,7 +121,7 @@ devices(2).maxPowerDiff = 10000;
 devices(3).name = 'Monitor';
 devices(3).description = 'Some typical monitor (supplied by PTB)';
 devices(3).cal = LoadCalFile('PTB3TestCal');
-devices(3).S = [400 4 76];
+devices(3).S = [380 2 201];
 devices(3).B_primary = SplineSpd(devices(3).cal.S_device,devices(3).cal.P_device,devices(3).S);
 devices(3).ambientSpd = SplineSpd(devices(3).cal.S_ambient,devices(3).cal.P_ambient,devices(3).S);
 devices(3).primaryHeadRoom = 0.02;
