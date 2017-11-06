@@ -25,7 +25,7 @@ availableModels = {'Human cones, penumbral cones, rods, and melanopsin',...
     };
 
 % Print each entry
-fprintf('Available receptor models:\n');
+fprintf('<strong>Available receptor models:</strong>\n');
 for i = 1:numel(availableModels)
     fprintf('\t[%i] %s\n',i,availableModels{i})
 end
@@ -123,17 +123,17 @@ devices(3).ambientSpd = SplineSpd(devices(3).cal.S_ambient,devices(3).cal.P_ambi
 devices(3).primaryHeadRoom = 0.02;
 devices(3).maxPowerDiff = 10000;
 
-% Five LED primaries TODO
+% Five LED primaries
 % No smoothness constraint implement, as the smoothness of a monitor
 % spectrum is pretty much determined by the shape of the primaries.
-%devices(4).name = 'FiveLED';
-%devices(4).description = 'Hypothetical device with five LED primaries';
-%devices(4).cal = struct(); % hypothetical devices don't have a calibration file
-%devices(4).S = [380 2 201];
-%devices(4).B_primary = 
-%devices(4).ambientSpd = zeros(devices(4).S(3),1);
-%devices(4).primaryHeadRoom = 0;
-%devices(4).maxPowerDiff = 10000;
+devices(4).name = 'FiveLED';
+devices(4).description = 'Hypothetical device with five LED primaries';
+devices(4).cal = struct(); % hypothetical devices don't have a calibration file
+devices(4).S = [380 2 201];
+devices(4).B_primary = LEDPrimaries(devices(4).S,[456 488 540 592 632],[10 10 10 17 17]/2,[.57 .125 .156 .27 .75]);
+devices(4).ambientSpd = zeros(devices(4).S(3),1);
+devices(4).primaryHeadRoom = 0;
+devices(4).maxPowerDiff = 10000;
 
 %% Select device
 % Print each entry
