@@ -49,12 +49,13 @@ receptors = SSTReceptorHuman('verbosity','high',...
     'doPenumbralConesTrueFalse',doPenumbralCones);
 
 %% Plot receptor fundamentals
-plot_quantalIsomerizations = receptors.plotSpectralSensitivities('whichFormat','T_quantalIsomerizations','saveFig',false);
-plot_quantalAbsorptions = receptors.plotSpectralSensitivities('whichFormat','T_quantalAbsorptions','saveFig',false);
-plot_quantalAbsorptionsNormalized = receptors.plotSpectralSensitivities('whichFormat','T_quantalAbsorptionsNormalized','saveFig',false);
-plot_energy = receptors.plotSpectralSensitivities('whichFormat','T_energy','saveFig',false);
-plot_energyNormalized = receptors.plotSpectralSensitivities('whichFormat','T_energyNormalized','saveFig',false);
-% TODO: combine into one plot (using subplots)
+f1 = figure(); clf;
+subplot(2,3,1); plot_quantalIsomerizations = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_quantalIsomerizations','saveFig',false);
+subplot(2,3,2); plot_quantalAbsorptions = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_quantalAbsorptions','saveFig',false);
+subplot(2,3,3); plot_quantalAbsorptionsNormalized = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_quantalAbsorptionsNormalized','saveFig',false);
+subplot(2,2,3); plot_energy = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_energy','saveFig',false);
+subplot(2,2,4); plot_energyNormalized = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_energyNormalized','saveFig',false);
+
 
 %% Define devices
 % devices are defined as structs, with the following fields:
