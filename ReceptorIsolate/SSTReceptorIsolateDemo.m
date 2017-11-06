@@ -225,7 +225,7 @@ receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_energyNormalized',
 pbaspect([1 1 1]);
 
 % Receptor energy
-subplt_energyReceptor = subplot(2,4,4); hold on;
+subplt_energyReceptor = subplot(2,3,3); hold on;
 plot(1:numel(backgroundReceptorEnergyNormalized),backgroundReceptorEnergyNormalized,'ko ','LineWidth',2);
 plot(1:numel(backgroundReceptorEnergyNormalized),directionReceptorEnergyNormalized,'ro ','LineWidth',2);
 legend({'Background','Direction'});
@@ -239,7 +239,7 @@ ylabel('Energy');
 pbaspect([1 1 1]);
 
 % Receptor contrast
-subplt_energyContrasts = subplot(2,4,8); hold on;
+subplt_energyContrasts = subplot(2,3,6); hold on;
 plot(1:numel(backgroundReceptorEnergyNormalized),backgroundReceptorEnergyNormalized./backgroundReceptorEnergyNormalized,'ko ','LineWidth',2);
 plot(1:numel(backgroundReceptorEnergyNormalized),directionReceptorEnergyNormalized./backgroundReceptorEnergyNormalized,'ro ','LineWidth',2);
 title('Relative receptor response');
