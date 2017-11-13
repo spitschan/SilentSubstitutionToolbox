@@ -200,7 +200,7 @@ legend({'Background','Direction'});
 xlim([0 length(backgroundPrimary+1)]);
 ylim([0 1]);
 xlabel('Primary number (nominal)');
-ylabel('Setting');
+ylabel('Value');
 pbaspect([1 1 1]);
 
 % Plot modulation spectra
