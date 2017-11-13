@@ -55,7 +55,7 @@ receptors = SSTReceptorHuman('verbosity','high',...
 %% Plot receptor fundamentals
 f1 = figure(); clf;
 subplot(1,2,1); plot_quantalIsomerizations = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_quantalIsomerizations','saveFig',false);
-subplot(1,2,2); plot_energy = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_energy','saveFig',false);
+subplot(1,2,2); plot_energy = receptors.plotSpectralSensitivities('ax',gca,'whichFormat','T_energyNormalized','saveFig',false);
 
 
 %% Define devices
@@ -154,9 +154,6 @@ fprintf('<strong>Device [%i] selected:</strong> %s (%s)\n',input,device.name,dev
 % Half-on in whatever primary space we are working in
 backgroundPrimary = repmat(.5,size(device.B_primary,2),1);
 
-%% Correct for bleaching FIXME
-% correctBleaching = logical( GetWithDefault('Correct for photopigment bleaching [1 = yes, 0 = no]?',1) );
-
 %% Prompt for direction of modulation
 receptorSelection = [receptors.labels',cell(size(receptors.labels'))];
 fprintf('\n<strong>Target [1], Silence [2], or Ignore [3] receptor:</strong>\n')
@@ -175,13 +172,10 @@ fprintf('\n<strong>while silencing</strong>')
 fprintf(' %ss,',receptors.labels{silenceReceptors});
 fprintf('...');
 
-%% Maximize contrast vs. desired contrast TODO
-desiredContrast = [];
-
 %% Create direction spectrum (by calling ReceptorIsolate)
 directionPrimary = ReceptorIsolate(receptors.T.T_energyNormalized,targetReceptors,ignoredReceptors,[],...
     device.B_primary, backgroundPrimary, backgroundPrimary, [],...
-    device.primaryHeadRoom, device.maxPowerDiff, desiredContrast, device.ambientSpd);
+    device.primaryHeadRoom, device.maxPowerDiff, [], device.ambientSpd);
 fprintf('done.\n');
 
 %% Calculate nominal contrasts (energy)
@@ -226,23 +220,23 @@ pbaspect([1 1 1]);
 
 % Receptor energy
 subplt_energyReceptor = subplot(2,3,3); hold on;
-plot(1:numel(backgroundReceptorEnergyNormalized),backgroundReceptorEnergyNormalized,'ko ','LineWidth',2);
+plot(1:numel(backgroundReceptorEnergyNormalized),backgroundReceptorEnergyNormalized,'k. ','LineWidth',2,'MarkerSize',15);
 plot(1:numel(backgroundReceptorEnergyNormalized),directionReceptorEnergyNormalized,'ro ','LineWidth',2);
 legend({'Background','Direction'});
-title('Receptor response');
+title('Receptor coordinate');
 xlim(xlim+[-1 1]);
 xticks(1:numel(backgroundReceptorEnergyNormalized));
 xticklabels(receptors.labels);
 subplt_energyReceptor.XTickLabelRotation = 90;
 subplt_energyReceptor.XGrid = 'on';
-ylabel('Energy');
+ylabel('Receptor coordinate');
 pbaspect([1 1 1]);
 
 % Receptor contrast
 subplt_energyContrasts = subplot(2,3,6); hold on;
-plot(1:numel(backgroundReceptorEnergyNormalized),backgroundReceptorEnergyNormalized./backgroundReceptorEnergyNormalized,'ko ','LineWidth',2);
+plot(1:numel(backgroundReceptorEnergyNormalized),backgroundReceptorEnergyNormalized./backgroundReceptorEnergyNormalized,'k. ','MarkerSize',15);
 plot(1:numel(backgroundReceptorEnergyNormalized),directionReceptorEnergyNormalized./backgroundReceptorEnergyNormalized,'ro ','LineWidth',2);
-title('Relative receptor response');
+title('Relative receptor coordinate');
 xlim(xlim+[-1 1]);
 ylim([0 2]);
 xticks(1:numel(backgroundReceptorEnergyNormalized));
@@ -251,5 +245,5 @@ subplt_energyContrasts.XGrid = 'on';
 subplt_energyContrasts.XAxisLocation = 'top';
 subplt_energyContrasts.XTickLabelRotation = 90;
 xlabel('');
-ylabel('Relative energy');
+ylabel('Relative receptor coordinate');
 pbaspect([1 1 1]);
