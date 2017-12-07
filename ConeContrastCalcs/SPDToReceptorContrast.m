@@ -18,22 +18,20 @@ function [contrasts, response, responseDiff] = SPDToReceptorContrast(SPDs,SSTRec
 %                   which to calculate contrasts
 %
 % Outputs:
-%    contrasts    - NxNxR matrix of contrasts (one NxN matrix per receptor 
-%                   type)
+%    contrasts    - NxNxR matrix of contrasts in % (one NxN
+%                   matrix per receptor type), where contrasts(i,j,R) =
+%                   responseDiff(i,j,R) / response(R,i) * 100%
 %    response     - RxN matrix of responses of each receptor type to each 
-%                   PSD
+%                   SPD
 %    responseDiff - NxNxR matrix of differences in responses (one NxN 
-%                   matrix per receptor type)
+%                   matrix per receptor type), where responseDiff(i,j,R) =
+%                   response(R,j) - response(R,i).
 %
 % Optional key/value pairs:
 %   None.
-%
-% Notes:
-%
-% See also:
 
 % History:
-%    12/01/17  jv  created. based on ComputerAndReportContrastsFromSpds     
+%    12/01/17  jv  created based on ComputeAndReportContrastsFromSpds     
 %
      
     % Calculate receptor response
