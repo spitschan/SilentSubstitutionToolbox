@@ -28,7 +28,17 @@ function [contrasts, response, responseDiff] = SPDToReceptorContrast(SPDs,SSTRec
 %                   response(R,j) - response(R,i).
 %
 % Optional key/value pairs:
-%   None.
+%    None.
+%
+% Notes:
+%    In the case that only 2 SPDs are passed (e.g., a background SPD and a
+%    direction SPD), the outputs are simplified as follows:
+%       responseDiff - Rx2 matrix, where the first column is the
+%                      response(R,j) - reponse(R,i), and the second column 
+%                      the inverse
+%       contrasts    - Rx2 matrix, where the first column is the contrast
+%                      relative to the first SPD, and the second column is
+%                      the contrast relative to the second SPD.
 
 % History:
 %    12/01/17  jv  created based on ComputeAndReportContrastsFromSpds     
@@ -41,7 +51,17 @@ function [contrasts, response, responseDiff] = SPDToReceptorContrast(SPDs,SSTRec
     temp = reshape(response',[1,size(SPDs,2),size(SSTReceptors.labels,2)]);
     temp = repmat(temp,[size(SPDs,2),1,1]);
     responseDiff = temp - permute(temp,[2 1 3]);
+
+    % Squeeze, if only 2 SPDs were passed
+    if size(SPDs,2) == 2
+        responseDiff = squeeze([responseDiff(1,2,:) responseDiff(2,1,:)])';
+        % denominator for contrast is the repsonses matrix when N = 2
+        temp = response;
+    else
+        % denominator for contrast is a permutation of the temp matrix
+        temp = permute(temp,[2 1 3]);
+    end
     
     % Calculate contrasts
-    contrasts = responseDiff ./ permute(temp,[2 1 3]) * 100;
+    contrasts = responseDiff ./ temp * 100;
 end
