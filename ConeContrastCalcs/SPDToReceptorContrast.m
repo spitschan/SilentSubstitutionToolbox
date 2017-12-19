@@ -39,19 +39,27 @@ function [contrasts, response, responseDiff] = SPDToReceptorContrast(SPDs,SSTRec
 %       contrasts    - Rx2 matrix, where the first column is the contrast
 %                      relative to the first SPD, and the second column is
 %                      the contrast relative to the second SPD.
+%
+%    In the case that only 1 SPD is passed, response is returned as normal,
+%    but responseDiff and contrasts are returned as nWlsx1 columnvectors of
+%    NaNs.
 
 % History:
 %    12/01/17  jv  created based on ComputeAndReportContrastsFromSpds     
 %
-     
-    % Calculate receptor response
-    response = SSTReceptors.T.T_energyNormalized * SPDs;
+    
+% Calculate receptor response
+response = SSTReceptors.T.T_energyNormalized * SPDs;
 
+if size(SPDs,2) <= 1
+    responseDiff = NaN(size(SPDs));
+    contrasts = NaN(size(SPDs));
+else
     % Calculate difference in receptor responses between all SPDs
     temp = reshape(response',[1,size(SPDs,2),size(SSTReceptors.labels,2)]);
     temp = repmat(temp,[size(SPDs,2),1,1]);
     responseDiff = temp - permute(temp,[2 1 3]);
-
+    
     % Squeeze, if only 2 SPDs were passed
     if size(SPDs,2) == 2
         responseDiff = squeeze([responseDiff(1,2,:) responseDiff(2,1,:)])';
@@ -64,4 +72,5 @@ function [contrasts, response, responseDiff] = SPDToReceptorContrast(SPDs,SSTRec
     
     % Calculate contrasts
     contrasts = responseDiff ./ temp * 100;
+end
 end
