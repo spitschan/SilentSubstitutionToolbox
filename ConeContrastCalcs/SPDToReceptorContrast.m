@@ -63,7 +63,7 @@ else
     % Squeeze, if only 2 SPDs were passed
     if size(SPDs,2) == 2
         responseDiff = squeeze([responseDiff(1,2,:) responseDiff(2,1,:)])';
-        % denominator for contrast is the repsonses matrix when N = 2
+        % denominator for contrast is the responses matrix when N = 2
         temp = response;
     else
         % denominator for contrast is a permutation of the temp matrix
