@@ -1,4 +1,4 @@
-function [receptorContrasts, postreceptoralContrasts, postreceptoralStrings] = ComputeAndReportContrastsFromSpds(prefixString,receptorStrings,T_receptors,backgroundSpd,modulationSpd)
+function [receptorContrasts, postreceptoralContrasts, postreceptoralStrings] = ComputeAndReportContrastsFromSpds(prefixString,receptorStrings,T_receptors,backgroundSpd,modulationSpd,varargin)
 % ComputeAndReportContrastsFromSpds
 %
 % Usage:
@@ -37,9 +37,9 @@ function [receptorContrasts, postreceptoralContrasts, postreceptoralStrings] = C
 
 %% Parse input
 p = inputParser;
-p.addParameter('verbose',true,@ischar);
-p.addParameter('doPostreceptoral',true,@ischar);
-p.parse;
+p.addParameter('verbose',true,@islogical);
+p.addParameter('doPostreceptoral',true,@islogical);
+p.parse(varargin{:});
 
 %% Check
 if p.Results.doPostreceptoral
