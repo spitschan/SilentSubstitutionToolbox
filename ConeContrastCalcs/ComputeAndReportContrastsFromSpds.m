@@ -53,9 +53,7 @@ end
 if (p.Results.verbose),  fprintf('\n<strong>%s</strong>\n', prefixString); end
 
 %% Calculate the contrasts
-backgroundReceptors = T_receptors*backgroundSpd;
-differenceReceptors = T_receptors*(modulationSpd-backgroundSpd);
-receptorContrasts = differenceReceptors ./ backgroundReceptors;
+receptorContrasts = SPDToReceptorContrast([backgroundSpd, modulationSpd],T_receptors);
 if (p.Results.verbose)
     for j = 1:size(T_receptors,1)
         fprintf('  * <strong>%s</strong>: contrast = %0.1f%%\n',receptorStrings{j},100*receptorContrasts(j));
