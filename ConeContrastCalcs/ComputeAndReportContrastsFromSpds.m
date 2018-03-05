@@ -17,7 +17,7 @@ function [receptorContrasts, postreceptoralContrasts, postreceptoralStrings] = C
 %    prefixString - A string that gets printed in the MATLAB window before contrast values are reported.
 %    photoreceptorClasses - Names of the photoreceptor classes in a cell array.
 %    T_receptors - Array with the spectral sensitivities, of size nReceptors by nWls,
-%                  where nReceptors is the number of receptors and N the number of 
+%                  where nReceptors is the number of receptors and N the number of
 %                  wavelength samples.
 %    backgroundSpd - Background spd in column vector of length nWls.
 %    modulationSpd - Modulation spd in column vector of length nWls.
@@ -54,13 +54,16 @@ if (p.Results.verbose),  fprintf('\n<strong>%s</strong>\n', prefixString); end
 
 %% Calculate the contrasts
 receptorContrasts = SPDToReceptorContrast([backgroundSpd, modulationSpd],T_receptors);
+receptorContrasts = receptorContrasts(:,1);
+
+%% Report
 if (p.Results.verbose)
     for j = 1:size(T_receptors,1)
         fprintf('  * <strong>%s</strong>: contrast = %0.1f%%\n',receptorStrings{j},100*receptorContrasts(j));
     end
 end
 
-% Postreceptoral contrasts.  Assuming that first three receptor contrasts are L, M and S.
+%% Postreceptoral contrasts.  Assuming that first three receptor contrasts are L, M and S.
 if p.Results.doPostreceptoral
     [postreceptoralContrasts, postreceptoralStrings] = ComputePostreceptoralContrastsFromLMSContrasts(receptorContrasts(1:3));
     

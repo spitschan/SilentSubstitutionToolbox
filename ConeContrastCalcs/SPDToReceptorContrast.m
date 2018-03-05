@@ -1,4 +1,4 @@
-function [contrasts, excitation, responseDiff] = SPDToReceptorContrast(SPDs,receptors)
+function [contrasts, excitation, excitationDiff] = SPDToReceptorContrast(SPDs,receptors)
 % Calculates contrast on photoreceptors between SPDs
 %
 % Syntax:
@@ -22,14 +22,14 @@ function [contrasts, excitation, responseDiff] = SPDToReceptorContrast(SPDs,rece
 %                     T.T_energyNormalized matrix will be used
 %
 % Outputs:
-%    contrasts    - NxNxR matrix of contrasts in % (one NxN
+%    contrasts    - NxNxR matrix of contrasts (one NxN
 %                   matrix per receptor type), where contrasts(i,j,R) =
-%                   responseDiff(i,j,R) / response(R,i) * 100%
-%    response     - RxN matrix of responses of each receptor type to each
+%                   excitationDiff(i,j,R) / excitation(R,i)
+%    excitation     - RxN matrix of excitations of each receptor type to each
 %                   SPD
-%    responseDiff - NxNxR matrix of differences in responses (one NxN
-%                   matrix per receptor type), where responseDiff(i,j,R) =
-%                   response(R,j) - response(R,i).
+%    excitationDiff - NxNxR matrix of differences in excitations (one NxN
+%                   matrix per receptor type), where excitationDiff(i,j,R) =
+%                   excitation(R,j) - excitation(R,i).
 %
 % Optional key/value pairs:
 %    None.
@@ -37,23 +37,23 @@ function [contrasts, excitation, responseDiff] = SPDToReceptorContrast(SPDs,rece
 % Notes:
 %    In the case that only 2 SPDs are passed (e.g., a background SPD and a
 %    direction SPD), the outputs are simplified as follows:
-%       responseDiff - Rx2 matrix, where the first column is the
-%                      response(R,j) - reponse(R,i), and the second column
+%       excitationDiff - Rx2 matrix, where the first column is the
+%                      excitation(R,j) - reponse(R,i), and the second column
 %                      the inverse
 %       contrasts    - Rx2 matrix, where the first column is the contrast
 %                      relative to the first SPD, and the second column is
 %                      the contrast relative to the second SPD.
 %
-%    In the case that only 1 SPD is passed, response is returned as normal,
-%    but responseDiff and contrasts are returned as nWlsx1 columnvectors of
+%    In the case that only 1 SPD is passed, excitation is returned as normal,
+%    but excitationDiff and contrasts are returned as nWlsx1 columnvectors of
 %    NaNs.
 
 % History:
 %    12/01/17  jv  created based on ComputeAndReportContrastsFromSpds
-%    03/02/18  jv  extracted response calculation to
+%    03/02/18  jv  extracted excitation calculation to
 %                  SPDToReceptorReceptorExcitation, and the contrast
 %                  calculations to ReceptorExcitationToContrast.
 
 excitation = SPDToReceptorExcitation(SPDs, receptors);
-[contrasts, responseDiff] = ReceptorExcitationToReceptorContrast(excitation);
+[contrasts, excitationDiff] = ReceptorExcitationToReceptorContrast(excitation);
 end

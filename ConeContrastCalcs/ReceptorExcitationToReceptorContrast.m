@@ -13,10 +13,10 @@ function [contrasts, excitationDiff] = ReceptorExcitationToReceptorContrast(rece
 %                          each of the N vectors of excitations.
 %
 % Outputs:
-%    contrasts           - NxNxR matrix of contrasts in percent (one NxN
+%    contrasts           - NxNxR matrix of contrasts (one NxN
 %                          matrix per receptor type), where
 %                          contrasts(i,j,R) = excitationDiff(i,j,R) /
-%                          excitation(R,i) * 100%
+%                          excitation(R,i)
 %    excitationDiff      - NxNxR matrix of differences in excitations (one
 %                          NxN matrix per receptor type), where
 %                          excitationDiff(i,j,R) = excitation(R,j) -
@@ -73,7 +73,7 @@ else
     end
     
     % Calculate contrasts
-    contrasts = excitationDiff ./ temp * 100;
+    contrasts = excitationDiff ./ temp;
 end
 
 
