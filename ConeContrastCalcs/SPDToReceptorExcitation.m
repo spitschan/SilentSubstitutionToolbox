@@ -26,12 +26,28 @@ function excitation = SPDToReceptorExcitation(SPD,receptors)
 % Optional key/value pairs:
 %    None.
 %
+% Examples are provided in the source code.
+%
 % See also:
 %    ReceptorExcitationToReceptorContrast, SPDToReceptorContrast
 
 % History:
 %    03/02/18  jv  wrote it, extracted from
 %                  ComputeAndReportContrastsFromSPDs
+
+% Examples:
+%{
+    receptors = SSTReceptorHuman; % default human receptors
+
+    % use monochromatic SPDs, with peak at peak wavelength for a receptor:
+    SPDs = receptors.T.T_energyNormalized' .* (receptors.T.T_energyNormalized' == max(receptors.T.T_energyNormalized'));
+    
+    % input argument can be an SSTReceptor object:
+    excitations = SPDToReceptorExcitation(SPDs,receptors);
+
+    % input argument can also be a T_receptors matrix
+    excitations = SPDToReceptorExcitation(SPDs,receptors.T.T_energyNormalized);
+%}
 
 %% Input validation
 parser = inputParser;
