@@ -37,7 +37,7 @@ function excitation = SPDToReceptorExcitation(SPD,receptors)
 
 % Examples:
 %{
-    receptors = SSTReceptorHuman; % default human receptors
+    receptors = SSTReceptorHuman('verbosity','low'); % default human receptors
 
     % use monochromatic SPDs, with peak at peak wavelength for a receptor:
     SPDs = receptors.T.T_energyNormalized' .* (receptors.T.T_energyNormalized' == max(receptors.T.T_energyNormalized'));

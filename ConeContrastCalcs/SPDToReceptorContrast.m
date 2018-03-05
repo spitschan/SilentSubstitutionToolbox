@@ -60,7 +60,7 @@ function [contrasts, excitation, excitationDiff] = SPDToReceptorContrast(SPDs,re
 % Examples:
 %{
     %% Two SPDs, output is simplified:
-    receptors = SSTReceptorHuman; % default human receptors
+    receptors = SSTReceptorHuman('verbosity','low'); % default human receptors
 
     % An SPD matching L-cone sensitivity, and an EES at half-maximum
     % sensitivity:
@@ -83,7 +83,7 @@ function [contrasts, excitation, excitationDiff] = SPDToReceptorContrast(SPDs,re
 %}
 %{
     %% Three SPDs:
-    receptors = SSTReceptorHuman; % default human receptors
+    receptors = SSTReceptorHuman('verbosity','low'); % default human receptors
 
     % An SPD matching L-cone sensitivity, one matching M-cone sensitivity,
     % and an EES at half-maximum sensitivity:
