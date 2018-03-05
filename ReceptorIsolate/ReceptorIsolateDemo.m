@@ -406,7 +406,7 @@ plot(SToWls(S),T_receptors,'LineWidth',2);
 xlabel('Wavelength (nm)')
 ylabel('Sensitivity');
 title('Normalized photoreceptor sensitivities');
-saveas(theFig1,sprintf('%s_%s_%s_Sensitivities.pdf',whichModel,whichPrimaries,whichDirectionNumber),'pdf');
+saveas(theFig1,sprintf('%s_%s_%s_Sensitivities.pdf',whichModel,whichPrimaries,whichDirection),'pdf');
 
 % Modulation spectra
 theFig2 = figure; hold on
@@ -417,7 +417,7 @@ xlim([380 780]);
 xlabel('Wavelength');
 ylabel('Power');
 pbaspect([1 1 1]);
-saveas(theFig2,sprintf('%s_%s_%s_Modulation.pdf',whichModel,whichPrimaries,whichDirectionNumber),'pdf');
+saveas(theFig2,sprintf('%s_%s_%s_Modulation.pdf',whichModel,whichPrimaries,whichDirection),'pdf');
 
 % Primaries
 theFig3 = figure; hold on
@@ -428,7 +428,7 @@ xlim([0 length(backgroundPrimary)]);
 ylim([0 1]);
 xlabel('Primary Number (nominal)');
 ylabel('Setting');
-saveas(theFig3,sprintf('%s_%s_%s_Primaries.pdf',whichModel,whichPrimaries,whichDirectionNumber),'pdf');
+saveas(theFig3,sprintf('%s_%s_%s_Primaries.pdf',whichModel,whichPrimaries,whichDirection),'pdf');
 
 %% Return to the directory from whence we started
 cd(curDir);
