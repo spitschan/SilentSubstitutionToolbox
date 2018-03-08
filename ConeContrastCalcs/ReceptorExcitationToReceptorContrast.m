@@ -32,7 +32,7 @@ function [contrasts, excitationDiff] = ReceptorExcitationToReceptorContrast(rece
 %    background SPD and a direction SPD), the outputs are simplified as
 %    follows:
 %       excitationDiff - Rx2 matrix, where the first column is the
-%                        excitation(R,j) - reponse(R,i), and the second
+%                        excitation(R,j) - excitation(R,i), and the second
 %                        column the inverse
 %       contrasts      - Rx2 matrix, where the first column is the contrast
 %                        relative to the first vector of excitations, and
