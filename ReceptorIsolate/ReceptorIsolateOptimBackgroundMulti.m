@@ -1,5 +1,9 @@
-function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundMulti(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground)
-% [isolatingPrimaries] = ReceptorIsolateOptimBackgroundMulti(T_receptors,whichReceptorsToIsolate,whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground)
+function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundMulti(T_receptors,whichReceptorsToIsolate, ...
+    whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,...
+    primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground)
+% [isolatingPrimaries] = ReceptorIsolateOptimBackgroundMulti(T_receptors,whichReceptorsToIsolate, ...
+%   whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,...
+%   primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground)
 %
 % This routine optimize finds the background primaries and k modulation
 % primaries maximizing the contrast on the specified k modulation
@@ -35,7 +39,7 @@ function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundM
 %     standard 0.5 half-on background, not all positive excursions (which
 %     maximize contrast) yield in-gamut negative excursions.
 % 
-%     (3) Error function. The heart of both ReceptorIsolateOptimBackgroundMulti
+%     (3) Error function. The heart ReceptorIsolateOptimBackgroundMulti
 %     is how the error function is defined. There are at present three
 %     definitions: a) for when the contrasts between receptors are yoked (e.g.
 %     LMS, with equal contrast on LMS), b) for when the contrasts are yoked but
@@ -66,21 +70,20 @@ function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundM
 % maxPowerDiff -             See ReceptorIsolate
 % desiredContrasts -         See ReceptorIsolate
 % ambientSpd -               See ReceptorIsolate
-% directionsYoked -          See ReceptorIsolate
-% directionsYokedAbs -       See ReceptorIsolate
+% directionsYoked -          NEED COMMENT
+% directionsYokedAbs -       NEED COMMENT
 % pegBackground -            Boolean flag to set if the background should not be
 %                            optimized. If set, the k modulation primaries will
 %                            nonetheless be found, maximizing contrast on the k
 %                            directions.
 
-% 7/18/17   ms      Commented.
-% 8/7/17    ms      Further comments.
+% 07/18/17   ms     Commented.
+% 08/17/17  ms      Further comments.
+% 03/27/18  dhb     Comments. Remove nargin checks, because all args are in
+%                   fact required.
 
 % Check whether the desired contrasts were passed, and if so check
 % consistency of its dimensions.
-if (nargin < 10)
-    desiredContrasts = [];
-end
 if ~isempty(desiredContrasts)
     if length(whichReceptorsToIsolate) ~= length(desiredContrasts)
         error('Size of whichReceptorsToIsolate and of desired contrasts vector do not line up')
@@ -91,7 +94,7 @@ end
 nModulations = size(whichReceptorsToIsolate, 2);
 
 % If no ambient light spd is passed, assumingit is zero.
-if (nargin < 11 || isempty(ambientSpd))
+if (isempty(ambientSpd))
     ambientSpd = zeros(size(B_primary,1),1);
 end
 
@@ -190,7 +193,7 @@ end
 %
 % Optimization subfunction.  This mixes maximizing response of isolated
 % receptors with smoothness.
-function f = IsolateFunction(x,B_primary,ambientSpd,T_receptors,whichReceptorsToIsolate,whichReceptorsToZero,whichReceptorsToMinimize,nModulations,directionsYoked, directionsYokedAbs)
+function f = IsolateFunction(x,B_primary,ambientSpd,T_receptors,whichReceptorsToIsolate,whichReceptorsToZero,whichReceptorsToMinimize,nModulations,directionsYoked,directionsYokedAbs)
 
 % Compute background including ambient
 backgroundSpd = B_primary*x(:, 1) + ambientSpd;
