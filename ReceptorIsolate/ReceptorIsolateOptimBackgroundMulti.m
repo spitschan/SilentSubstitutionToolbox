@@ -77,10 +77,11 @@ function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundM
 %                            nonetheless be found, maximizing contrast on the k
 %                            directions.
 
-% 07/18/17   ms     Commented.
+% 07/18/17  ms      Commented.
 % 08/17/17  ms      Further comments.
 % 03/27/18  dhb     Comments. Remove nargin checks, because all args are in
 %                   fact required.
+%           dhb     Check on returned primaries staying within headroom
 
 % Check whether the desired contrasts were passed, and if so check
 % consistency of its dimensions.
@@ -182,6 +183,16 @@ x = fmincon(@(x) IsolateFunction(x,B_primary,ambientSpd,T_receptors,...
     nModulations,directionsYoked,directionsYokedAbs),x,Cx,Qx,[],[],vlbx,vubx,@(x)nonlconstraint(x, nModulations),options);
 
 % Extract the output arguments to be passed back.
+% This enforces a sanity check on the primaries.
+primaryTolerance = 1e-6;
+x(x > 1 - primaryHeadRoom & x < 1 - primaryHeadRoom + primaryTolerance) = 1 - primaryHeadRoom;
+x(x < primaryHeadRoom & x > primaryHeadRoom-primaryTolerance) = primaryHeadRoom;
+if (any(x) > 1 - primaryHeadRoom)
+    error('Primary greater than 1 minus headroom');
+end
+if (any(x) < primaryHeadRoom)
+    error('Primeary less than primary headroom');
+end
 backgroundPrimary = x(:, 1);
 for i = 1:nModulations+1
     isolatingPrimary{i} = x(:, i);

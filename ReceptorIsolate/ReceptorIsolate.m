@@ -71,6 +71,9 @@ function [isolatingPrimary] = ReceptorIsolate(T_receptors,whichReceptorsToIsolat
 %                   backgrounds to work when primaries are pinned.  Not actually tested.
 % 3/27/18  dhb      Added error check to make sure we don't try to use
 %                   unimplemented whichReceptorsToMinimize.
+%          dhb      Add check that background primaries respect requested
+%                   headroom.  This has to be true for anything else to make sense.
+%          dhb      Add check on returned primary range.
 
 % Check whether the desired contrasts were passed, and if so check
 % consistency of its dimensions.
@@ -106,6 +109,12 @@ beq = backgroundReceptorsZero;
 %
 % The following piece of code may also only work just right if we're
 % not pinning primaries.
+if (any(backgroundPrimary < primaryHeadRoom))
+    error('Cannot work if background primary is less than specified headroom');
+end
+if (any(backgroundPrimary > 1-primaryHeadRoom))
+    error('Cannot work if background primary is greater than 1 minus specified headroom');
+end
 for b = 1:size(backgroundPrimary, 1)
     if backgroundPrimary(b) > 0.5
         vub(b) = 1-primaryHeadRoom;
@@ -155,9 +164,10 @@ C = [C1 ; C2]*B_primary;
 Q = ones(2*(vectorLength-1), 1)*maxPowerDiff;
 
 %% Fix numerical issues with vlb > vub that can sometimes come up.
+vlbTolerance = 1e-6;
 for ii = 1:length(vub)
-    if (vlb(ii) > vub(ii) - 1e-6)
-        vlb(ii) = vub(ii) - 1e-6;
+    if (vlb(ii) > vub(ii) - vlbTolerance)
+        vlb(ii) = vub(ii) - vlbTolerance;
     end
 end
 
@@ -167,18 +177,19 @@ end
 options = optimset('fmincon');
 options = optimset(options,'Diagnostics','off','Display','off','LargeScale','on','Algorithm','sqp', 'MaxFunEvals', 100000, 'TolFun', 1e-10, 'TolCon', 1e-10, 'TolX', 1e-10);
 x = fmincon(@(x) IsolateFunction(x,B_primary,backgroundPrimary,ambientSpd,T_receptors,whichReceptorsToIsolate,desiredContrasts,whichReceptorsToMinimize),x,C,Q,Aeq,beq,vlb,vub,[],options);
+
+% Extract the output arguments to be passed back.
+% This enforces a sanity check on the primaries.
+primaryTolerance = 2*vlbTolerance;
+x(x > 1 - primaryHeadRoom & x < 1 - primaryHeadRoom + primaryTolerance) = 1 - primaryHeadRoom;
+x(x < primaryHeadRoom & x > primaryHeadRoom-primaryTolerance) = primaryHeadRoom;
+if (any(x) > 1 - primaryHeadRoom)
+    error('Primary greater than 1 minus headroom');
+end
+if (any(x) < primaryHeadRoom)
+    error('Primeary less than primary headroom');
+end
 isolatingPrimary = x;
-
-primaryTolerance = 1e-6;
-if any(isolatingPrimary > 1+primaryTolerance)
-    error('Primary values > 1');
-end
-isolatingPrimary(isolatingPrimary > 1) = 1;
-
-if any(isolatingPrimary < 0-primaryTolerance)
-    error('Primary values < 0');
-end
-isolatingPrimary(isolatingPrimary < 0) = 0;
 
 end
 
