@@ -59,6 +59,24 @@ function [contrasts, excitation, excitationDiff] = SPDToReceptorContrast(SPDs,re
 
 % Examples:
 %{
+    %% Two SPDs, single receptor:
+    SPD1 = 0.5*ones(401, 1);
+    SPD2 = ones(401, 1);
+    receptor = ones(1, 401);
+    
+    contrasts = SPDToReceptorContrast([SPD1 SPD2],receptor);
+    assert(all(contrasts == [1 -.5]));
+%}
+%{
+    %% Two SPDs, two receptors:
+    SPD1 = 0.5*ones(401, 1);
+    SPD2 = ones(401, 1);
+    receptor = [ones(1, 401); .5*ones(1,401)];
+    
+    contrasts = SPDToReceptorContrast([SPD1 SPD2],receptor);
+    assert(all(all(contrasts == [1 -.5; 1 -.5])));
+%}
+%{
     %% Two SPDs, output is simplified:
     receptors = SSTReceptorHuman('verbosity','low'); % default human receptors
 
