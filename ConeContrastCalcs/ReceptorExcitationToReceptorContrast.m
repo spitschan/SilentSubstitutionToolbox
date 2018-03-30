@@ -127,7 +127,10 @@ else
     
     % Squeeze, if only 2 SPDs were passed
     if size(receptorExcitations,2) == 2
-        excitationDiff = squeeze([excitationDiff(1,2,:) excitationDiff(2,1,:)])';
+        excitationDiff = squeeze([excitationDiff(1,2,:), excitationDiff(2,1,:)])';
+        if size(receptorExcitations,1) == 1
+            excitationDiff = excitationDiff';
+        end
         % denominator for contrast is the excitations matrix when N = 2
         temp = receptorExcitations;
     else
