@@ -49,6 +49,11 @@ if p.Results.doPostreceptoral
     end
 end
 
+%% Throw an error if receptorStrongs is not a cell
+if ~iscell(receptorStrings)
+   error('Please pass input arg `receptorStrings'' as cell array'); 
+end
+
 %% Print out some leading information
 if (p.Results.verbose),  fprintf('\n<strong>%s</strong>\n', prefixString); end
 
