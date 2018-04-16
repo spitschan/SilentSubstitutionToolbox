@@ -109,10 +109,11 @@ beq = backgroundReceptorsZero;
 %
 % The following piece of code may also only work just right if we're
 % not pinning primaries.
-if (any(backgroundPrimary < primaryHeadRoom))
+primaryHeadRoomTolerance = 1e-7;
+if (any(backgroundPrimary < primaryHeadRoom - primaryHeadRoomTolerance))
     error('Cannot work if background primary is less than specified headroom');
 end
-if (any(backgroundPrimary > 1-primaryHeadRoom))
+if (any(backgroundPrimary > 1-primaryHeadRoom+primaryHeadRoomTolerance))
     error('Cannot work if background primary is greater than 1 minus specified headroom');
 end
 for b = 1:size(backgroundPrimary, 1)
