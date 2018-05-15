@@ -7,10 +7,11 @@ MATLAB toolbox to compute estimates of human photoreceptor spectral sensitivitie
 This software is licensed under the license specified in `LICENSE.md` (MIT License). The code may be used freely. Using it to compute robust modulations by silencing multiple photoreceptor classes is covered by a U.S. Patent Application ([United States Patent Application 14/852001, "ROBUST TARGETING OF PHOTOSENSITIVE MOLECULES", 09/11/2015](http://www.freepatentsonline.com/y2016/0073922.html)) and is subject to licensing.
 
 #### 3. Developers
-This software was developed by: 
+This software is developed by: 
 * [Manuel Spitschan](https://github.com/spitschan) (Lead Developer; University of Oxford)
 * [Geoffrey K. Aguirre](https://github.com/gkaguirre) (University of Pennsylvania)
 * [David H. Brainard](https://github.com/DavidBrainard) (University of Pennsylvania)
+* [Joris Vincent](https://github.com/JorisVincent) (University of Pennsylvania)
 
 #### 4. Citing
 If you use this code in support of work in a published paper, please cite us:
