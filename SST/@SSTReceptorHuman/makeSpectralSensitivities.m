@@ -106,7 +106,7 @@ obj.T.T_quantalAbsorptions = T_quantalAbsorptions;
 obj.T.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
 obj.T.T_energy = T_energy;
 obj.T.T_energyNormalized = T_energyNormalized;
-obj.T.T_absorbance = [adjIndDiffParamsLMS.absorbance ; adjIndDiffParamsMel ; adjIndDiffParamsRod];
+obj.T.T_absorbance = [adjIndDiffParamsLMS.absorbance ; adjIndDiffParamsMel.absorbance ; adjIndDiffParamsRod.absorbance];
 obj.T.trans_lens = adjIndDiffParamsLMS.lens;
 obj.T.trans_mac = adjIndDiffParamsLMS.mac;
 
