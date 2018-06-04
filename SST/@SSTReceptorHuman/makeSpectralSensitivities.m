@@ -22,6 +22,9 @@ function makeSpectralSensitivities(obj)
 %       T.T_quantalAbsorptionsNormalized - Normalized quantal absoprtions
 %       T.T_energy - Energy fundamentals
 %       T.T_energyNormalized - Normalized energy fundamentals
+%       T.T_absorbance - Pigment absorbances
+%       T.trans_lens - Lens transmittance
+%       T.trans_mac - Macular transmittance
 %
 %     This routine gets called when the receptor object gets created by
 %     @SSTReceptorHuman.
@@ -45,15 +48,15 @@ function makeSpectralSensitivities(obj)
 %% Generate the spectral sensitivities
 %
 % LMS cones
-[T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS] = ComputeCIEConeFundamentals(obj.S,...
+[T_quantalAbsorptionsNormalizedLMS,T_quantalAbsorptionsLMS,T_quantalIsomerizationsLMS,adjIndDiffParamsLMS] = ComputeCIEConeFundamentals(obj.S,...
     obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm);
 
 % Melanopsin
-[T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel] = ComputeCIEMelFundamental(obj.S,...
+[T_quantalAbsorptionsNormalizedMel,T_quantalAbsorptionsMel,T_quantalIsomerizationsMel,adjIndDiffParamsMel] = ComputeCIEMelFundamental(obj.S,...
     obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
 
 % Rod
-[T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod] = ComputeCIERodFundamental(obj.S,...
+[T_quantalAbsorptionsNormalizedRod,T_quantalAbsorptionsRod,T_quantalIsomerizationsRod,adjIndDiffParamsRod] = ComputeCIERodFundamental(obj.S,...
     obj.fieldSizeDeg,obj.obsAgeInYrs,obj.obsPupilDiameterMm,[]);
 
 % L*M*S* (penumbral) cones, if required
@@ -103,6 +106,10 @@ obj.T.T_quantalAbsorptions = T_quantalAbsorptions;
 obj.T.T_quantalAbsorptionsNormalized = T_quantalAbsorptionsNormalized;
 obj.T.T_energy = T_energy;
 obj.T.T_energyNormalized = T_energyNormalized;
+obj.T.T_absorbance = [adjIndDiffParamsLMS.absorbance ; adjIndDiffParamsMel ; adjIndDiffParamsRod];
+obj.T.trans_lens = adjIndDiffParamsLMS.lens;
+obj.T.trans_mac = adjIndDiffParamsLMS.mac;
+
 if obj.doPenumbralConesTrueFalse == 0
     obj.labels = {'LCone' 'MCone' 'SCone' 'Mel' 'Rod'};
 elseif obj.doPenumbralConesTrueFalse == 1
