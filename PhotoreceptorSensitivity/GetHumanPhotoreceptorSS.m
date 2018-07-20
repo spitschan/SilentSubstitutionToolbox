@@ -324,8 +324,8 @@ SSMConeNominalLambdaMax = 530.3;
 SSSConeNominalLambdaMax = 420.7;
 
 %% Promote fieldSizeDegrees to a vector if it is a scalar
-if (length(fieldSizeDegrees == 1)
-    fieldSizeDegrees = fieldSizeDegrees*ones(length(PhotoreceptorClasses),1);
+if (length(fieldSizeDegrees) == 1)
+    fieldSizeDegrees = fieldSizeDegrees*ones(length(photoreceptorClasses),1);
 end
 for i = 1:length(photoreceptorClasses)
     theClass = photoreceptorClasses{i};
