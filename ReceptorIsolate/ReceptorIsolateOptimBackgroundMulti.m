@@ -187,10 +187,10 @@ x = fmincon(@(x) IsolateFunction(x,B_primary,ambientSpd,T_receptors,...
 primaryTolerance = 1e-6;
 x(x > 1 - primaryHeadRoom & x < 1 - primaryHeadRoom + primaryTolerance) = 1 - primaryHeadRoom;
 x(x < primaryHeadRoom & x > primaryHeadRoom-primaryTolerance) = primaryHeadRoom;
-if (any(x) > 1 - primaryHeadRoom)
+if (any(x > 1 - primaryHeadRoom))
     error('Primary greater than 1 minus headroom');
 end
-if (any(x) < primaryHeadRoom)
+if (any(x < primaryHeadRoom))
     error('Primeary less than primary headroom');
 end
 backgroundPrimary = x(:, 1);
