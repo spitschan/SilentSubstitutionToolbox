@@ -74,6 +74,7 @@ function [isolatingPrimary] = ReceptorIsolate(T_receptors,whichReceptorsToIsolat
 %          dhb      Add check that background primaries respect requested
 %                   headroom.  This has to be true for anything else to make sense.
 %          dhb      Add check on returned primary range.
+%          dhb      For close cases, tolerance wasn't being checked right. Fixed I think.
 
 % Check whether the desired contrasts were passed, and if so check
 % consistency of its dimensions.
@@ -182,12 +183,12 @@ x = fmincon(@(x) IsolateFunction(x,B_primary,backgroundPrimary,ambientSpd,T_rece
 % Extract the output arguments to be passed back.
 % This enforces a sanity check on the primaries.
 primaryTolerance = 2*vlbTolerance;
-x(x > 1 - primaryHeadRoom & x < 1 - primaryHeadRoom + primaryTolerance) = 1 - primaryHeadRoom;
+x(x > 1 - primaryHeadRoom & x < 1 - primaryHeadRoom + primaryTolerance) = 1 - primaryHeadRoom ;
 x(x < primaryHeadRoom & x > primaryHeadRoom-primaryTolerance) = primaryHeadRoom;
-if (any(x) > 1 - primaryHeadRoom)
+if (any(x > 1 - primaryHeadRoom))
     error('Primary greater than 1 minus headroom');
 end
-if (any(x) < primaryHeadRoom)
+if (any(x < primaryHeadRoom))
     error('Primeary less than primary headroom');
 end
 isolatingPrimary = x;
