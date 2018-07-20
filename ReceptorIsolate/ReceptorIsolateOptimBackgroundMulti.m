@@ -5,7 +5,7 @@ function [isolatingPrimary, backgroundPrimary] = ReceptorIsolateOptimBackgroundM
 %   whichReceptorsToIgnore,whichReceptorsToMinimize,B_primary,backgroundPrimary,initialPrimary,whichPrimariesToPin,...
 %   primaryHeadRoom,maxPowerDiff,desiredContrasts,ambientSpd,directionsYoked,directionsYokedAbs,pegBackground)
 %
-% This routine optimize finds the background primaries and k modulation
+% This routine finds the background primaries and k modulation
 % primaries maximizing the contrast on the specified k modulation
 % directions. This is done in simultaneous optimization.
 %
@@ -127,7 +127,7 @@ boundIndex = [whichPrimariesToPin whichPrimariesToVary];
 % modulation will be in gamut, but that's not necessary the case if the
 % background is not 0.5 for all wl bands.
 %
-% The following piece of code may also only works just right if we're
+% The following piece of code may also only work just right if we're
 % not pinning primaries.
 vub = backgroundPrimary; vub(:) = 1-primaryHeadRoom;
 vlb = backgroundPrimary; vlb(:) = primaryHeadRoom;
@@ -247,7 +247,7 @@ for i = 1:nModulations+1
     c1 = -([backgroundPrimary isolatingPrimary{i}]*[2 -1]');
     c2 = [backgroundPrimary isolatingPrimary{i}]*[2 -1]' - 1;
     
-    c3 = -([backgroundPrimary isolatingPrimary{i}]*[0 1]'); % negative arm
+    c3 = -([backgroundPrimary isolatingPrimary{i}]*[0 1]');  % negative arm
     c4 = [backgroundPrimary isolatingPrimary{i}]*[0 1]' - 1; % positive arm
     
     c = [c c1 c2 c2 c3];
