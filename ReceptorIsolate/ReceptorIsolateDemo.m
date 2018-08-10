@@ -17,6 +17,11 @@
 % 4/19/13  dhb, ms  Got this working again.
 % 12/11/14 dhb      Clean up for release.
 % 1/6/17   ms       Updated name convention for photopigments.
+% 08/10/18 dhb      Add L-M direction demo.  This works for a specified
+%                   contrast. I think we have code in
+%                   ReceptorIsolateOptimBackgroundMulti that allows
+%                   maximizing along a direction. For another day to
+%                   remember how that works.
 
 %% Clear and close
 clear; close all;
@@ -198,7 +203,7 @@ switch (whichModel)
         pupilDiameterMm = GetWithDefault('\tPupil diameter?', 4.7);
         vesselOxyFraction = GetWithDefault(['\tOxygenation fraction for vessel hemoglobin [typical 0.85]?'], 0.85);
         vesselOverallThicknessUm = GetWithDefault(['\tVessel thickness [typical 5 um]?'], 5);
-        correctBleaching = GetWithDefault(['\tCorrect for cone photopigment bleaching [1 = yes, 0 = no]?'],1);
+        correctBleaching = GetWithDefault(['\tCorrect for cone photopigment bleaching [1 = yes, 0 = no]?'],0);
         
         % Define photoreceptor classes that we'll consider.
         % ReceptorIsolate has a few more built-ins than these.
@@ -253,6 +258,7 @@ switch (whichModel)
         T_receptors = GetHumanPhotoreceptorSS(S, photoreceptorClasses, fieldSizeDegrees, observerAgeInYears, pupilDiameterMm, [], fractionBleached, oxygenationFraction, vesselThickness);
         
         %% Let user choose a photoreceptor class to target
+        LMinusMTargetContrast = 0.06;
         fprintf('Available photoreceptor classes to target:\n');
         fprintf('\t[1]  Melanopsin, silence open-field cones; ignore rods and penumbral cones\n');
         fprintf('\t[2]  Melanopsin, silence open-field and penumbral cones; ignore rods)\n');
@@ -260,6 +266,7 @@ switch (whichModel)
         fprintf('\t[4]  S cones, silence open field L and M cones, ingore all others\n');
         fprintf('\t[5]  Penumbral L and M cones, silence open-field cones, melanopsin, and prenumbral S cones; ignore rods\n');
         fprintf('\t[6]  Rods\n');
+        fprintf('\t[7]  L minus M at %0.2f contrast\n',LMinusMTargetContrast);
         whichDirectionNumber = GetWithDefault('Enter direction',1);
         
         % Depending on which direction is chosen, specify the indices
@@ -299,6 +306,19 @@ switch (whichModel)
                 whichReceptorsToTarget = [5];
                 whichReceptorsToIgnore = [6 7 8];
                 whichReceptorsToMinimize = [];
+            case 7
+                % Here we want to obtain desired contrasts on two
+                % photoreceptor classes.  We don't have code in place to
+                % maximize in a specified direction, but we can explicitly
+                % specify the desired contrasts on the targeted directions.
+                % One can then maximize by hand, finding out how far one
+                % can go before it is out of gamut.  A little loop and
+                % check could automate this process.
+                whichDirection = 'LMinusM';
+                whichReceptorsToTarget = [1 2];
+                whichReceptorsToIgnore = [4 5 6 7 8];
+                whichReceptorsToMinimize = [];
+                desiredContrast = [LMinusMTargetContrast -LMinusMTargetContrast];
             otherwise
                 error('Unknown direction entered');
         end
@@ -351,11 +371,13 @@ end
 % If we target, here we specify the same contrast for all targeted classes.
 % This is not necessary, they can differ.  It just makes the demo code a
 % bit simpler to yoke them since we only have to prompt for one number.
-maximizeTargetContrast = GetWithDefault('\tMaximize contrast? [1 = yes, 0 = no]', 1);
-if maximizeTargetContrast
-    desiredContrast = [];
-else
-    desiredContrast = GetWithDefault('\tDesired contrast (applies to all targeted classes)?', 0.45)*ones(size(whichReceptorsToTarget));
+if (~exist('desiredContrast','var') | isempty(desiredContrast))
+    maximizeTargetContrast = GetWithDefault('\tMaximize contrast? [1 = yes, 0 = no]', 1);
+    if maximizeTargetContrast
+        desiredContrast = [];
+    else
+        desiredContrast = GetWithDefault('\tDesired contrast (applies to all targeted classes)?', 0.45)*ones(size(whichReceptorsToTarget));
+    end
 end
 
 % Nice message for user
@@ -386,15 +408,26 @@ modulationPrimary = ReceptorIsolate(T_receptors,whichReceptorsToTarget, whichRec
 
 %% Compute the contrasts that we got.
 backgroundReceptors = T_receptors*(B_primary*backgroundPrimary + ambientSpd);
+
+% Positive modulation of receptors
 modulationReceptors = T_receptors*B_primary*(modulationPrimary - backgroundPrimary);
 contrastReceptors = modulationReceptors ./ backgroundReceptors;
+fprintf('Positive modulation contrasts\n');
+for j = 1:size(T_receptors,1)
+    fprintf('\t%s: contrast = %0.4f\n',photoreceptorClasses{j},contrastReceptors(j));
+end
+
+% Negative modulation of receptors
+modulationReceptors = T_receptors*B_primary*(-(modulationPrimary - backgroundPrimary));
+contrastReceptors = modulationReceptors ./ backgroundReceptors;
+fprintf('Negative modulation contrasts\n');
 for j = 1:size(T_receptors,1)
     fprintf('\t%s: contrast = %0.4f\n',photoreceptorClasses{j},contrastReceptors(j));
 end
 
 %% Plots
 plotDir = 'ReceptorIsolateDemoOutput';
-if ~isdir(plotDir);
+if ~isdir(plotDir)
     mkdir(plotDir);
 end
 curDir = pwd;
@@ -422,12 +455,14 @@ saveas(theFig2,sprintf('%s_%s_%s_Modulation.pdf',whichModel,whichPrimaries,which
 % Primaries
 theFig3 = figure; hold on
 plot(modulationPrimary,'r','LineWidth',2);
+plot(backgroundPrimary+(-(modulationPrimary-backgroundPrimary)),'g','LineWidth',2);
 plot(backgroundPrimary,'k','LineWidth',2);
 title('Primary settings');
 xlim([0 length(backgroundPrimary)]);
 ylim([0 1]);
 xlabel('Primary Number (nominal)');
 ylabel('Setting');
+legend({'Positive', 'Negative', 'Background'},'Location','NorthEastOutside');
 saveas(theFig3,sprintf('%s_%s_%s_Primaries.pdf',whichModel,whichPrimaries,whichDirection),'pdf');
 
 %% Return to the directory from whence we started
