@@ -32,6 +32,8 @@ function status = ReceptorIsolateDemo(varargin)
 %                                 - 'basichuman' Basic human validation
 %    'whichDirectionNumber'    - Number (default 1). Which preset direction
 %                                to validate, when 'validate' is not 'none'
+%    'validationFractionTolerance' - Number (default 0.001). Fractional
+%                                tolerance for validation check, when validating.
 %
 % See also:
 %
@@ -56,6 +58,7 @@ close all;
 p = inputParser;
 p.addParameter('validate','none',@ischar);
 p.addParameter('whichDirectionNumber',1,@isnumeric);
+p.addParameter('validationFractionTolerance',0.001,@isnumeric)
 p.parse(varargin{:});
 
 %% Set status to OK
@@ -555,6 +558,14 @@ switch (p.Results.validate)
         % set this up.
         switch p.Results.whichDirectionNumber
             case 1
+                receptorsCheck = sum(T_receptors(:));
+                if (abs(max(receptorsCheck - 189.39))/189.39 > p.Results.validationFractionTolerance)
+                    status = 0;
+                end
+                modulationPrimaryCheck = sum(modulationPrimary(:));
+                if (abs(max(modulationPrimaryCheck - 47.553))/47.553 > p.Results.validationFractionTolerance)
+                    status = 0;
+                end
         end
     otherwise
         error('Unknown value for validate type passed.')
