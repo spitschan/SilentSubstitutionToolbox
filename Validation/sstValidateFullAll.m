@@ -13,13 +13,19 @@ function sstValidateFullAll(varargin)
 %% Close all figures so that we start with a clean slate
 close all;
 
+%% Set return flag
+success = true;
+
 %% We will use preferences for the 'isetbioValidation' project
 thisProject = 'SilentSubstitutionToolbox';
 
-%% Put in the tests here
+%% Here are some tests
+status = ReceptorIsolateDemo('validate','basichuman','whichDirectionNumber',1);
+if (~status)
+    success = false;
+end
 
-%% Set return flag
-success = true;
+%% Report whether we are OK
 assert(success, 'One or more validations failed.');
 
 end
