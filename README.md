@@ -1,3 +1,5 @@
+[![Build Status](http://brainard-jenkins.psych.upenn.edu/buildStatus/icon?job=SilentSubstitutionToolbox)](http://brainard-jenkins.psych.upenn.edu/job/SilentSubstitutionToolbox/)
+
 # Silent Substitution Toolbox 
 
 #### 1. Description
