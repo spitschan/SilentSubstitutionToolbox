@@ -26,7 +26,6 @@ if (~status)
 end
 
 %% Report whether we are OK
-success = false;
 assert(success, 'One or more validations failed.');
 
 end
