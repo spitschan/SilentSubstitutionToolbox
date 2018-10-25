@@ -1,6 +1,6 @@
 [![Build Status](http://brainard-jenkins.psych.upenn.edu/buildStatus/icon?job=SilentSubstitutionToolbox)](http://brainard-jenkins.psych.upenn.edu/job/SilentSubstitutionToolbox/)
 
-![RSRD](rsrd.png)
+![RSRD](rsrt.png)
 
 # Silent Substitution Toolbox 
 
