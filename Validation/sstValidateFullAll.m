@@ -14,7 +14,7 @@ function sstValidateFullAll(varargin)
 close all;
 
 %% Set return flag
-success = true;
+success = false;
 
 %% We will use preferences for the 'isetbioValidation' project
 thisProject = 'SilentSubstitutionToolbox';
