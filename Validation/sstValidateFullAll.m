@@ -32,6 +32,12 @@ if (~status)
     success = false;
 end
 
+status = SSTReceptorDemo('validate','basichuman');
+if (~status)
+    fprintf('SSTReceptorDemo failed\n');
+    success = false;
+end
+
 %% Report whether we are OK
 assert(success, 'One or more validations failed.');
 
