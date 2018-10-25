@@ -601,19 +601,22 @@ saveas(figPars, fullfile(sstRoot, 'SST', 'plots', 'SSTReceptorDemo_ParvResamplin
 switch (p.Results.validate)
     case 'basichuman'
         if (~strcmp(receptorObj.MD5Hash,'bf6016593cb2d6c3b92d77dc502150d9'))
+            fprintf('MD5Hash check failed\n');
             status = 0;
         end
-        T_EnergyResamplingCheck = sum(receptorObj.T.T_energyNormalized(:));
-        if (abs(max(T_EnergyResamplingCheck - 370.4517))/370.4517 > p.Results.validationFractionTolerance)
+        T_EnergyNormalizedCheck = sum(receptorObj.T.T_energyNormalized(:));
+        if (abs(max(T_EnergyNormalizedCheck - 370.4517))/370.4517 > p.Results.validationFractionTolerance)
+            fprintf('T_EnergyNormalized check failed\n');
             status = 0;
         end
-        receptorObj.T.T_energyNormalized
         postRecepContrastsResamplingCheck = sum(postRecepContrastsResampling(:));
         if (abs(max(postRecepContrastsResamplingCheck - 7.4960))/7.4960 > p.Results.validationFractionTolerance)
+            fprintf('postRecepContrastsResampling check failed\n');
             status = 0;
         end
         postRecepContrastsParametricVariationCheck = sum(postRecepContrastsParametricVariation{1}(:));
         if (abs(max(postRecepContrastsParametricVariationCheck - 0.6092))/0.6092 > p.Results.validationFractionTolerance)
+            fprintf('postRecepContrastsParametricVariation check failed\n');
             status = 0;
         end
         
