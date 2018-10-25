@@ -1,41 +1,73 @@
-%% SSTReceptorDemo.m
+function status = SSTReceptorDemo(varargin)
 %
-% This script demonstrates the use of the SSTReceptorHuman object and its
-% ability to investigate the splatter either (A) parametrically or using (B) a
-% resampling approach.
 %
-% (A) The SSTReceptorHuman object can create variants of the spectral
-%     sensitivities which differ in the 8-parameter Asano et al. model for
-%     cone individual differences. The parameters are lens density, macular
-%     pigment  density, the optical density for the LMS pigments, and the
-%     shift in lambda-max of the LMS pigments. Once the SSTReceptor object
-%     has been  defined, this is done through a call to
-%     makeSpectralSensitivitiesParametricVariation, which is a method of
-%     the object.
+% Description:
+%    This script demonstrates the use of the SSTReceptorHuman object and its
+%    ability to investigate the splatter either (A) parametrically or using (B) a
+%    resampling approach.
+% 
+%    (A) The SSTReceptorHuman object can create variants of the spectral
+%        sensitivities which differ in the 8-parameter Asano et al. model for
+%        cone individual differences. The parameters are lens density, macular
+%        pigment  density, the optical density for the LMS pigments, and the
+%        shift in lambda-max of the LMS pigments. Once the SSTReceptor object
+%        has been  defined, this is done through a call to
+%        makeSpectralSensitivitiesParametricVariation, which is a method of
+%        the object.
 %
-% (B) The SSTReceptorHuman object can also create variants of the spectral
-%     sensitivities by resampling them using the known (from the
-%     literature) standard deviations of the individual differences
-%     parameters. In any given resampled set of LMS cone fundamentals, the
-%     parameters have been changed. Of course, the resampling is set up
-%     such that the lens and macular pigment density parameters affect the
-%     LMS cone fundamentals, while the optical density and the lambda-max
-%     shift parameters affect the LMS cones independently.
+%    (B) The SSTReceptorHuman object can also create variants of the spectral
+%        sensitivities by resampling them using the known (from the
+%        literature) standard deviations of the individual differences
+%        parameters. In any given resampled set of LMS cone fundamentals, the
+%        parameters have been changed. Of course, the resampling is set up
+%        such that the lens and macular pigment density parameters affect the
+%        LMS cone fundamentals, while the optical density and the lambda-max
+%        shift parameters affect the LMS cones independently.
 %
-% Under the hood, the SSTReceptorHuman object uses machinery from
-% Psychtoolbox-3 to generate the spectral sensitivities of the cones.
+%    Under the hood, the SSTReceptorHuman object uses machinery from
+%    Psychtoolbox-3 to generate the spectral sensitivities of the cones.
 %
-% The demo loads background and modulation spectra which are part of the
-% SilentSubstitutionToolbox. These were added when we set up SST originally
-% and are not of specific interest beyond showing how to load spectra and
-% make splatter calculations.
+%    The demo loads background and modulation spectra which are part of the
+%    SilentSubstitutionToolbox. These were added when we set up SST originally
+%    and are not of specific interest beyond showing how to load spectra and
+%    make splatter calculations.
 %
-% 7/22/17   ms      Commented.
+% Inputs:
+%    None
+%
+% Outputs:
+%    status - Returns 1 in interactive mode, or if validations pass. Returns
+%             0 if a validation fails.
+%
+% Optional key/value pairs:
+%    'validate'                - String (default 'none'). Can pass strings to run
+%                                preset validations. When string is none, runs in
+%                                interactive mode and prompts for values.
+%                                 - 'none' Interactive mode, no validation checks.
+%                                 - 'basichuman' Basic human validation
+%    'validationFractionTolerance' - Number (default 0.001). Fractional
+%                                tolerance for validation check, when validating.
+%
+% See also:
+%
 
-%% Clear work space
-clearvars; close all; clc;
+% History:
+%   07/22/17   ms      Commented.
+%   10/25/18  dhb      Made a function with validation options.
 
-% Infer the SST root
+%% Parse input
+p = inputParser;
+p.addParameter('validate','none',@ischar);
+p.addParameter('validationFractionTolerance',0.001,@isnumeric)
+p.parse(varargin{:});
+
+%% Freeze rng seed
+rng(2504);
+
+%% Initialze return status
+status = 1;
+
+%% Infer the SST root
 sstRoot0 = mfilename('fullpath');
 sstRoot1 = cd(fullfile(fileparts(sstRoot0), '../..'));
 sstRoot = pwd;
@@ -558,10 +590,34 @@ xlabel('\Delta\lambda_{max} [S]');
 screenDims = get(0, 'Screensize');
 set(figPars, 'Position', [1 screenDims(4) screenDims(3)*0.9 screenDims(4)*0.9]);
 
-
 % Save out the figure
 set(figPars, 'PaperPosition', [0 0 40 20]);
 set(figPars, 'PaperSize', [40 20]);
 set(figPars, 'Color', 'w');
 set(figPars, 'InvertHardcopy', 'off');
 saveas(figPars, fullfile(sstRoot, 'SST', 'plots', 'SSTReceptorDemo_ParvResamplingFig.png'), 'png');
+
+%% Do some validation checks
+switch (p.Results.validate)
+    case 'basichuman'
+        if (~strcmp(receptorObj.MD5Hash,'bf6016593cb2d6c3b92d77dc502150d9'))
+            status = 0;
+        end
+        T_EnergyResamplingCheck = sum(receptorObj.T.T_energyNormalized(:));
+        if (abs(max(T_EnergyResamplingCheck - 370.4517))/370.4517 > p.Results.validationFractionTolerance)
+            status = 0;
+        end
+        receptorObj.T.T_energyNormalized
+        postRecepContrastsResamplingCheck = sum(postRecepContrastsResampling(:));
+        if (abs(max(postRecepContrastsResamplingCheck - 7.4960))/7.4960 > p.Results.validationFractionTolerance)
+            status = 0;
+        end
+        postRecepContrastsParametricVariationCheck = sum(postRecepContrastsParametricVariation{1}(:));
+        if (abs(max(postRecepContrastsParametricVariationCheck - 0.6092))/0.6092 > p.Results.validationFractionTolerance)
+            status = 0;
+        end
+        
+    case 'none'    
+    otherwise
+        error('Unknown validation type specified');
+end
