@@ -38,6 +38,9 @@ if (~status)
     success = false;
 end
 
+%% Close up all figs
+close all;
+
 %% Report whether we are OK
 assert(success, 'One or more validations failed.');
 
