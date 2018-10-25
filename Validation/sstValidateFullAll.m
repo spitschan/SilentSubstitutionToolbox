@@ -22,6 +22,13 @@ thisProject = 'SilentSubstitutionToolbox';
 %% Here are some tests
 status = ReceptorIsolateDemo('validate','basichuman','whichDirectionNumber',1);
 if (~status)
+    fprintf('ReceptorIsolateDemo failed\n');
+    success = false;
+end
+
+status = SSTReceptorCheckAgreement();
+if (~status)
+    fprintf('SSTReceptorCheckAgreement failed\n');
     success = false;
 end
 

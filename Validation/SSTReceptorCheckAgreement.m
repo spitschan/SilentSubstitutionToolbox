@@ -1,20 +1,32 @@
-%% SSTReceptorCheckAgreement
+function status = SSTReceptorCheckAgreement
 %
-% This program checks for agreement between the old
-% 'GetHumanPhotoreceptorSS' method and the new 'SSTReceptorHuman' object by
-% serially iterating through various parameters sets (varying pupil
-% diameter, field size and observer age, which are the front-end
-% parameters).
+% Description:
+%   This program checks for agreement between the old
+%   'GetHumanPhotoreceptorSS' method and the new 'SSTReceptorHuman' object by
+%   serially iterating through various parameters sets (varying pupil
+%   diameter, field size and observer age, which are the front-end
+%   parameters).
+%
+% Inputs:
+%    None.
+%
+% Outputs:
+%    status      -  True if no error, false otherwise.
 
-% 8/29/17   ms      Written.
-% 9/8/17    dhb     Comment out pause.  This seems useful for debugging but once it's working
-%                   we just want to run through the whole thing and see all the OKs scroll by.
+% History:
+%   8/29/17   ms      Written.
+%   9/8/17    dhb     Comment out pause.  This seems useful for debugging but once it's working
+%                     we just want to run through the whole thing and see all the OKs scroll by.
+%   10/25/18  dhb     Make a function, return status rather than throw an
+%                     error.  Makes it callable from a higher level
+%                     validation function.
 
 % Define wavelength spacing
 S = [380 2 201];
 wls = SToWls(S);
 
 % Iterate over ...
+status = true;
 for pupilDiameterMm = [2 4 6 8] % ... pupil diameter
     for fieldSizeDeg = [2 10 20 40 60] % ... field size
         for obsAgeInYrs = [20 30 40 50 60 70 80] % ... observer age
@@ -38,7 +50,7 @@ for pupilDiameterMm = [2 4 6 8] % ... pupil diameter
                 difft1(ii) = sum(abs(receptorObj.T.T_quantalIsomerizations(ii, :) - T_quantalIsomerizations(ii, :)));
             end
             if any(difft0 > 1e-7) || any(difft1 > 1e-7)
-                error('X Not consistent');
+                status = false;
             else
                 fprintf('X Pupil diam [mm] <strong>%d</strong>, field size [deg] <strong>%d</strong>, obs. age [yrs] <strong>%d</strong>: <strong>OK</strong>\n', pupilDiameterMm, fieldSizeDeg, obsAgeInYrs);
             end
