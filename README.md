@@ -1,7 +1,5 @@
 [![Build Status](http://brainard-jenkins.psych.upenn.edu/buildStatus/icon?job=SilentSubstitutionToolbox)](http://brainard-jenkins.psych.upenn.edu/job/SilentSubstitutionToolbox/)
 
-https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=imgres&cd=&cad=rja&uact=8&ved=2ahUKEwigntGdiqLeAhVrTt8KHaDKCFIQjRx6BAgBEAU&url=http%3A%2F%2Fgoogle.com%2Fsearch%3Ftbm%3Disch%26q%3DRun%2BSilent%2C%2BRun%2BDeep&psig=AOvVaw1J0CD2k0OK33RejxFi9RMp&ust=1540573656266908
-
 # Silent Substitution Toolbox 
 
 #### 1. Description
