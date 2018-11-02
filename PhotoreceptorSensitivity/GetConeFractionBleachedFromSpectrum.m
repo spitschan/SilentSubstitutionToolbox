@@ -46,6 +46,7 @@ function [fractionBleachedFromIsom, fractionBleachedFromIsomHemo] = GetConeFract
 % 12/12/14  dhb     Make verbose arg (added yesterday by ms) optional.
 %           dhb     desiredPhotopicLuminanceCdM2 was ignored completely.
 %                   Now used, but ignored if not passed.
+% 11/02/18  dhb     Make inner segment diamter field size dependent.
 
 %% Set default args
 if (nargin < 7 | isempty(verbose))
@@ -97,7 +98,11 @@ irradianceQuantaPerCm2Sec = (10.^8)*irradianceQuantaPerUm2Sec;
 irradianceQuantaPerDeg2Sec = (degPerMm^2)*(10.^-2)*irradianceQuantaPerCm2Sec;
 
 %% This is just to get cone inner segment diameter
-photoreceptors = DefaultPhotoreceptors('CIE10Deg');
+if (fieldSizeDegrees < 4)
+    photoreceptors = DefaultPhotoreceptors('CIE2Deg');
+else
+    photoreceptors = DefaultPhotoreceptors('CIE10Deg');
+end
 photoreceptors = FillInPhotoreceptors(photoreceptors);
 
 %% Get isomerizations
@@ -118,7 +123,11 @@ end
 %% Optional printout
 if verbose
     fprintf('    * Stimulus luminance used %0.1f candelas/m2\n',photopicLuminanceCdM2);
+    fprintf('    * Trolands: %0.2f\n',irradiancePhotTrolands);
+    fprintf('    * LMS cone inner segment diameters taken as %0.2f um\n',photoreceptors.ISdiameter.value(1),photoreceptors.ISdiameter.value(2),photoreceptors.ISdiameter.value(3));
+    fprintf('    * LMS isomerizations/sec, L: %0.2f, M: %0.2f, S: %0.2f\n',theLMSIsomerizations(1),theLMSIsomerizations(2),theLMSIsomerizations(3));
     fprintf('    * Fraction bleached computed from trolands (applies to L and M cones): %0.2f\n',fractionBleachedFromTrolands);
+    fprintf('    * For comparision, 2-1 average of LM from isomerization rates: %0.2f\n',(2*fractionBleachedFromIsom(1)+fractionBleachedFromIsom(2))/3);
     fprintf('    * Fraction bleached from isomerization rates: L, %0.2f; M, %0.2f; S, %0.2f\n', ...
         fractionBleachedFromIsom(1),fractionBleachedFromIsom(2),fractionBleachedFromIsom(3));
     fprintf('    * Fraction bleached from isomerization rates: LHemo, %0.2f; MHemo, %0.2f; SHemo, %0.2f\n', ...
