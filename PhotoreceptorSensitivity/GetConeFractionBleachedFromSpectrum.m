@@ -124,7 +124,7 @@ end
 if verbose
     fprintf('    * Stimulus luminance used %0.1f candelas/m2\n',photopicLuminanceCdM2);
     fprintf('    * Trolands: %0.2f\n',irradiancePhotTrolands);
-    fprintf('    * LMS cone inner segment diameters taken as %0.2f um\n',photoreceptors.ISdiameter.value(1),photoreceptors.ISdiameter.value(2),photoreceptors.ISdiameter.value(3));
+    fprintf('    * LMS cone inner segment diameters taken as %0.2f, %0.2f, %0.2f um\n',photoreceptors.ISdiameter.value(1),photoreceptors.ISdiameter.value(2),photoreceptors.ISdiameter.value(3));
     fprintf('    * LMS isomerizations/sec, L: %0.2f, M: %0.2f, S: %0.2f\n',theLMSIsomerizations(1),theLMSIsomerizations(2),theLMSIsomerizations(3));
     fprintf('    * Fraction bleached computed from trolands (applies to L and M cones): %0.2f\n',fractionBleachedFromTrolands);
     fprintf('    * For comparision, 2-1 average of LM from isomerization rates: %0.2f\n',(2*fractionBleachedFromIsom(1)+fractionBleachedFromIsom(2))/3);
