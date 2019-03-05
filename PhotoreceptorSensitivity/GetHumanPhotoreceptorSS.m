@@ -237,6 +237,7 @@ LConeFractionSet = false;
 MConeFractionSet = false;
 SConeFractionSet = false;
 if length(photoreceptorClasses) > 1
+    fractionConeBleachedFromIsom = [0 0 0]; % initialize as triplet for PTB
     for i = 1:length(photoreceptorClasses)
         switch photoreceptorClasses{i}
             case {'LConeTabulatedAbsorbance' 'LConeTabulatedAbsorbancePenumbral' 'LConeSSNomogramLegacy'}
