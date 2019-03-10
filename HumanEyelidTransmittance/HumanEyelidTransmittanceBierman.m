@@ -123,8 +123,8 @@ legend([h1 h2 h3 h4], 'Oxy-hemoglobin', 'Deoxy-hemoglobin', 'Melanin', 'Bilirubi
 title({'Human eyelid transmittance' 'Components'});
 
 % Save the figure
-set(gc1Fig, 'PaperPosition', [0 0 4 4]);
-set(gc1Fig, 'PaperSize', [4 4]);
+set(gc1Fig, 'PaperPosition', [0 0 12 12]);
+set(gc1Fig, 'PaperSize', [12 12]);
 saveas(gc1Fig, 'HumanEyelidTransmittanceBierman_Components.pdf', 'pdf');
 
 %% Load in the data from Rea et al.
@@ -171,8 +171,8 @@ legend([h1 h2 h3], 'Predicted transmittance (analytic)', 'Predicted transmittanc
 title({'Human eyelid transmittance'});
 
 % Save the figure
-set(gc2Fig, 'PaperPosition', [0 0 4 4]);
-set(gc2Fig, 'PaperSize', [4 4]);
+set(gc2Fig, 'PaperPosition', [0 0 12 12]);
+set(gc2Fig, 'PaperSize', [12 12]);
 saveas(gc2Fig, 'HumanEyelidTransmittanceBierman_Transmittance.pdf', 'pdf');
 
 %% Compare with Moseley et al.'s data
@@ -192,6 +192,7 @@ legend([h1 h2], 'Bierman, Figueiro & Rea (2011) model', 'Moseley, Bayliss & Fiel
 title({'Human eyelid transmittance'});
 
 % Save the figure
-set(gc3Fig, 'PaperPosition', [0 0 4 4]);
-set(gc3Fig, 'PaperSize', [4 4]);
+set(gc3Fig, 'PaperPosition', [0 0 12 12]);
+set(gc3Fig, 'PaperSize', [12 12]);
 saveas(gc3Fig, 'HumanEyelidTransmittanceBierman_ComparisonMoseley.pdf', 'pdf');
+saveas(gc3Fig, 'HumanEyelidTransmittanceBierman_ComparisonMoseley.png', 'png');
