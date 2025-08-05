@@ -88,7 +88,7 @@ if ~isempty(desiredContrasts)
 end
 
 %% Default for ambientSpd
-if (nargin < 11 || isempty(ambientSpd))
+if (nargin < 12 || isempty(ambientSpd))
     ambientSpd = zeros(size(B_primary,1),1);
 end
 
@@ -177,7 +177,7 @@ end
 % Progressive smoothing seems to work better than providing final value all
 % at once.
 options = optimset('fmincon');
-options = optimset(options,'Diagnostics','off','Display','off','LargeScale','on','Algorithm','sqp', 'MaxFunEvals', 100000, 'TolFun', 1e-10, 'TolCon', 1e-10, 'TolX', 1e-10);
+options = optimset(options,'Diagnostics','off','Display','iter','LargeScale','on','Algorithm','sqp', 'MaxFunEvals', 100000, 'TolFun', 1e-10, 'TolCon', 1e-10, 'TolX', 1e-10);
 x = fmincon(@(x) IsolateFunction(x,B_primary,backgroundPrimary,ambientSpd,T_receptors,whichReceptorsToIsolate,desiredContrasts,whichReceptorsToMinimize),x,C,Q,Aeq,beq,vlb,vub,[],options);
 
 % Extract the output arguments to be passed back.

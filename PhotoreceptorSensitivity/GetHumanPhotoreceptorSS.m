@@ -650,7 +650,7 @@ end
 %% Normalize energy sensitivities.
 %
 % They might already be normalized in most cases, but this makes sure.
-for i = 1:size(T_energyNormalized)
+for i = 1:size(T_energyNormalized,1)
     T_energyNormalized(i,:) = T_energyNormalized(i,:)/max(T_energyNormalized(i,:));
 end
 
