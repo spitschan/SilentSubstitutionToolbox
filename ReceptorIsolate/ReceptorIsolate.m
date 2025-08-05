@@ -60,25 +60,25 @@ function [isolatingPrimary] = ReceptorIsolate(T_receptors,whichReceptorsToIsolat
 % 4/1/12   dhb      Wrote it.
 % 11/15/12 dhb, ms  Remove upperVaryFactor arg.  Bound between 0 and 1-primaryHeadRoom.
 % 12/4/12  ms       Fixed a bug in the optimization object, added case
-%                   handling for smoothing spd or primaries.
+%                           handling for smoothing spd or primaries.
 % 4/19/13  dhb, ms  Added lots of comments.  Change behavior when desiredContrasts not passed,
-%                   so as to maximize sum of contrasts of modulations,
-%                   rather than sum of activations.
-%          dhb      Change error function a little to avoid numerical issues.
-% 8/27/13  ll       Fix minor typo in variable name
-% 12/12/13 dhb      Clean up comments etc.
+%                          so as to maximize sum of contrasts of modulations,
+%                          rather than sum of activations.
+%          dhb          Change error function a little to avoid numerical issues.
+% 8/27/13  ll         Fix minor typo in variable name
+% 12/12/13 dhb    Clean up comments etc.
 % 3/10/16  ms, dhb  Generalize ms's fix to bounds for asymmetric
-%                   backgrounds to work when primaries are pinned.  Not actually tested.
+%                          backgrounds to work when primaries are pinned.  Not actually tested.
 % 3/27/18  dhb      Added error check to make sure we don't try to use
-%                   unimplemented whichReceptorsToMinimize.
-%          dhb      Add check that background primaries respect requested
-%                   headroom.  This has to be true for anything else to make sense.
-%          dhb      Add check on returned primary range.
-%          dhb      For close cases, tolerance wasn't being checked right. Fixed I think.
+%                           unimplemented whichReceptorsToMinimize.
+%          dhb          Add check that background primaries respect requested
+%                          headroom.  This has to be true for anything else to make sense.
+%          dhb         Add check on returned primary range.
+%          dhb         For close cases, tolerance wasn't being checked right. Fixed I think.
 
 % Check whether the desired contrasts were passed, and if so check
 % consistency of its dimensions.
-if (nargin < 10)
+if (nargin < 11)
     desiredContrasts = [];
 end
 if ~isempty(desiredContrasts)
@@ -88,7 +88,10 @@ if ~isempty(desiredContrasts)
 end
 
 %% Default for ambientSpd
-if (nargin < 12 || isempty(ambientSpd))
+if (nargin < 12)
+    ambientSpd = [];
+end
+if (isempty(ambientSpd))
     ambientSpd = zeros(size(B_primary,1),1);
 end
 
@@ -177,7 +180,7 @@ end
 % Progressive smoothing seems to work better than providing final value all
 % at once.
 options = optimset('fmincon');
-options = optimset(options,'Diagnostics','off','Display','iter','LargeScale','on','Algorithm','sqp', 'MaxFunEvals', 100000, 'TolFun', 1e-10, 'TolCon', 1e-10, 'TolX', 1e-10);
+options = optimset(options,'Diagnostics','off','Display','off','LargeScale','on','Algorithm','sqp', 'MaxFunEvals', 100000, 'TolFun', 1e-10, 'TolCon', 1e-10, 'TolX', 1e-10);
 x = fmincon(@(x) IsolateFunction(x,B_primary,backgroundPrimary,ambientSpd,T_receptors,whichReceptorsToIsolate,desiredContrasts,whichReceptorsToMinimize),x,C,Q,Aeq,beq,vlb,vub,[],options);
 
 % Extract the output arguments to be passed back.
